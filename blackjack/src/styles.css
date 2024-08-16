@@ -1,0 +1,171 @@
+* {
+  touch-action: manipulation;
+}
+
+#dealersHand,
+#playersHands > div {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center; /* Center the hand */
+  overflow-x: auto;
+  border: 1px solid #ccc;
+  padding: 11px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  max-height: 18vh !important;
+  min-height: 18vh !important;
+  height: 18vh !important;
+  max-width: 85vw !important;
+  width: fit-content;
+  min-width: 22vh;
+  background-color: rgb(9, 59, 9);
+  overflow: hidden;
+}
+
+#dealersHand img,
+#playersHands > div img {
+  max-height: 100% !important;
+  margin-right: 11px;
+  margin-left: 0px;
+  transform-style: preserve-3d;
+}
+
+#dealersHand img:last-child,
+#playersHands > div img:last-child {
+  margin-right: 0px;
+  margin-left: 0px;
+}
+
+#hitBtn {
+  padding: 4px 21.5px 4px 21.5px;
+}
+
+#splitBtn {
+  padding: 4px 16.5px 4px 16.5px;
+}
+
+#standBtn {
+  padding: 4px 13px 4px 13px;
+}
+
+#doubleDownBtn {
+  line-height: 0.9;
+}
+
+#gameActions button {
+  border-radius: 10px;
+}
+
+#message h6 {
+  color: rgb(204, 58, 58);
+  font-weight: bolder;
+}
+
+#main {
+  max-height: 70vh !important;
+  height: 70vh !important;
+}
+
+#pointsDisplay,
+#wagerDisplay {
+  max-height: 4vh !important;
+  height: 4vh !important;
+  width: 20vh;
+  font-size: 1.2vh;
+  font-weight: bold;
+}
+
+#wagerDiv img {
+  box-sizing: border-box;
+  border: 0.4vh solid #ccc;
+  border-radius: 3.25vh;
+  max-height: 6.5vh;
+  margin: 0.5vh;
+}
+
+#wagerDiv img:hover {
+  cursor: pointer;
+}
+
+#wagerDiv #wagerBtn,
+#wagerRst,
+#allInBtn {
+  max-width: 120px;
+  font-size: 12px;
+  border-radius: 10px;
+}
+
+#wagerDiv #allInBtn {
+  padding: 4px 11px 4px 11px;
+}
+
+#disclaimer p {
+  font-size: 0.5rem;
+}
+
+#disclaimer {
+  width: fit-content;
+  height: fit-content;
+}
+
+.activeHand {
+  border: 5px solid yellow;
+  box-shadow: 0 0 15px yellow;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translate3d(-100%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes flip {
+  from {
+    transform: rotateX(20deg) rotateY(90deg);
+  }
+  to {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+}
+
+.imgFlip {
+  animation: flip 0.7s ease;
+}
+
+.imgSlide {
+  animation: slideIn 0.3s linear;
+}
+
+@keyframes flipFull {
+  from {
+    transform: rotateX(180deg) rotateY(360deg);
+  }
+  to {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+}
+
+.chipFlip {
+  animation: flipFull 0.7s linear;
+  transform-style: preserve-3d;
+}
+
+@keyframes highlight {
+  0% {
+    background-color: #ccc;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.highlight {
+  animation: highlight 0.5s linear;
+}
+
+.viewportResize {
+  transition: margin-left 0.3s ease-in-out;
+}
