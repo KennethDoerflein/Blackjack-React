@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import DealerSection from "./components/DealerSection.js";
 import PlayerSection from "./components/PlayerSection.js";
 import PointSection from "./components/PointSection.js";
@@ -8,12 +8,47 @@ import SettingsModal from "./components/SettingsModal.js";
 import InfoModal from "./components/InfoModal.js";
 import TopButtons from "./components/TopButtons.js";
 
+import CardDeck from "./game_logic/CardDeck.js";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import "./styles.css";
 
 function App() {
   document.documentElement.setAttribute("data-bs-theme", "dark");
+  const [deck, setDeck] = useState(new CardDeck());
+  const [playerHands, setPlayerHand] = useState([], [], [], []);
+  const [dealerHand, setDealerHand] = useState([]);
+  const [playerPoints, setPlayerPoints] = useState(100);
+  const [dealerTotal, setDealerTotal] = useState(0);
+  const [playerTotals, setPlayerTotal] = useState([0, 0, 0, 0]);
+  const [currentWager, setCurrentWager] = useState([0, 0, 0, 0]);
+  const [currentHand, setCurrentHand] = useState(0);
+  const [previousHand, setPreviousHand] = useState(0);
+  const [splitCount, setSplitCount] = useState(0);
+
+  const startGame = () => {
+    setDeck(new CardDeck());
+    setPlayerHand([], [], [], []);
+    setDealerHand([]);
+    setDealerTotal(0);
+    setPlayerTotal([0, 0, 0, 0]);
+    setCurrentWager([0, 0, 0, 0]);
+    setPlayerPoints(100);
+    setCurrentHand(0);
+    setPreviousHand(-1);
+    setSplitCount(0);
+  };
+
+  const updateWager = (value) => {
+    setCurrentWager((prevWager) => {
+      const newWager = [...prevWager];
+      newWager[currentHand] = parseInt(value, 10);
+      console.log("New wager array:", newWager);
+      return newWager;
+    });
+  };
+
   return (
     <>
       <TopButtons />
@@ -23,9 +58,9 @@ function App() {
         </div>
         <DealerSection />
         <PlayerSection />
-        <PointSection />
+        <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
         <div id="bottomDiv" className="container text-center">
-          <WagerControls />
+          <WagerControls playerPoints={playerPoints} setPlayerPoints={setPlayerPoints} currentWager={currentWager} updateWager={updateWager} currentHand={currentHand} />
           <GameControls />
         </div>
       </div>
