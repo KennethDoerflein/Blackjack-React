@@ -1,9 +1,4 @@
 import React from "react";
-import chip1 from "../assets/1Chip.jpg";
-import chip5 from "../assets/5Chip.jpg";
-import chip10 from "../assets/10Chip.jpg";
-import chip20 from "../assets/20Chip.jpg";
-import chip50 from "../assets/50Chip.jpg";
 
 export default function WagerControls({ currentWager, updateWager, currentHand, playerPoints, setPlayerPoints }) {
   const addChipValue = (e) => {
@@ -38,12 +33,12 @@ export default function WagerControls({ currentWager, updateWager, currentHand, 
 
   return (
     <>
-      <div hidden id="wagerDiv" className="mt-2">
-        <img onClick={addChipValue} className="chip" src={chip1} data-value="1" alt="1 point chip" />
-        <img onClick={addChipValue} className="chip" src={chip5} data-value="5" alt="5 point chip" />
-        <img onClick={addChipValue} className="chip" src={chip10} data-value="10" alt="10 point chip" />
-        <img onClick={addChipValue} className="chip" src={chip20} data-value="20" alt="20 point chip" />
-        <img onClick={addChipValue} className="chip" src={chip50} data-value="50" alt="50 point chip" />
+      <div id="wagerDiv" className="mt-2">
+        <img onClick={addChipValue} className="chip" src="./assets/1Chip.jpg" data-value="1" alt="1 point chip" />
+        <img onClick={addChipValue} className="chip" src="./assets/5Chip.jpg" data-value="5" alt="5 point chip" />
+        <img onClick={addChipValue} className="chip" src="./assets/10Chip.jpg" data-value="10" alt="10 point chip" />
+        <img onClick={addChipValue} className="chip" src="../assets/20Chip.jpg" data-value="20" alt="20 point chip" />
+        <img onClick={addChipValue} className="chip" src="../assets/50Chip.jpg" data-value="50" alt="50 point chip" />
         <div>
           <button onClick={clearWager} id="wagerRst" className="btn-sm btn btn-danger align-middle ms-2 my-3">
             Reset Wager
