@@ -18,7 +18,9 @@ function App() {
   document.documentElement.setAttribute("data-bs-theme", "dark");
   const [deck, setDeck] = useState(new CardDeck());
   const [playerHands, setPlayerHand] = useState([], [], [], []);
+  const [playerHandElements, setPlayerHandElements] = useState([], [], [], []);
   const [dealerHand, setDealerHand] = useState([]);
+  const [dealerHandElements, setDealerHandElements] = useState([]);
   const [playerPoints, setPlayerPoints] = useState(100);
   const [dealerTotal, setDealerTotal] = useState(0);
   const [playerTotals, setPlayerTotal] = useState([0, 0, 0, 0]);
@@ -44,7 +46,6 @@ function App() {
     setCurrentWager((prevWager) => {
       const newWager = [...prevWager];
       newWager[currentHand] = parseInt(value, 10);
-      console.log("New wager array:", newWager);
       return newWager;
     });
   };
@@ -56,8 +57,8 @@ function App() {
         <div hidden id="resultsAlert" className="alert alert-info alert-dismissible fade show w-75 mx-auto px-0" role="alert">
           <div id="message" className="container text-center"></div>
         </div>
-        <DealerSection />
-        <PlayerSection />
+        <DealerSection dealerHandElements={dealerHandElements} />
+        <PlayerSection playerHandElements={playerHandElements} />
         <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
         <div id="bottomDiv" className="container text-center">
           <WagerControls playerPoints={playerPoints} setPlayerPoints={setPlayerPoints} currentWager={currentWager} updateWager={updateWager} currentHand={currentHand} />

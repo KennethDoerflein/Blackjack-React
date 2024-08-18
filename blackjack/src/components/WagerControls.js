@@ -1,9 +1,12 @@
 import React from "react";
+import { toggleHiddenElement, toggleDisabledElement } from "../utils/utils.js";
 
 export default function WagerControls({ currentWager, updateWager, currentHand, playerPoints, setPlayerPoints }) {
   const addChipValue = (e) => {
     const chipValue = parseInt(e.target.getAttribute("data-value"), 10);
-    updateWager(currentWager[currentHand] + chipValue);
+    if (currentWager[currentHand] + chipValue <= playerPoints) {
+      updateWager(currentWager[currentHand] + chipValue);
+    }
   };
 
   const clearWager = (e) => {
@@ -21,9 +24,9 @@ export default function WagerControls({ currentWager, updateWager, currentHand, 
       } else {
         setPlayerPoints(playerPoints - currentWager[currentHand]);
       }
-      // disableSettingsButtons();
-      // updatePoints();
-      // toggleWagerElements();
+      toggleHiddenElement(document.getElementById("wagerDiv"));
+      toggleDisabledElement(document.getElementById("soft17Switch"));
+      toggleDisabledElement(document.getElementById("splitSwitch"));
       // initialDeal();
       // clearDiv(messageDiv);
     } else {
