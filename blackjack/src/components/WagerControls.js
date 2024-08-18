@@ -43,7 +43,7 @@ export default function WagerControls({ currentWager, updateWager, currentHand, 
 
   return (
     <>
-      <div id="wagerDiv" className="mt-2">
+      <div hidden id="wagerDiv" className="mt-2">
         <img onClick={addChipValue} className="chip" src="./assets/1Chip.jpg" data-value="1" alt="1 point chip" />
         <img onClick={addChipValue} className="chip" src="./assets/5Chip.jpg" data-value="5" alt="5 point chip" />
         <img onClick={addChipValue} className="chip" src="./assets/10Chip.jpg" data-value="10" alt="10 point chip" />
