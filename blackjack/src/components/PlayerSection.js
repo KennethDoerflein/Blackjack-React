@@ -1,10 +1,11 @@
 import React from "react";
 
-export default function PlayerSection({ playerHandElements }) {
+export default function PlayerSection({ playerHandElements, playerTotals }) {
   return (
     <>
       <h6 id="playerHeader" className="container text-center my-3">
-        Player's Cards
+        {/* Temporary for debugging*/}
+        Player's Cards {playerTotals[0]}
       </h6>
       <span id="playersHands">
         <div id="playersHand" className="container">

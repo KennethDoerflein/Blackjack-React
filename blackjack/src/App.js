@@ -10,15 +10,19 @@ import TopButtons from "./components/TopButtons.js";
 
 import CardDeck from "./game_logic/CardDeck.js";
 
+import { toggleDisabledElement, preloadAndGetImage, shouldFlipCard, createCardImage, delay } from "./utils/utils.js";
+
+import { calculateTotal, addCard } from "./game_logic/gameFunctions.js";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import "./styles.css";
 
-function App() {
+export default function App() {
   document.documentElement.setAttribute("data-bs-theme", "dark");
   const [deck, setDeck] = useState(new CardDeck());
-  const [playerHands, setPlayerHand] = useState([], [], [], []);
-  const [playerHandElements, setPlayerHandElements] = useState([], [], [], []);
+  const [playerHands, setPlayerHand] = useState([[], [], [], []]);
+  const [playerHandElements, setPlayerHandElements] = useState([[], [], [], []]);
   const [dealerHand, setDealerHand] = useState([]);
   const [dealerHandElements, setDealerHandElements] = useState([]);
   const [playerPoints, setPlayerPoints] = useState(100);
@@ -29,9 +33,9 @@ function App() {
   const [previousHand, setPreviousHand] = useState(0);
   const [splitCount, setSplitCount] = useState(0);
 
-  const startGame = () => {
+  const newGame = () => {
     setDeck(new CardDeck());
-    setPlayerHand([], [], [], []);
+    setPlayerHand([[], [], [], []]);
     setDealerHand([]);
     setDealerTotal(0);
     setPlayerTotal([0, 0, 0, 0]);
@@ -40,14 +44,48 @@ function App() {
     setCurrentHand(0);
     setPreviousHand(-1);
     setSplitCount(0);
+    setPlayerHandElements([[], [], [], []]);
+    setDealerHandElements([]);
   };
 
   const updateWager = (value) => {
-    setCurrentWager((prevWager) => {
-      const newWager = [...prevWager];
-      newWager[currentHand] = parseInt(value, 10);
-      return newWager;
-    });
+    const newWager = [...currentWager];
+    newWager[currentHand] = parseInt(value, 10);
+    setCurrentWager(newWager);
+  };
+
+  const hit = async (entity = "player", origin = "user") => {
+    const newHandElements = [...playerHandElements];
+    const newPlayerHands = [...playerHands];
+    if (entity !== "dealer") {
+      await addCard(newPlayerHands[currentHand], newHandElements[currentHand], entity, origin, deck);
+    } else {
+      await addCard(dealerHand, dealerHandElements, entity, origin, deck);
+    }
+
+    // Calculate the new totals before updating the state
+    const newTotals = [...playerTotals];
+    for (let i = 0; i < newPlayerHands.length; i++) {
+      newTotals[i] = await calculateTotal(newPlayerHands[i]);
+    }
+    const newDealerTotal = await calculateTotal(dealerHand);
+
+    setPlayerTotal(newTotals);
+    setDealerTotal(newDealerTotal);
+    setPlayerHandElements(newHandElements);
+    setPlayerHand(newPlayerHands);
+
+    if (entity !== "dealer" && origin === "user") {
+      //updateGameButtons();
+      if (newTotals[currentHand] > 21) {
+        //hideGameButtons();
+        //await endHand();
+        console.log("Total over 21");
+      } else {
+        //autoStandOn21();
+      }
+    }
+    await delay(1000);
   };
 
   return (
@@ -58,11 +96,11 @@ function App() {
           <div id="message" className="container text-center"></div>
         </div>
         <DealerSection dealerHandElements={dealerHandElements} />
-        <PlayerSection playerHandElements={playerHandElements} />
+        <PlayerSection playerHandElements={playerHandElements} playerTotals={playerTotals} />
         <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
         <div id="bottomDiv" className="container text-center">
           <WagerControls playerPoints={playerPoints} setPlayerPoints={setPlayerPoints} currentWager={currentWager} updateWager={updateWager} currentHand={currentHand} />
-          <GameControls />
+          <GameControls hit={hit} />
         </div>
       </div>
 
@@ -76,5 +114,3 @@ function App() {
     </>
   );
 }
-
-export default App;
