@@ -1,11 +1,18 @@
 import React from "react";
-import { toggleHiddenElement, toggleDisabledElement } from "../utils/utils.js";
+import { toggleHiddenElement, toggleDisabledElement, animateElement } from "../utils/utils.js";
 
 export default function WagerControls({ currentWager, updateWager, currentHand, playerPoints, setPlayerPoints }) {
   const addChipValue = (e) => {
+    animateElement(e.target, "chipFlip", 700);
+    animateElement(document.getElementById("wagerDisplay"), "highlight", 700);
+
     const chipValue = parseInt(e.target.getAttribute("data-value"), 10);
-    if (currentWager[currentHand] + chipValue <= playerPoints) {
-      updateWager(currentWager[currentHand] + chipValue);
+    const newWager = currentWager[currentHand] + chipValue;
+    if (newWager <= playerPoints && Number.isInteger(newWager)) {
+      updateWager(newWager);
+    } else if (newWager > playerPoints) {
+      alert("Oops! You don't have enough points to place that wager. Your wager has been adjusted to your remaining points.");
+      currentWager = playerPoints;
     }
   };
 
