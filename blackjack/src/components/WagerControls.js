@@ -1,7 +1,7 @@
 import React from "react";
 import { toggleHiddenElement, toggleDisabledElement, animateElement } from "../utils/utils.js";
 
-export default function WagerControls({ currentWager, updateWager, currentHand, playerPoints, setPlayerPoints }) {
+export default function WagerControls({ currentWager, updateWager, currentHand, playerPoints, setPlayerPoints, initialDeal }) {
   const addChipValue = (e) => {
     animateElement(e.target, "chipFlip", 700);
     animateElement(document.getElementById("wagerDisplay"), "highlight", 700);
@@ -34,7 +34,7 @@ export default function WagerControls({ currentWager, updateWager, currentHand, 
       toggleHiddenElement(document.getElementById("wagerDiv"));
       toggleDisabledElement(document.getElementById("soft17Switch"));
       toggleDisabledElement(document.getElementById("splitSwitch"));
-      // initialDeal();
+      initialDeal();
       // clearDiv(messageDiv);
     } else {
       alert("The wager must be a number and greater than 0.");

@@ -10,7 +10,7 @@ import TopButtons from "./components/TopButtons.js";
 
 import CardDeck from "./game_logic/CardDeck.js";
 
-import { toggleDisabledElement, preloadAndGetImage, shouldFlipCard, createCardImage, delay } from "./utils/utils.js";
+import { toggleHiddenElement, toggleDisabledElement, preloadAndGetImage, shouldFlipCard, createCardImage, delay } from "./utils/utils.js";
 
 import { calculateTotal, addCard } from "./game_logic/gameFunctions.js";
 
@@ -33,6 +33,13 @@ export default function App() {
   const [previousHand, setPreviousHand] = useState(0);
   const [splitCount, setSplitCount] = useState(0);
 
+  window.onload = async () => {
+    // if (!debugMode) {
+    //   infoModal.show();
+    // }
+    newGame();
+  };
+
   const newGame = () => {
     setDeck(new CardDeck());
     setPlayerHand([[], [], [], []]);
@@ -46,6 +53,14 @@ export default function App() {
     setSplitCount(0);
     setPlayerHandElements([[], [], [], []]);
     setDealerHandElements([]);
+    toggleHiddenElement(document.getElementById("wagerDiv"));
+  };
+
+  const initialDeal = async () => {
+    await hit("player", "init");
+    await hit("dealer", "init");
+    await hit("player", "init");
+    await hit("dealer", "init");
   };
 
   const updateWager = (value) => {
@@ -83,6 +98,7 @@ export default function App() {
         //autoStandOn21();
       }
     }
+    await delay(1000);
     toggleDisabledElement(document.getElementById("hitBtn"));
   };
 
@@ -97,7 +113,14 @@ export default function App() {
         <PlayerSection playerHandElements={playerHandElements} playerTotals={playerTotals} />
         <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
         <div id="bottomDiv" className="container text-center">
-          <WagerControls playerPoints={playerPoints} setPlayerPoints={setPlayerPoints} currentWager={currentWager} updateWager={updateWager} currentHand={currentHand} />
+          <WagerControls
+            playerPoints={playerPoints}
+            setPlayerPoints={setPlayerPoints}
+            currentWager={currentWager}
+            updateWager={updateWager}
+            currentHand={currentHand}
+            initialDeal={initialDeal}
+          />
           <GameControls hit={hit} />
         </div>
       </div>

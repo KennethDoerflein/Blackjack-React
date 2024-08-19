@@ -22,9 +22,8 @@ export const addCard = async (cards, div, entity, origin, deck, setHandElements,
 
   const imgElement = await createCardImage("./assets/cards-1.3/back.png");
   let reactImgElement = createReactImageElement(cards.length, imgElement.src, card.image, "imgSlide");
-  const updatedDiv = [...div, reactImgElement];
 
-  updateHandElements(setHandElements, entity, currentHand, updatedDiv);
+  updateHandElements(setHandElements, entity, currentHand, reactImgElement);
   await delay(300);
 
   if (shouldFlipCard(entity, cards)) {
@@ -36,13 +35,13 @@ const createReactImageElement = (key, src, alt, className) => {
   return <img key={key} src={src} alt={alt} className={className} />;
 };
 
-const updateHandElements = (setHandElements, entity, currentHand, updatedDiv) => {
+const updateHandElements = (setHandElements, entity, currentHand, reactImgElement) => {
   setHandElements((prev) => {
     let newHandElements = [...prev];
     if (entity !== "dealer") {
-      newHandElements[currentHand] = updatedDiv;
+      newHandElements[currentHand] = [...newHandElements[currentHand], reactImgElement];
     } else {
-      newHandElements = updatedDiv;
+      newHandElements = [...newHandElements, reactImgElement];
     }
     return newHandElements;
   });
