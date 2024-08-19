@@ -55,12 +55,12 @@ export default function App() {
   };
 
   const hit = async (entity = "player", origin = "user") => {
-    const newHandElements = [...playerHandElements];
+    toggleDisabledElement(document.getElementById("hitBtn"));
     const newPlayerHands = [...playerHands];
     if (entity !== "dealer") {
-      await addCard(newPlayerHands[currentHand], newHandElements[currentHand], entity, origin, deck);
+      await addCard(newPlayerHands[currentHand], playerHandElements[currentHand], entity, origin, deck, setPlayerHandElements, currentHand);
     } else {
-      await addCard(dealerHand, dealerHandElements, entity, origin, deck);
+      await addCard(dealerHand, dealerHandElements, entity, origin, deck, setDealerHandElements);
     }
 
     // Calculate the new totals before updating the state
@@ -72,7 +72,6 @@ export default function App() {
 
     setPlayerTotal(newTotals);
     setDealerTotal(newDealerTotal);
-    setPlayerHandElements(newHandElements);
     setPlayerHand(newPlayerHands);
 
     if (entity !== "dealer" && origin === "user") {
@@ -80,12 +79,11 @@ export default function App() {
       if (newTotals[currentHand] > 21) {
         //hideGameButtons();
         //await endHand();
-        console.log("Total over 21");
       } else {
         //autoStandOn21();
       }
     }
-    await delay(1000);
+    toggleDisabledElement(document.getElementById("hitBtn"));
   };
 
   return (
