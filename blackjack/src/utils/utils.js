@@ -55,3 +55,30 @@ export async function preloadAndGetImage(src) {
   await preloadImage(src);
   return src;
 }
+
+// Update game buttons based on current game state
+export function updateGameButtons(playerTotal) {
+  const canPlay = playerTotal <= 21;
+  const hitBtn = document.getElementById("hitBtn");
+  const standBtn = document.getElementById("standBtn");
+  const splitBtn = document.getElementById("splitBtn");
+  const doubleDownBtn = document.getElementById("doubleDownBtn");
+
+  // Update button visibility
+  hitBtn.hidden = !canPlay;
+  standBtn.hidden = false;
+  // splitBtn.hidden = !isSplitAllowed();
+  // doubleDownBtn.hidden = !isDoubleDownAllowed();
+}
+
+// Hide game buttons from view
+export function hideGameButtons() {
+  const hitBtn = document.getElementById("hitBtn");
+  const standBtn = document.getElementById("standBtn");
+  const splitBtn = document.getElementById("splitBtn");
+  const doubleDownBtn = document.getElementById("doubleDownBtn");
+  hitBtn.hidden = true;
+  standBtn.hidden = true;
+  splitBtn.hidden = true;
+  doubleDownBtn.hidden = true;
+}

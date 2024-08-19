@@ -1,10 +1,10 @@
 import React from "react";
 
-export default function GameControls({hit}) {
+export default function GameControls({ hit, newGame}) {
   return (
     <>
       <div id="gameActions" className="d-flex justify-content-center w-100 mt-2">
-        <button onClick={hit} id="hitBtn" type="button" className="btn-sm btn btn-warning mx-2">
+        <button onClick={hit} hidden id="hitBtn" type="button" className="btn-sm btn btn-warning mx-2">
           Hit
         </button>
         <button hidden id="splitBtn" type="button" className="btn-sm btn btn-primary mx-2">
@@ -18,7 +18,7 @@ export default function GameControls({hit}) {
         <button hidden id="standBtn" type="button" className="btn-sm btn btn-danger mx-2">
           Stand
         </button>
-        <button hidden id="newGameBtn" type="button" className="btn-sm btn btn-success mx-auto my-1">
+        <button onClick={newGame} hidden id="newGameBtn" type="button" className="btn-sm btn btn-success mx-auto my-1">
           New Game
         </button>
       </div>

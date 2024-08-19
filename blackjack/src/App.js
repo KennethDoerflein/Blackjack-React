@@ -10,7 +10,7 @@ import TopButtons from "./components/TopButtons.js";
 
 import CardDeck from "./game_logic/CardDeck.js";
 
-import { toggleHiddenElement, toggleDisabledElement, preloadAndGetImage, shouldFlipCard, createCardImage, delay } from "./utils/utils.js";
+import { toggleHiddenElement, toggleDisabledElement, delay, hideGameButtons, updateGameButtons } from "./utils/utils.js";
 
 import { calculateTotal, addCard } from "./game_logic/gameFunctions.js";
 
@@ -61,6 +61,7 @@ export default function App() {
     await hit("dealer", "init");
     await hit("player", "init");
     await hit("dealer", "init");
+    updateGameButtons(playerTotals[currentHand]);
   };
 
   const updateWager = (value) => {
@@ -90,9 +91,9 @@ export default function App() {
     setPlayerHand(newPlayerHands);
 
     if (entity !== "dealer" && origin === "user") {
-      //updateGameButtons();
+      updateGameButtons(newTotals[currentHand]);
       if (newTotals[currentHand] > 21) {
-        //hideGameButtons();
+        hideGameButtons();
         //await endHand();
       } else {
         //autoStandOn21();
@@ -121,7 +122,7 @@ export default function App() {
             currentHand={currentHand}
             initialDeal={initialDeal}
           />
-          <GameControls hit={hit} />
+          <GameControls hit={hit} newGame={newGame} />
         </div>
         <div id="disclaimer" className="container text-center mt-3">
           <p className="small text-muted my-0 px-5">
