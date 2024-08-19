@@ -1,6 +1,15 @@
 import React from "react";
 
 export default function SettingsModal() {
+  function toggleMusic() {
+    const musicSwitch = document.getElementById("musicSwitch");
+    const backgroundMusic = document.getElementById("backgroundMusic");
+    if (musicSwitch.checked) {
+      backgroundMusic.play();
+    } else {
+      backgroundMusic.pause();
+    }
+  }
   return (
     <>
       <div className="modal fade" id="settingsModal" tabIndex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
@@ -17,7 +26,7 @@ export default function SettingsModal() {
                 <small>Some Switches Will Be Disabled During a Game</small>
               </div>
               <div className="form-check form-switch">
-                <input className="form-check-input" type="checkbox" role="switch" id="musicSwitch" />
+                <input onClick={toggleMusic} className="form-check-input" type="checkbox" role="switch" id="musicSwitch" />
                 <label className="form-check-label" htmlFor="musicSwitch">
                   Music
                 </label>
