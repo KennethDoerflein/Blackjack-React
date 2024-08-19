@@ -45,3 +45,13 @@ export async function createCardImage(initialSrc) {
   imgElement.src = initialSrc;
   return imgElement;
 }
+
+export function shouldFlipCard(entity, cards) {
+  return entity !== "dealer" || cards.length !== 2;
+}
+
+// Preload an image and return its src
+export async function preloadAndGetImage(src) {
+  await preloadImage(src);
+  return src;
+}
