@@ -123,13 +123,13 @@ export default function App() {
           />
           <GameControls hit={hit} />
         </div>
+        <div id="disclaimer" className="container text-center mt-3">
+          <p className="small text-muted my-0 px-5">
+            <strong>* Disclaimer:</strong> Points in this game have <strong>no monetary value</strong> and are for <strong>entertainment purposes only</strong>.
+          </p>
+        </div>
       </div>
 
-      <div id="disclaimer" className="container text-center mt-3">
-        <p className="small text-muted my-0 px-5">
-          <strong>* Disclaimer:</strong> Points in this game have <strong>no monetary value</strong> and are for <strong>entertainment purposes only</strong>.
-        </p>
-      </div>
       <SettingsModal />
       <InfoModal />
     </>
