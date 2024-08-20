@@ -90,3 +90,27 @@ export function hideGameButtons() {
   // splitBtn.hidden = true;
   // doubleDownBtn.hidden = true;
 }
+
+// Check if the split button should be shown based on split switch (point value or rank)
+export function checkSplitButton(playersHand, currentHand, splitCount, currentWager, playerPoints) {
+  const hitBtn = document.getElementById("hitBtn");
+  const splitBtn = document.getElementById("splitBtn");
+  if (hitBtn && splitBtn) {
+    splitBtn.hidden = !hitBtn.hidden && isSplitAllowed(playersHand, currentHand, splitCount, currentWager, playerPoints) ? false : true;
+  }
+}
+
+// Check if splitting is allowed based on current hand and rules
+export const isSplitAllowed = (playerHands, currentHand, splitCount, currentWager, playerPoints) => {
+  const splitSwitch = document.getElementById("splitSwitch");
+  const isMatchingRankOrValue = splitSwitch.checked
+    ? playerHands[currentHand][0].rank === playerHands[currentHand][1].rank
+    : playerHands[currentHand][0].pointValue === playerHands[currentHand][1].pointValue;
+
+  return splitCount < 3 && playerHands[currentHand].length === 2 && isMatchingRankOrValue && isWagerAllowed(currentWager[currentHand], playerPoints);
+};
+
+// Check if the current wager is allowed based on player points
+export function isWagerAllowed(currentWager, playerPoints) {
+  return currentWager <= playerPoints;
+}

@@ -1,6 +1,7 @@
 import React from "react";
+import { checkSplitButton } from "../utils/utils.js";
 
-export default function SettingsModal() {
+export default function SettingsModal(playersHand, currentHand, splitCount, currentWager, playerPoints) {
   function toggleMusic() {
     const musicSwitch = document.getElementById("musicSwitch");
     const backgroundMusic = document.getElementById("backgroundMusic");
@@ -10,6 +11,7 @@ export default function SettingsModal() {
       backgroundMusic.pause();
     }
   }
+
   return (
     <>
       <div className="modal fade" id="settingsModal" tabIndex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
@@ -44,7 +46,14 @@ export default function SettingsModal() {
                 </label>
               </div>
               <div className="form-check form-switch">
-                <input className="form-check-input" type="checkbox" role="switch" id="splitSwitch" />
+                <input
+                  onClick={() => checkSplitButton(playersHand, currentHand, splitCount, currentWager, playerPoints)}
+                  className="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="splitSwitch"
+                />
+
                 <label className="form-check-label" htmlFor="splitSwitch">
                   Split Based on Suit
                 </label>

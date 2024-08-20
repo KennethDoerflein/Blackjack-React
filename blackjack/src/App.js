@@ -10,7 +10,7 @@ import TopButtons from "./components/TopButtons.js";
 
 import CardDeck from "./game_logic/CardDeck.js";
 
-import { toggleHiddenElement, toggleDisabledElement, delay, hideGameButtons, updateGameButtons, shouldDealerHit } from "./utils/utils.js";
+import { toggleHiddenElement, toggleDisabledElement, delay, hideGameButtons, updateGameButtons, shouldDealerHit, checkSplitButton } from "./utils/utils.js";
 
 import { calculateTotal, addCard, flipCard } from "./game_logic/gameFunctions.js";
 
@@ -62,6 +62,7 @@ export default function App() {
     await hit("player", "init");
     await hit("dealer", "init");
     updateGameButtons(playerTotals[currentHand]);
+    checkSplitButton(playerHands, currentHand, splitCount, currentWager, playerPoints);
   };
 
   const updateWager = (value) => {
@@ -153,7 +154,7 @@ export default function App() {
         </div>
       </div>
 
-      <SettingsModal />
+      <SettingsModal playerHands={playerHands} currentHand={currentHand} splitCount={splitCount} currentWager={currentWager} playerPoints={playerPoints} />
       <InfoModal />
     </>
   );
