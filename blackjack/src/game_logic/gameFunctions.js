@@ -76,3 +76,25 @@ export function shouldDealerHit(total, hand) {
   return total < 17;
 }
 
+// Check if a hand is a soft 17 (total 17 with an Ace counted as 11)
+function isSoft17(cards) {
+  const totalWithoutAces = calculateTotalWithoutAces(cards);
+  const numAces = countAces(cards);
+  return totalWithoutAces === 6 && numAces > 0;
+}
+
+// Calculate total points for a hand, excluding reduction of Aces to 1
+function calculateTotalWithoutAces(cards) {
+  let total = 0;
+  for (let i = 0; i < cards.length; i++) {
+    if (cards[i].rank !== "ace") {
+      total += cards[i].pointValue;
+    }
+  }
+  return total;
+}
+
+// Count the number of Aces in a hand
+function countAces(cards) {
+  return cards.filter((card) => card.rank === "ace").length;
+}
