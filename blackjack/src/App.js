@@ -92,7 +92,7 @@ export default function App() {
     setPlayerHand(newPlayerHands);
 
     if (entity !== "dealer" && origin === "user") {
-      updateGameButtons(newTotals[currentHand]);
+      updateGameButtons(playerTotals[currentHand], playerHands, currentHand, splitCount, currentWager, playerPoints);
       if (newTotals[currentHand] > 21) {
         hideGameButtons();
         await endHand();
