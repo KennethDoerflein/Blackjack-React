@@ -62,6 +62,8 @@ export default function App() {
     await hit("player", "init");
     await hit("dealer", "init");
     updateGameButtons(playerTotals[currentHand]);
+    document.getElementById("playersHand").classList.add("activeHand");
+
     checkSplitButton(playerHands, currentHand, splitCount, currentWager, playerPoints);
   };
 
@@ -106,6 +108,8 @@ export default function App() {
 
   const endHand = async () => {
     if (currentHand === splitCount) {
+      document.getElementById("playersHand").classList.remove("activeHand");
+      document.getElementById("dealersHand").classList.add("activeHand");
       hideGameButtons();
       let imgPath = `./assets/cards-1.3/${dealerHand[1].image}`;
       let reactImgElement = <img key={1} src={imgPath} alt={dealerHand[1].image} />;
@@ -113,6 +117,8 @@ export default function App() {
       flipCard(reactImgElement, dealerHand[1], setDealerHandElements, "dealer", -1);
       if (shouldDealerHit(dealerTotal, dealerHand)) await delay(500);
       await playDealer();
+      await delay(250);
+      document.getElementById("dealersHand").classList.remove("activeHand");
     }
   };
 
