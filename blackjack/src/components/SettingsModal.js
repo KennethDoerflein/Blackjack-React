@@ -1,7 +1,7 @@
 import React from "react";
 import { checkSplitButton } from "../utils/utils.js";
 
-export default function SettingsModal(playersHand, currentHand, splitCount, currentWager, playerPoints) {
+export default function SettingsModal({ playerHands, currentHand, splitCount, currentWager, playerPoints }) {
   function toggleMusic() {
     const musicSwitch = document.getElementById("musicSwitch");
     const backgroundMusic = document.getElementById("backgroundMusic");
@@ -47,7 +47,7 @@ export default function SettingsModal(playersHand, currentHand, splitCount, curr
               </div>
               <div className="form-check form-switch">
                 <input
-                  onClick={() => checkSplitButton(playersHand, currentHand, splitCount, currentWager, playerPoints)}
+                  onClick={() => checkSplitButton(playerHands, currentHand, splitCount, currentWager, playerPoints)}
                   className="form-check-input"
                   type="checkbox"
                   role="switch"

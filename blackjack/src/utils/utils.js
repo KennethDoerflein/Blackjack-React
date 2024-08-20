@@ -87,17 +87,20 @@ export function checkSplitButton(playersHand, currentHand, splitCount, currentWa
   const hitBtn = document.getElementById("hitBtn");
   const splitBtn = document.getElementById("splitBtn");
   if (hitBtn && splitBtn) {
-    splitBtn.hidden = !hitBtn.hidden && isSplitAllowed(playersHand, currentHand, splitCount, currentWager, playerPoints) ? false : true;
+    const isSplitAllowedResult = isSplitAllowed(playersHand, currentHand, splitCount, currentWager, playerPoints);
+    splitBtn.hidden = !hitBtn.hidden && isSplitAllowedResult ? false : true;
   }
 }
 
 // Check if splitting is allowed based on current hand and rules
 export const isSplitAllowed = (playerHands, currentHand, splitCount, currentWager, playerPoints) => {
   const splitSwitch = document.getElementById("splitSwitch");
+  if (!playerHands[currentHand] || playerHands[currentHand].length < 2) {
+    return false;
+  }
   const isMatchingRankOrValue = splitSwitch.checked
     ? playerHands[currentHand][0].rank === playerHands[currentHand][1].rank
     : playerHands[currentHand][0].pointValue === playerHands[currentHand][1].pointValue;
-
   return splitCount < 3 && playerHands[currentHand].length === 2 && isMatchingRankOrValue && isWagerAllowed(currentWager[currentHand], playerPoints);
 };
 
