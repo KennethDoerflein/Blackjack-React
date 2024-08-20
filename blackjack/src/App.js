@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import DealerSection from "./components/DealerSection.js";
 import PlayerSection from "./components/PlayerSection.js";
 import PointSection from "./components/PointSection.js";
@@ -10,7 +10,7 @@ import TopButtons from "./components/TopButtons.js";
 
 import CardDeck from "./game_logic/CardDeck.js";
 
-import { toggleHiddenElement, toggleDisabledElement, delay, hideGameButtons, updateGameButtons, shouldDealerHit, checkSplitButton } from "./utils/utils.js";
+import { toggleHiddenElement, toggleDisabledElement, delay, hideGameButtons, updateGameButtons } from "./utils/utils.js";
 
 import { calculateTotal, addCard, flipCard } from "./game_logic/gameFunctions.js";
 
@@ -61,10 +61,8 @@ export default function App() {
     await hit("dealer", "init");
     await hit("player", "init");
     await hit("dealer", "init");
-    updateGameButtons(playerTotals[currentHand]);
+    updateGameButtons(playerTotals[currentHand], playerHands, currentHand, splitCount, currentWager, playerPoints);
     document.getElementById("playersHand").classList.add("activeHand");
-
-    checkSplitButton(playerHands, currentHand, splitCount, currentWager, playerPoints);
   };
 
   const updateWager = (value) => {
