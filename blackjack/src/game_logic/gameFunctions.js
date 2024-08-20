@@ -66,3 +66,13 @@ const updateFlippedHandElements = (setHandElements, entity, currentHand, flipped
     return newHandElements;
   });
 };
+
+// Determine if the dealer should hit based on game rules
+export function shouldDealerHit(total, hand) {
+  const soft17Switch = document.getElementById("soft17Switch");
+  if (soft17Switch && soft17Switch.checked) {
+    return total < 17 || (total === 17 && isSoft17(hand));
+  }
+  return total < 17;
+}
+

@@ -1,11 +1,3 @@
-// Determine if the dealer should hit based on game rules
-export function shouldDealerHit(total, hand) {
-  // if (soft17Switch.checked) {
-  //   return total < 17 || (total === 17 && isSoft17(hand));
-  // }
-  return total < 17;
-}
-
 export function toggleHiddenElement(element) {
   if (element) {
     element.hidden = !element.hidden;

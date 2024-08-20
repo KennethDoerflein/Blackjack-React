@@ -12,7 +12,7 @@ import CardDeck from "./game_logic/CardDeck.js";
 
 import { toggleHiddenElement, toggleDisabledElement, delay, hideGameButtons, updateGameButtons } from "./utils/utils.js";
 
-import { calculateTotal, addCard, flipCard } from "./game_logic/gameFunctions.js";
+import { calculateTotal, addCard, flipCard, shouldDealerHit } from "./game_logic/gameFunctions.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
