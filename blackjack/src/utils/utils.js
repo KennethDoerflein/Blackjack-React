@@ -67,7 +67,8 @@ export function updateGameButtons(playerTotal, playersHands, currentHand, splitC
   hitBtn.hidden = !canPlay;
   standBtn.hidden = false;
   checkSplitButton(playersHands, currentHand, splitCount, currentWager, playerPoints);
-  // doubleDownBtn.hidden = !isDoubleDownAllowed();
+
+  doubleDownBtn.hidden = !isDoubleDownAllowed(playersHands, currentHand, playerTotal, currentWager, playerPoints);
 }
 
 // Hide game buttons from view
@@ -75,11 +76,11 @@ export function hideGameButtons() {
   const hitBtn = document.getElementById("hitBtn");
   const standBtn = document.getElementById("standBtn");
   const splitBtn = document.getElementById("splitBtn");
-  // const doubleDownBtn = document.getElementById("doubleDownBtn");
+  const doubleDownBtn = document.getElementById("doubleDownBtn");
   hitBtn.hidden = true;
   standBtn.hidden = true;
   splitBtn.hidden = true;
-  // doubleDownBtn.hidden = true;
+  doubleDownBtn.hidden = true;
 }
 
 // Check if the split button should be shown based on split switch (point value or rank)
@@ -107,4 +108,9 @@ export const isSplitAllowed = (playersHands, currentHand, splitCount, currentWag
 // Check if the current wager is allowed based on player points
 export function isWagerAllowed(currentWager, playerPoints) {
   return currentWager <= playerPoints;
+}
+
+// Check if doubling down is allowed based on current hand and rules
+function isDoubleDownAllowed(playersHands, currentHand, playerTotal, currentWager, playerPoints) {
+  return playersHands[currentHand].length === 2 && playerTotal <= 21 && isWagerAllowed(currentWager[currentHand], playerPoints);
 }
