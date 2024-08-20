@@ -10,9 +10,9 @@ import TopButtons from "./components/TopButtons.js";
 
 import CardDeck from "./game_logic/CardDeck.js";
 
-import { toggleHiddenElement, toggleDisabledElement, delay, hideGameButtons, updateGameButtons } from "./utils/utils.js";
+import { toggleHiddenElement, toggleDisabledElement, delay, hideGameButtons, updateGameButtons, shouldDealerHit } from "./utils/utils.js";
 
-import { calculateTotal, addCard } from "./game_logic/gameFunctions.js";
+import { calculateTotal, addCard, flipCard } from "./game_logic/gameFunctions.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
@@ -94,13 +94,35 @@ export default function App() {
       updateGameButtons(newTotals[currentHand]);
       if (newTotals[currentHand] > 21) {
         hideGameButtons();
-        //await endHand();
-      } else {
+        await endHand();
+      } else if (newTotals[currentHand] === 21) {
         //autoStandOn21();
       }
     }
     await delay(1000);
     toggleDisabledElement(document.getElementById("hitBtn"));
+  };
+
+  const endHand = async () => {
+    if (currentHand === splitCount) {
+      hideGameButtons();
+      let imgPath = `./assets/cards-1.3/${dealerHand[1].image}`;
+      let reactImgElement = <img key={1} src={imgPath} alt={dealerHand[1].image} />;
+      await delay(500);
+      flipCard(reactImgElement, dealerHand[1], setDealerHandElements, "dealer", -1);
+      if (shouldDealerHit(dealerTotal, dealerHand)) await delay(500);
+      await playDealer();
+    }
+  };
+
+  // Play the dealer's hand according to the rules
+  const playDealer = async () => {
+    let newDealerTotal = dealerTotal;
+    while (shouldDealerHit(newDealerTotal, dealerHand)) {
+      await hit("dealer", "endGame");
+      newDealerTotal = await calculateTotal(dealerHand);
+      setDealerTotal(newDealerTotal);
+    }
   };
 
   return (
@@ -122,7 +144,7 @@ export default function App() {
             currentHand={currentHand}
             initialDeal={initialDeal}
           />
-          <GameControls hit={hit} newGame={newGame} />
+          <GameControls hit={hit} newGame={newGame} endHand={endHand} />
         </div>
         <div id="disclaimer" className="container text-center mt-3">
           <p className="small text-muted my-0 px-5">

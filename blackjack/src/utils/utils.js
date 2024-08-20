@@ -1,3 +1,11 @@
+// Determine if the dealer should hit based on game rules
+export function shouldDealerHit(total, hand) {
+  // if (soft17Switch.checked) {
+  //   return total < 17 || (total === 17 && isSoft17(hand));
+  // }
+  return total < 17;
+}
+
 export function toggleHiddenElement(element) {
   if (element) {
     element.hidden = !element.hidden;
@@ -75,10 +83,10 @@ export function updateGameButtons(playerTotal) {
 export function hideGameButtons() {
   const hitBtn = document.getElementById("hitBtn");
   const standBtn = document.getElementById("standBtn");
-  const splitBtn = document.getElementById("splitBtn");
-  const doubleDownBtn = document.getElementById("doubleDownBtn");
+  // const splitBtn = document.getElementById("splitBtn");
+  // const doubleDownBtn = document.getElementById("doubleDownBtn");
   hitBtn.hidden = true;
   standBtn.hidden = true;
-  splitBtn.hidden = true;
-  doubleDownBtn.hidden = true;
+  // splitBtn.hidden = true;
+  // doubleDownBtn.hidden = true;
 }

@@ -47,7 +47,7 @@ const updateHandElements = (setHandElements, entity, currentHand, reactImgElemen
   });
 };
 
-const flipCard = async (reactImgElement, card, setHandElements, entity, currentHand) => {
+export const flipCard = async (reactImgElement, card, setHandElements, entity, currentHand) => {
   const finalImgPath = `./assets/cards-1.3/${card.image}`;
   const newSrc = await preloadAndGetImage(finalImgPath);
   const flippedReactImgElement = createReactImageElement(reactImgElement.key, newSrc, card.image, "imgFlip");
