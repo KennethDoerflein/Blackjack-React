@@ -21,10 +21,10 @@ import "./styles.css";
 export default function App() {
   document.documentElement.setAttribute("data-bs-theme", "dark");
   const [deck, setDeck] = useState(new CardDeck());
-  const [playerHands, setPlayerHand] = useState([[], [], [], []]);
-  const [playerHandElements, setPlayerHandElements] = useState([[], [], [], []]);
-  const [dealerHand, setDealerHand] = useState([]);
-  const [dealerHandElements, setDealerHandElements] = useState([]);
+  const [playersHands, setPlayerHand] = useState([[], [], [], []]);
+  const [playersHandElements, setPlayersHandElements] = useState([[], [], [], []]);
+  const [dealersHand, setDealersHand] = useState([]);
+  const [dealersHandElements, setDealersHandElements] = useState([]);
   const [playerPoints, setPlayerPoints] = useState(100);
   const [dealerTotal, setDealerTotal] = useState(0);
   const [playerTotals, setPlayerTotal] = useState([0, 0, 0, 0]);
@@ -43,7 +43,7 @@ export default function App() {
   const newGame = () => {
     setDeck(new CardDeck());
     setPlayerHand([[], [], [], []]);
-    setDealerHand([]);
+    setDealersHand([]);
     setDealerTotal(0);
     setPlayerTotal([0, 0, 0, 0]);
     setCurrentWager([0, 0, 0, 0]);
@@ -51,8 +51,8 @@ export default function App() {
     setCurrentHand(0);
     setPreviousHand(-1);
     setSplitCount(0);
-    setPlayerHandElements([[], [], [], []]);
-    setDealerHandElements([]);
+    setPlayersHandElements([[], [], [], []]);
+    setDealersHandElements([]);
     toggleHiddenElement(document.getElementById("wagerDiv"));
   };
 
@@ -61,7 +61,7 @@ export default function App() {
     await hit("dealer", "init");
     await hit("player", "init");
     await hit("dealer", "init");
-    updateGameButtons(playerTotals[currentHand], playerHands, currentHand, splitCount, currentWager, playerPoints);
+    updateGameButtons(playerTotals[currentHand], playersHands, currentHand, splitCount, currentWager, playerPoints);
     document.getElementById("playersHand").classList.add("activeHand");
   };
 
@@ -73,26 +73,26 @@ export default function App() {
 
   const hit = async (entity = "player", origin = "user") => {
     toggleDisabledElement(document.getElementById("hitBtn"));
-    const newPlayerHands = [...playerHands];
+    const newplayersHands = [...playersHands];
     if (entity !== "dealer") {
-      await addCard(newPlayerHands[currentHand], playerHandElements[currentHand], entity, origin, deck, setPlayerHandElements, currentHand);
+      await addCard(newplayersHands[currentHand], playersHandElements[currentHand], entity, origin, deck, setPlayersHandElements, currentHand);
     } else {
-      await addCard(dealerHand, dealerHandElements, entity, origin, deck, setDealerHandElements);
+      await addCard(dealersHand, dealersHandElements, entity, origin, deck, setDealersHandElements);
     }
 
     // Calculate the new totals before updating the state
     const newTotals = [...playerTotals];
-    for (let i = 0; i < newPlayerHands.length; i++) {
-      newTotals[i] = await calculateTotal(newPlayerHands[i]);
+    for (let i = 0; i < newplayersHands.length; i++) {
+      newTotals[i] = await calculateTotal(newplayersHands[i]);
     }
-    const newDealerTotal = await calculateTotal(dealerHand);
+    const newDealerTotal = await calculateTotal(dealersHand);
 
     setPlayerTotal(newTotals);
     setDealerTotal(newDealerTotal);
-    setPlayerHand(newPlayerHands);
+    setPlayerHand(newplayersHands);
 
     if (entity !== "dealer" && origin === "user") {
-      updateGameButtons(playerTotals[currentHand], playerHands, currentHand, splitCount, currentWager, playerPoints);
+      updateGameButtons(playerTotals[currentHand], playersHands, currentHand, splitCount, currentWager, playerPoints);
       if (newTotals[currentHand] > 21) {
         hideGameButtons();
         await endHand();
@@ -109,11 +109,11 @@ export default function App() {
       document.getElementById("playersHand").classList.remove("activeHand");
       document.getElementById("dealersHand").classList.add("activeHand");
       hideGameButtons();
-      let imgPath = `./assets/cards-1.3/${dealerHand[1].image}`;
-      let reactImgElement = <img key={dealerHandElements.key} src={imgPath} alt={dealerHand[1].image} />;
+      let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
+      let reactImgElement = <img key={dealersHandElements.key} src={imgPath} alt={dealersHand[1].image} />;
       await delay(500);
-      flipCard(reactImgElement, dealerHand[1], setDealerHandElements, "dealer", -1);
-      if (shouldDealerHit(dealerTotal, dealerHand)) await delay(500);
+      flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
+      if (shouldDealerHit(dealerTotal, dealersHand)) await delay(500);
       await playDealer();
       await delay(250);
       document.getElementById("dealersHand").classList.remove("activeHand");
@@ -123,9 +123,9 @@ export default function App() {
   // Play the dealer's hand according to the rules
   const playDealer = async () => {
     let newDealerTotal = dealerTotal;
-    while (shouldDealerHit(newDealerTotal, dealerHand)) {
+    while (shouldDealerHit(newDealerTotal, dealersHand)) {
       await hit("dealer", "endGame");
-      newDealerTotal = await calculateTotal(dealerHand);
+      newDealerTotal = await calculateTotal(dealersHand);
       setDealerTotal(newDealerTotal);
     }
   };
@@ -137,8 +137,8 @@ export default function App() {
         <div hidden id="resultsAlert" className="alert alert-info alert-dismissible fade show w-75 mx-auto px-0" role="alert">
           <div id="message" className="container text-center"></div>
         </div>
-        <DealerSection dealerHandElements={dealerHandElements} />
-        <PlayerSection playerHandElements={playerHandElements} playerTotals={playerTotals} />
+        <DealerSection dealersHandElements={dealersHandElements} />
+        <PlayerSection playersHandElements={playersHandElements} playerTotals={playerTotals} />
         <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
         <div id="bottomDiv" className="container text-center">
           <WagerControls
@@ -158,7 +158,7 @@ export default function App() {
         </div>
       </div>
 
-      <SettingsModal playerHands={playerHands} currentHand={currentHand} splitCount={splitCount} currentWager={currentWager} playerPoints={playerPoints} />
+      <SettingsModal playersHands={playersHands} currentHand={currentHand} splitCount={splitCount} currentWager={currentWager} playerPoints={playerPoints} />
       <InfoModal />
     </>
   );

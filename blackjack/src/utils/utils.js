@@ -57,7 +57,7 @@ export async function preloadAndGetImage(src) {
 }
 
 // Update game buttons based on current game state
-export function updateGameButtons(playerTotal, playerHands, currentHand, splitCount, currentWager, playerPoints) {
+export function updateGameButtons(playerTotal, playersHands, currentHand, splitCount, currentWager, playerPoints) {
   const canPlay = playerTotal <= 21;
   const hitBtn = document.getElementById("hitBtn");
   const standBtn = document.getElementById("standBtn");
@@ -66,7 +66,7 @@ export function updateGameButtons(playerTotal, playerHands, currentHand, splitCo
   // Update button visibility
   hitBtn.hidden = !canPlay;
   standBtn.hidden = false;
-  checkSplitButton(playerHands, currentHand, splitCount, currentWager, playerPoints);
+  checkSplitButton(playersHands, currentHand, splitCount, currentWager, playerPoints);
   // doubleDownBtn.hidden = !isDoubleDownAllowed();
 }
 
@@ -93,15 +93,15 @@ export function checkSplitButton(playersHand, currentHand, splitCount, currentWa
 }
 
 // Check if splitting is allowed based on current hand and rules
-export const isSplitAllowed = (playerHands, currentHand, splitCount, currentWager, playerPoints) => {
+export const isSplitAllowed = (playersHands, currentHand, splitCount, currentWager, playerPoints) => {
   const splitSwitch = document.getElementById("splitSwitch");
-  if (!playerHands[currentHand] || playerHands[currentHand].length < 2) {
+  if (!playersHands[currentHand] || playersHands[currentHand].length < 2) {
     return false;
   }
   const isMatchingRankOrValue = splitSwitch.checked
-    ? playerHands[currentHand][0].rank === playerHands[currentHand][1].rank
-    : playerHands[currentHand][0].pointValue === playerHands[currentHand][1].pointValue;
-  return splitCount < 3 && playerHands[currentHand].length === 2 && isMatchingRankOrValue && isWagerAllowed(currentWager[currentHand], playerPoints);
+    ? playersHands[currentHand][0].rank === playersHands[currentHand][1].rank
+    : playersHands[currentHand][0].pointValue === playersHands[currentHand][1].pointValue;
+  return splitCount < 3 && playersHands[currentHand].length === 2 && isMatchingRankOrValue && isWagerAllowed(currentWager[currentHand], playerPoints);
 };
 
 // Check if the current wager is allowed based on player points
