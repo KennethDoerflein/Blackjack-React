@@ -12,7 +12,7 @@ export default function WagerControls({ currentWager, updateWager, currentHand, 
       updateWager(newWager);
     } else if (newWager > playerPoints) {
       alert("Oops! You don't have enough points to place that wager. Your wager has been adjusted to your remaining points.");
-      currentWager = playerPoints;
+      updateWager(playerPoints);
     }
   };
 
