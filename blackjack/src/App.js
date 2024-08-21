@@ -10,7 +10,7 @@ import TopButtons from "./components/TopButtons.js";
 
 import CardDeck from "./game_logic/CardDeck.js";
 
-import { toggleHiddenElement, toggleDisabledGameButtons, delay, hideGameButtons, updateGameButtons, isDoubleDownAllowed } from "./utils/utils.js";
+import { toggleHiddenElement, enableGameButtons, toggleDisabledGameButtons, delay, hideGameButtons, updateGameButtons, isDoubleDownAllowed } from "./utils/utils.js";
 
 import { calculateTotal, addCard, flipCard, shouldDealerHit } from "./game_logic/gameFunctions.js";
 
@@ -37,23 +37,26 @@ export default function App() {
     // if (!debugMode) {
     //   infoModal.show();
     // }
+    setPlayerPoints(100);
     newGame();
   };
 
   const newGame = () => {
-    setDeck(new CardDeck());
-    setPlayerHand([[], [], [], []]);
-    setDealersHand([]);
-    setDealerTotal(0);
-    setPlayerTotal([0, 0, 0, 0]);
-    setCurrentWager([0, 0, 0, 0]);
-    setPlayerPoints(100);
-    setCurrentHand(0);
-    setPreviousHand(-1);
-    setSplitCount(0);
-    setPlayersHandElements([[], [], [], []]);
-    setDealersHandElements([]);
-    toggleHiddenElement(document.getElementById("wagerDiv"));
+    if (playerPoints > 0) {
+      document.getElementById("newGameBtn").hidden = true;
+      setDeck(new CardDeck());
+      setPlayerHand([[], [], [], []]);
+      setDealersHand([]);
+      setDealerTotal(0);
+      setPlayerTotal([0, 0, 0, 0]);
+      setCurrentWager([0, 0, 0, 0]);
+      setCurrentHand(0);
+      setPreviousHand(-1);
+      setSplitCount(0);
+      setPlayersHandElements([[], [], [], []]);
+      setDealersHandElements([]);
+      toggleHiddenElement(document.getElementById("wagerDiv"));
+    }
   };
 
   const initialDeal = async () => {
@@ -63,6 +66,7 @@ export default function App() {
     await hit("dealer", "init");
     updateGameButtons(playerTotals[currentHand], playersHands, currentHand, splitCount, currentWager, playerPoints);
     document.getElementById("playersHand").classList.add("activeHand");
+    enableGameButtons();
   };
 
   const updateWager = (value) => {
@@ -117,6 +121,7 @@ export default function App() {
       await playDealer();
       await delay(250);
       document.getElementById("dealersHand").classList.remove("activeHand");
+      if (playerPoints > 0) toggleHiddenElement(document.getElementById("newGameBtn"));
     }
   };
 
