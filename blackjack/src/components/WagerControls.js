@@ -1,7 +1,7 @@
 import React from "react";
-import { toggleHiddenElement, toggleDisabledElement, animateElement } from "../utils/utils.js";
+import { toggleHiddenElement, toggleDisabledElement, animateElement, updateGameButtons } from "../utils/utils.js";
 
-export default function WagerControls({ currentWager, updateWager, currentHand, playerPoints, setPlayerPoints, initialDeal }) {
+export default function WagerControls({ currentWager, updateWager, currentHand, playerPoints, setPlayerPoints, initialDeal, playerTotals, playersHands, splitCount }) {
   const addChipValue = (e) => {
     animateElement(e.target, "chipFlip", 700);
     animateElement(document.getElementById("wagerDisplay"), "highlight", 700);
@@ -20,21 +20,24 @@ export default function WagerControls({ currentWager, updateWager, currentHand, 
     updateWager(0);
   };
 
-  const placeWager = (e) => {
+  const placeWager = async (e) => {
     let id = e.target.id;
     let isAllIn = id === "allInBtn";
     let isWagerValid = !isNaN(currentWager[currentHand]) && currentWager[currentHand] > 0 && currentWager[currentHand] <= playerPoints;
+    let updatedPoints = 0;
     if (isWagerValid || isAllIn) {
       if (isAllIn) {
         updateWager(playerPoints);
-        setPlayerPoints(0);
       } else {
-        setPlayerPoints(playerPoints - currentWager[currentHand]);
+        updatedPoints = playerPoints - currentWager[currentHand];
       }
+      setPlayerPoints(updatedPoints);
       toggleHiddenElement(document.getElementById("wagerDiv"));
       toggleDisabledElement(document.getElementById("soft17Switch"));
       toggleDisabledElement(document.getElementById("splitSwitch"));
-      initialDeal();
+      await initialDeal();
+      updateGameButtons(playerTotals[currentHand], playersHands, currentHand, splitCount, currentWager, updatedPoints);
+
       // clearDiv(messageDiv);
     } else {
       alert("The wager must be a number and greater than 0.");

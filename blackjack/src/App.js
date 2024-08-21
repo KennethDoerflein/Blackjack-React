@@ -64,7 +64,6 @@ export default function App() {
     await hit("dealer", "init");
     await hit("player", "init");
     await hit("dealer", "init");
-    updateGameButtons(playerTotals[currentHand], playersHands, currentHand, splitCount, currentWager, playerPoints);
     document.getElementById("playersHand").classList.add("activeHand");
     enableGameButtons();
   };
@@ -96,7 +95,7 @@ export default function App() {
     setPlayerHand(newPlayersHands);
 
     if (entity !== "dealer" && origin === "user") {
-      updateGameButtons(playerTotals[currentHand], playersHands, currentHand, splitCount, currentWager, playerPoints);
+      updateGameButtons(newTotals[currentHand], newPlayersHands, currentHand, splitCount, currentWager, playerPoints);
       if (newTotals[currentHand] > 21) {
         hideGameButtons();
         await endHand();
@@ -153,6 +152,9 @@ export default function App() {
             updateWager={updateWager}
             currentHand={currentHand}
             initialDeal={initialDeal}
+            playerTotals={playerTotals}
+            playersHands={playersHands}
+            splitCount={splitCount}
           />
           <GameControls
             hit={hit}
