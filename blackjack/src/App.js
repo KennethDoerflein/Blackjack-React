@@ -10,7 +10,7 @@ import TopButtons from "./components/TopButtons.js";
 
 import CardDeck from "./game_logic/CardDeck.js";
 
-import { toggleHiddenElement, toggleDisabledElement, delay, hideGameButtons, updateGameButtons } from "./utils/utils.js";
+import { toggleHiddenElement, toggleDisabledGameButtons, delay, hideGameButtons, updateGameButtons, isDoubleDownAllowed } from "./utils/utils.js";
 
 import { calculateTotal, addCard, flipCard, shouldDealerHit } from "./game_logic/gameFunctions.js";
 
@@ -72,7 +72,7 @@ export default function App() {
   };
 
   const hit = async (entity = "player", origin = "user") => {
-    toggleDisabledElement(document.getElementById("hitBtn"));
+    toggleDisabledGameButtons();
     const newPlayersHands = [...playersHands];
     if (entity !== "dealer") {
       await addCard(newPlayersHands[currentHand], playersHandElements[currentHand], entity, origin, deck, setPlayersHandElements, currentHand);
@@ -99,9 +99,9 @@ export default function App() {
       } else if (newTotals[currentHand] === 21) {
         //autoStandOn21();
       }
+      toggleDisabledGameButtons();
     }
-    await delay(1000);
-    toggleDisabledElement(document.getElementById("hitBtn"));
+    await delay(1150);
   };
 
   const endHand = async () => {
@@ -149,7 +149,16 @@ export default function App() {
             currentHand={currentHand}
             initialDeal={initialDeal}
           />
-          <GameControls hit={hit} newGame={newGame} endHand={endHand} />
+          <GameControls
+            hit={hit}
+            newGame={newGame}
+            endHand={endHand}
+            doubleDownAllowed={isDoubleDownAllowed(playersHands, currentHand, playerTotals[currentHand], currentWager, playerPoints)}
+            updateWager={updateWager}
+            playerPoints={playerPoints}
+            setPlayerPoints={setPlayerPoints}
+            currentHandWager={currentWager[currentHand]}
+          />
         </div>
         <div id="disclaimer" className="container text-center mt-3">
           <p className="small text-muted my-0 px-5">

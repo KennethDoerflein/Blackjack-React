@@ -1,8 +1,17 @@
 import React from "react";
+import { delay } from "../utils/utils";
 
-export default function GameControls({ hit, newGame, endHand }) {
+export default function GameControls({ hit, newGame, endHand, doubleDownAllowed, updateWager, playerPoints, setPlayerPoints, currentHandWager }) {
   function splitHand() {}
-  function doubleDown() {}
+  async function doubleDown() {
+    if (doubleDownAllowed) {
+      updateWager(currentHandWager * 2);
+      setPlayerPoints(playerPoints - currentHandWager);
+      await hit("player", "doubleDown");
+      await delay(1000);
+      endHand();
+    }
+  }
 
   return (
     <>
