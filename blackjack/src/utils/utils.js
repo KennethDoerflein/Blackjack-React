@@ -122,6 +122,6 @@ export function isWagerAllowed(currentWager, playerPoints) {
 }
 
 // Check if doubling down is allowed based on current hand and rules
-function isDoubleDownAllowed(playersHands, currentHand, playerTotal, currentWager, playerPoints) {
+export function isDoubleDownAllowed(playersHands, currentHand, playerTotal, currentWager, playerPoints) {
   return playersHands[currentHand].length === 2 && playerTotal <= 21 && isWagerAllowed(currentWager[currentHand], playerPoints);
 }
