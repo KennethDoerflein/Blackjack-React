@@ -73,23 +73,23 @@ export default function App() {
 
   const hit = async (entity = "player", origin = "user") => {
     toggleDisabledElement(document.getElementById("hitBtn"));
-    const newplayersHands = [...playersHands];
+    const newPlayersHands = [...playersHands];
     if (entity !== "dealer") {
-      await addCard(newplayersHands[currentHand], playersHandElements[currentHand], entity, origin, deck, setPlayersHandElements, currentHand);
+      await addCard(newPlayersHands[currentHand], playersHandElements[currentHand], entity, origin, deck, setPlayersHandElements, currentHand);
     } else {
       await addCard(dealersHand, dealersHandElements, entity, origin, deck, setDealersHandElements);
     }
 
     // Calculate the new totals before updating the state
     const newTotals = [...playerTotals];
-    for (let i = 0; i < newplayersHands.length; i++) {
-      newTotals[i] = await calculateTotal(newplayersHands[i]);
+    for (let i = 0; i < newPlayersHands.length; i++) {
+      newTotals[i] = await calculateTotal(newPlayersHands[i]);
     }
     const newDealerTotal = await calculateTotal(dealersHand);
 
     setPlayerTotal(newTotals);
     setDealerTotal(newDealerTotal);
-    setPlayerHand(newplayersHands);
+    setPlayerHand(newPlayersHands);
 
     if (entity !== "dealer" && origin === "user") {
       updateGameButtons(playerTotals[currentHand], playersHands, currentHand, splitCount, currentWager, playerPoints);
