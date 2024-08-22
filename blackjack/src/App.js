@@ -113,7 +113,7 @@ export default function App() {
       document.getElementById("dealersHand").classList.add("activeHand");
       hideGameButtons();
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
-      let reactImgElement = <img key={dealersHandElements.key} src={imgPath} alt={dealersHand[1].image} />;
+      let reactImgElement = <img key={dealersHandElements[1].key} src={imgPath} alt={dealersHand[1].image} />;
       await delay(500);
       flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
       if (shouldDealerHit(dealerTotal, dealersHand)) await delay(500);
