@@ -1,11 +1,22 @@
 import React from "react";
 
-export default function PlayerSection({ playersHandElements, playerTotals }) {
+export default function PlayerSection({ playersHandElements, playerTotals, splitCount }) {
   return (
     <>
       <h6 id="playerHeader" className="container text-center my-3">
-        {/* Temporary for debugging*/}
-        Player's Cards {playerTotals[0]}
+        Player's Cards{" "}
+        {splitCount > 0
+          ? (() => {
+              let totalPerHand = "";
+              for (let i = 0; i < splitCount; i++) {
+                totalPerHand += `Hand ${i + 1}: ${playerTotals[i]}`;
+                if (i !== splitCount) {
+                  totalPerHand += ", ";
+                }
+              }
+              return totalPerHand;
+            })()
+          : `(Total: ${playerTotals[0]})`}
       </h6>
       <span id="playersHands">
         <div id="playersHand" className="container">

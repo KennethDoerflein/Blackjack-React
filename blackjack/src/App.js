@@ -141,8 +141,8 @@ export default function App() {
         <div hidden id="resultsAlert" className="alert alert-info alert-dismissible fade show w-75 mx-auto px-0" role="alert">
           <div id="message" className="container text-center"></div>
         </div>
-        <DealerSection dealersHandElements={dealersHandElements} />
-        <PlayerSection playersHandElements={playersHandElements} playerTotals={playerTotals} />
+        <DealerSection dealersHandElements={dealersHandElements} dealerTotal={dealerTotal} />
+        <PlayerSection playersHandElements={playersHandElements} playerTotals={playerTotals} splitCount={splitCount} />
         <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
         <div id="bottomDiv" className="container text-center">
           <WagerControls
