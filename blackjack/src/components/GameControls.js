@@ -6,10 +6,11 @@ export default function GameControls({ hit, newGame, endHand, doubleDownAllowed,
   async function doubleDown() {
     if (doubleDownAllowed) {
       updateWager(currentHandWager * 2);
-      setPlayerPoints(playerPoints - currentHandWager);
+      const pointsLeft = playerPoints - currentHandWager;
+      setPlayerPoints(pointsLeft);
       await hit("player", "doubleDown");
       await delay(1000);
-      endHand();
+      endHand(pointsLeft);
     }
   }
 
