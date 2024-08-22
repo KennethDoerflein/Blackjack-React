@@ -9,7 +9,7 @@ export default function GameControls({ hit, newGame, endHand, doubleDownAllowed,
       const pointsLeft = playerPoints - currentHandWager;
       setPlayerPoints(pointsLeft);
       await hit("player", "doubleDown");
-      await delay(1000);
+      await delay(750);
       endHand(pointsLeft);
     }
   }

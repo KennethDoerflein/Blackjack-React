@@ -74,6 +74,8 @@ export default function App() {
     await hit("dealer", "init");
     document.getElementById("playersHand").classList.add("activeHand");
     enableGameButtons();
+      await delay(500);
+      await endHand();
   };
 
   const updateWager = (value) => {
@@ -101,20 +103,12 @@ export default function App() {
     setPlayerTotal(newTotals);
     setDealerTotal(newDealerTotal);
     setPlayerHand(newPlayersHands);
-    if (entity !== "dealer") {
-      if (autoStandOn21(newTotals[currentHand]) && origin !== "doubleDown") {
-        await delay(500);
+        await delay(750);
         await endHand();
-      } else if (origin === "user") {
-        updateGameButtons(newTotals[currentHand], newPlayersHands, currentHand, splitCount, currentWager, playerPoints);
-        if (newTotals[currentHand] > 21) {
-          hideGameButtons();
-          await endHand();
-        }
-        toggleDisabledGameButtons();
-      }
+        await delay(500);
+    await delay(725);
+    if (entity !== "dealer") {
     }
-    await delay(1150);
   };
 
   const endHand = async (pointsLeft = playerPoints) => {
@@ -124,11 +118,9 @@ export default function App() {
       hideGameButtons();
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
       let reactImgElement = <img key={dealersHandElements[1].key} src={imgPath} alt={dealersHand[1].image} />;
-      await delay(500);
+      await delay(800);
       flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
-      if (shouldDealerHit(dealerTotal, dealersHand)) await delay(500);
       await playDealer();
-      await delay(250);
       document.getElementById("dealersHand").classList.remove("activeHand");
       if (pointsLeft > 0) toggleHiddenElement(document.getElementById("newGameBtn"));
 
@@ -141,6 +133,7 @@ export default function App() {
   const playDealer = async () => {
     let newDealerTotal = dealerTotal;
     while (shouldDealerHit(newDealerTotal, dealersHand)) {
+      await delay(550);
       await hit("dealer", "endGame");
       newDealerTotal = await calculateTotal(dealersHand);
       setDealerTotal(newDealerTotal);
