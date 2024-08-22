@@ -186,7 +186,15 @@ export default function App() {
         </div>
       </div>
 
-      <SettingsModal playersHands={playersHands} currentHand={currentHand} splitCount={splitCount} currentWager={currentWager} playerPoints={playerPoints} />
+      <SettingsModal
+        playersHands={playersHands}
+        currentHand={currentHand}
+        splitCount={splitCount}
+        currentWager={currentWager}
+        playerPoints={playerPoints}
+        endHand={endHand}
+        playerTotals={playerTotals}
+      />
       <InfoModal />
     </>
   );

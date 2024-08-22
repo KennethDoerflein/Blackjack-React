@@ -1,7 +1,7 @@
 import React from "react";
 import { checkSplitButton } from "../utils/utils.js";
 
-export default function SettingsModal({ playersHands, currentHand, splitCount, currentWager, playerPoints }) {
+export default function SettingsModal({ playersHands, currentHand, splitCount, currentWager, playerPoints, playerTotals, endHand }) {
   function toggleMusic() {
     const musicSwitch = document.getElementById("musicSwitch");
     const backgroundMusic = document.getElementById("backgroundMusic");
@@ -9,6 +9,13 @@ export default function SettingsModal({ playersHands, currentHand, splitCount, c
       backgroundMusic.play();
     } else {
       backgroundMusic.pause();
+    }
+  }
+
+  function checkStand() {
+    const standSwitch = document.getElementById("standSwitch");
+    if (standSwitch.checked && playerTotals[currentHand] === 21) {
+      endHand();
     }
   }
 
@@ -34,7 +41,7 @@ export default function SettingsModal({ playersHands, currentHand, splitCount, c
                 </label>
               </div>
               <div className="form-check form-switch">
-                <input className="form-check-input" type="checkbox" role="switch" id="standSwitch" />
+                <input onClick={checkStand} className="form-check-input" type="checkbox" role="switch" id="standSwitch" />
                 <label className="form-check-label" htmlFor="standSwitch">
                   Automatically Stand When You Get 21
                 </label>
