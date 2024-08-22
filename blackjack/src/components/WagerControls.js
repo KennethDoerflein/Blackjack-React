@@ -35,9 +35,7 @@ export default function WagerControls({ currentWager, updateWager, currentHand, 
       toggleHiddenElement(document.getElementById("wagerDiv"));
       toggleDisabledElement(document.getElementById("soft17Switch"));
       toggleDisabledElement(document.getElementById("splitSwitch"));
-      await initialDeal();
-      updateGameButtons(playerTotals[currentHand], playersHands, currentHand, splitCount, currentWager, updatedPoints);
-
+      await initialDeal(updatedPoints);
       // clearDiv(messageDiv);
     } else {
       alert("The wager must be a number and greater than 0.");

@@ -67,15 +67,17 @@ export default function App() {
     }
   };
 
-  const initialDeal = async () => {
+  const initialDeal = async (updatedPoints) => {
     await hit("player", "init");
     await hit("dealer", "init");
-    await hit("player", "init");
+    const newTotal = await hit("player", "init");
     await hit("dealer", "init");
     document.getElementById("playersHand").classList.add("activeHand");
     enableGameButtons();
+    if (autoStandOn21(newTotal)) {
       await delay(500);
       await endHand();
+    } else updateGameButtons(playerTotals[currentHand], playersHands, currentHand, splitCount, currentWager, updatedPoints);
   };
 
   const updateWager = (value) => {
@@ -103,11 +105,21 @@ export default function App() {
     setPlayerTotal(newTotals);
     setDealerTotal(newDealerTotal);
     setPlayerHand(newPlayersHands);
+    if (entity !== "dealer" && origin === "user") {
+      updateGameButtons(newTotals[currentHand], newPlayersHands, currentHand, splitCount, currentWager, playerPoints);
+      if (newTotals[currentHand] > 21) {
+        hideGameButtons();
         await delay(750);
         await endHand();
+      } else if (autoStandOn21(newTotals[currentHand]) && origin !== "doubleDown" && dealersHandElements.length > 2) {
         await delay(500);
+        await endHand();
+      }
+      toggleDisabledGameButtons();
+    }
     await delay(725);
     if (entity !== "dealer") {
+      return newTotals[currentHand];
     }
   };
 
@@ -117,7 +129,7 @@ export default function App() {
       document.getElementById("dealersHand").classList.add("activeHand");
       hideGameButtons();
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
-      let reactImgElement = <img key={dealersHandElements[1].key} src={imgPath} alt={dealersHand[1].image} />;
+      let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
       await delay(800);
       flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
       await playDealer();
