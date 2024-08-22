@@ -46,7 +46,6 @@ export default function App() {
     // if (!debugMode) {
     //   infoModal.show();
     // }
-    setPlayerPoints(100);
     newGame();
   };
 
