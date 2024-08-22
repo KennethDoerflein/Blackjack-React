@@ -10,7 +10,16 @@ import TopButtons from "./components/TopButtons.js";
 
 import CardDeck from "./game_logic/CardDeck.js";
 
-import { toggleHiddenElement, enableGameButtons, toggleDisabledGameButtons, delay, hideGameButtons, updateGameButtons, isDoubleDownAllowed } from "./utils/utils.js";
+import {
+  toggleHiddenElement,
+  toggleDisabledElement,
+  enableGameButtons,
+  toggleDisabledGameButtons,
+  delay,
+  hideGameButtons,
+  updateGameButtons,
+  isDoubleDownAllowed,
+} from "./utils/utils.js";
 
 import { calculateTotal, addCard, flipCard, shouldDealerHit } from "./game_logic/gameFunctions.js";
 
@@ -121,6 +130,8 @@ export default function App() {
       await delay(250);
       document.getElementById("dealersHand").classList.remove("activeHand");
       if (playerPoints > 0) toggleHiddenElement(document.getElementById("newGameBtn"));
+      toggleDisabledElement(document.getElementById("soft17Switch"));
+      toggleDisabledElement(document.getElementById("splitSwitch"));
     }
   };
 
