@@ -21,7 +21,7 @@ import {
   isDoubleDownAllowed,
 } from "./utils/utils.js";
 
-import { calculateTotal, addCard, flipCard, shouldDealerHit } from "./game_logic/gameFunctions.js";
+import { calculateTotal, addCard, flipCard, shouldDealerHit, autoStandOn21 } from "./game_logic/gameFunctions.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
@@ -102,16 +102,18 @@ export default function App() {
     setPlayerTotal(newTotals);
     setDealerTotal(newDealerTotal);
     setPlayerHand(newPlayersHands);
-
-    if (entity !== "dealer" && origin === "user") {
-      updateGameButtons(newTotals[currentHand], newPlayersHands, currentHand, splitCount, currentWager, playerPoints);
-      if (newTotals[currentHand] > 21) {
-        hideGameButtons();
+    if (entity !== "dealer") {
+      if (autoStandOn21(newTotals[currentHand]) && origin !== "doubleDown") {
+        await delay(500);
         await endHand();
-      } else if (newTotals[currentHand] === 21) {
-        //autoStandOn21();
+      } else if (origin === "user") {
+        updateGameButtons(newTotals[currentHand], newPlayersHands, currentHand, splitCount, currentWager, playerPoints);
+        if (newTotals[currentHand] > 21) {
+          hideGameButtons();
+          await endHand();
+        }
+        toggleDisabledGameButtons();
       }
-      toggleDisabledGameButtons();
     }
     await delay(1150);
   };
