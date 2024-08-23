@@ -106,6 +106,18 @@ export function enableGameButtons() {
   doubleDownBtn.disabled = false;
 }
 
+// disable game buttons
+export function disableGameButtons() {
+  const hitBtn = document.getElementById("hitBtn");
+  const standBtn = document.getElementById("standBtn");
+  const splitBtn = document.getElementById("splitBtn");
+  const doubleDownBtn = document.getElementById("doubleDownBtn");
+  hitBtn.disabled = true;
+  standBtn.disabled = true;
+  splitBtn.disabled = true;
+  doubleDownBtn.disabled = true;
+}
+
 // Check if the split button should be shown based on split switch (point value or rank)
 export function checkSplitButton(playersHand, currentHand, splitCount, currentWager, playerPoints) {
   const hitBtn = document.getElementById("hitBtn");
