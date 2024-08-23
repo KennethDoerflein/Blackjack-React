@@ -24,6 +24,7 @@ import {
 import { calculateTotal, addCard, flipCard, shouldDealerHit, autoStandOn21 } from "./game_logic/gameFunctions.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Modal } from "bootstrap";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import "./styles.css";
 
@@ -43,9 +44,10 @@ export default function App() {
   const [splitCount, setSplitCount] = useState(0);
 
   window.onload = async () => {
-    // if (!debugMode) {
-    //   infoModal.show();
-    // }
+    const infoModal = new Modal(document.getElementById("infoModal"), {
+      keyboard: false,
+    });
+    infoModal.show();
     newGame();
   };
 
