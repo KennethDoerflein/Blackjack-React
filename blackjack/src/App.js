@@ -43,6 +43,7 @@ export default function App() {
   const [previousHand, setPreviousHand] = useState(0);
   const [splitCount, setSplitCount] = useState(0);
 
+  // Start the game and show the info modal
   window.onload = async () => {
     const infoModal = new Modal(document.getElementById("infoModal"), {
       keyboard: false,
@@ -51,6 +52,7 @@ export default function App() {
     newGame();
   };
 
+  // Start a new game by shuffling the deck and resetting the UI
   const newGame = () => {
     if (playerPoints > 0) {
       document.getElementById("newGameBtn").hidden = true;
@@ -69,6 +71,7 @@ export default function App() {
     }
   };
 
+  // Deal initial cards to player and dealer
   const initialDeal = async (updatedPoints) => {
     await hit("player", "init");
     await hit("dealer", "init");
@@ -88,6 +91,7 @@ export default function App() {
     setCurrentWager(newWager);
   };
 
+  // Deal a card to the player or dealer
   const hit = async (entity = "player", origin = "user") => {
     toggleDisabledGameButtons();
     const newPlayersHands = [...playersHands];
@@ -125,6 +129,7 @@ export default function App() {
     }
   };
 
+  // End the current hand and proceed to the next hand or end the game
   const endHand = async (pointsLeft = playerPoints) => {
     if (currentHand === splitCount) {
       document.getElementById("playersHand").classList.remove("activeHand");
