@@ -1,7 +1,7 @@
 import React from "react";
-import { toggleHiddenElement, toggleDisabledElement, animateElement, updateGameButtons } from "../utils/utils.js";
+import { toggleHiddenElement, toggleDisabledElement, animateElement } from "../utils/utils.js";
 
-export default function WagerControls({ currentWager, updateWager, currentHand, playerPoints, setPlayerPoints, initialDeal, playerTotals, playersHands, splitCount }) {
+export default function WagerControls({ currentWager, updateWager, currentHand, playerPoints, setPlayerPoints, initialDeal }) {
   const addChipValue = (e) => {
     animateElement(e.target, "chipFlip", 700);
     animateElement(document.getElementById("wagerDisplay"), "highlight", 700);

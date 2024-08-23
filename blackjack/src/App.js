@@ -177,9 +177,6 @@ export default function App() {
             updateWager={updateWager}
             currentHand={currentHand}
             initialDeal={initialDeal}
-            playerTotals={playerTotals}
-            playersHands={playersHands}
-            splitCount={splitCount}
           />
           <GameControls
             hit={hit}
