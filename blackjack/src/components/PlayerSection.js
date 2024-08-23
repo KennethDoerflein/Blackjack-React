@@ -8,9 +8,9 @@ export default function PlayerSection({ playersHandElements, playerTotals, split
         {splitCount > 0
           ? (() => {
               let totalPerHand = "";
-              for (let i = 0; i < splitCount; i++) {
+              for (let i = 0; i <= splitCount; i++) {
                 totalPerHand += `Hand ${i + 1}: ${playerTotals[i]}`;
-                if (i !== splitCount) {
+                if (i < splitCount) {
                   totalPerHand += ", ";
                 }
               }
