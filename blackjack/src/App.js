@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DealerSection from "./components/DealerSection.js";
 import PlayerSection from "./components/PlayerSection.js";
 import PointSection from "./components/PointSection.js";
@@ -14,11 +14,11 @@ import {
   toggleHiddenElement,
   toggleDisabledElement,
   enableGameButtons,
-  toggleDisabledGameButtons,
   delay,
   hideGameButtons,
   updateGameButtons,
   isDoubleDownAllowed,
+  disableGameButtons,
 } from "./utils/utils.js";
 
 import { calculateTotal, addCard, flipCard, shouldDealerHit, autoStandOn21 } from "./game_logic/gameFunctions.js";
@@ -42,6 +42,7 @@ export default function App() {
   const [currentHand, setCurrentHand] = useState(0);
   const [previousHand, setPreviousHand] = useState(0);
   const [splitCount, setSplitCount] = useState(0);
+  const playerHandNames = ["playersHand", "playersSecondHand", "playersThirdHand", "playersFourthHand"];
 
   // Start the game and show the info modal
   window.onload = async () => {
@@ -68,6 +69,9 @@ export default function App() {
       setPlayersHandElements([[], [], [], []]);
       setDealersHandElements([]);
       toggleHiddenElement(document.getElementById("wagerDiv"));
+      for (let i = 1; i <= splitCount; i++) {
+        toggleHiddenElement(document.getElementById(playerHandNames[i]));
+      }
     }
   };
 
@@ -92,11 +96,11 @@ export default function App() {
   };
 
   // Deal a card to the player or dealer
-  const hit = async (entity = "player", origin = "user") => {
-    toggleDisabledGameButtons();
+  const hit = async (entity = "player", origin = "user", hand = currentHand) => {
+    disableGameButtons();
     const newPlayersHands = [...playersHands];
     if (entity !== "dealer") {
-      await addCard(newPlayersHands[currentHand], playersHandElements[currentHand], entity, origin, deck, setPlayersHandElements, currentHand);
+      await addCard(newPlayersHands[hand], playersHandElements[hand], entity, origin, deck, setPlayersHandElements, hand);
     } else {
       await addCard(dealersHand, dealersHandElements, entity, origin, deck, setDealersHandElements);
     }
@@ -112,27 +116,27 @@ export default function App() {
     setDealerTotal(newDealerTotal);
     setPlayerHand(newPlayersHands);
     if (entity !== "dealer" && origin === "user") {
-      updateGameButtons(newTotals[currentHand], newPlayersHands, currentHand, splitCount, currentWager, playerPoints);
-      if (newTotals[currentHand] > 21) {
+      updateGameButtons(newTotals[hand], newPlayersHands, hand, splitCount, currentWager, playerPoints);
+      if (newTotals[hand] > 21) {
         hideGameButtons();
         await delay(750);
         await endHand();
-      } else if (autoStandOn21(newTotals[currentHand]) && origin !== "doubleDown" && dealersHandElements.length > 2) {
+      } else if (autoStandOn21(newTotals[hand]) && origin !== "doubleDown" && origin !== "split" && dealersHandElements.length > 2) {
         await delay(500);
         await endHand();
       }
-      toggleDisabledGameButtons();
+      enableGameButtons();
     }
     await delay(725);
     if (entity !== "dealer") {
-      return newTotals[currentHand];
+      return newTotals[hand];
     }
   };
 
   // End the current hand and proceed to the next hand or end the game
   const endHand = async (pointsLeft = playerPoints) => {
     if (currentHand === splitCount) {
-      document.getElementById("playersHand").classList.remove("activeHand");
+      document.getElementById(playerHandNames[currentHand]).classList.remove("activeHand");
       document.getElementById("dealersHand").classList.add("activeHand");
       hideGameButtons();
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
@@ -145,6 +149,72 @@ export default function App() {
 
       toggleDisabledElement(document.getElementById("soft17Switch"));
       toggleDisabledElement(document.getElementById("splitSwitch"));
+    } else if (currentHand !== splitCount) {
+      advanceHand(currentHand + 1);
+    }
+  };
+
+  // Advance to the next player hand if splits occurred
+  function advanceHand(newHand) {
+    if (currentHand < splitCount && splitCount > 0) {
+      updateGameButtons(playerTotals[newHand], playersHands, newHand, splitCount, currentWager, playerPoints);
+      document.getElementById(playerHandNames[newHand]).classList.add("activeHand");
+      document.getElementById(playerHandNames[currentHand]).classList.remove("activeHand");
+      setCurrentHand(newHand);
+      if (!autoStandOn21(playerTotals[newHand])) {
+        enableGameButtons();
+      }
+    }
+  }
+
+  // Use useEffect to watch for changes in currentHand with a delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (autoStandOn21(playerTotals[currentHand])) {
+        endHand();
+      }
+    }, 1000); // Adjust the delay time as needed
+
+    return () => clearTimeout(timer); // Cleanup the timer on component unmount
+  }, [currentHand]);
+
+  // Split the player's hand into two separate hands
+  const splitHand = async () => {
+    disableGameButtons();
+    const newSplitCount = splitCount + 1;
+    setSplitCount(newSplitCount);
+    setPreviousHand(currentHand);
+    let newPlayersHands = [...playersHands];
+    let newPlayerHandElements = [...playersHandElements];
+    newPlayersHands[newSplitCount].push(newPlayersHands[currentHand].pop());
+    newPlayerHandElements[newSplitCount].push({ ...newPlayerHandElements[currentHand].pop(), key: "1" });
+
+    // Calculate the new totals before updating the state
+    const newTotals = [...playerTotals];
+    for (let i = 0; i < newPlayersHands.length; i++) {
+      newTotals[i] = await calculateTotal(newPlayersHands[i]);
+    }
+
+    setPlayerTotal(newTotals);
+    setPlayerHand(newPlayersHands);
+    setPlayersHandElements(newPlayerHandElements);
+    document.getElementById(playerHandNames[newSplitCount]).toggleAttribute("hidden");
+    await delay(750);
+    await hit("player", "split", currentHand);
+    await hit("player", "split", newSplitCount);
+
+    // Calculate the new totals before updating the state
+    for (let i = 0; i < newPlayersHands.length; i++) {
+      newTotals[i] = await calculateTotal(newPlayersHands[i]);
+    }
+
+    setPlayerTotal(newTotals);
+    updateGameButtons(newTotals[currentHand], newPlayersHands, currentHand, newSplitCount, currentWager, playerPoints);
+    if (autoStandOn21(newTotals[currentHand])) {
+      await delay(500);
+      endHand();
+    } else {
+      enableGameButtons();
     }
   };
 
@@ -187,6 +257,7 @@ export default function App() {
             playerPoints={playerPoints}
             setPlayerPoints={setPlayerPoints}
             currentHandWager={currentWager[currentHand]}
+            splitHand={splitHand}
           />
         </div>
         <div id="disclaimer" className="container text-center mt-3">

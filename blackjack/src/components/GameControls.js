@@ -1,8 +1,7 @@
 import React from "react";
 import { delay } from "../utils/utils";
 
-export default function GameControls({ hit, newGame, endHand, doubleDownAllowed, updateWager, playerPoints, setPlayerPoints, currentHandWager }) {
-  function splitHand() {}
+export default function GameControls({ hit, newGame, endHand, doubleDownAllowed, updateWager, playerPoints, setPlayerPoints, currentHandWager, splitHand }) {
   async function doubleDown() {
     if (doubleDownAllowed) {
       updateWager(currentHandWager * 2);
