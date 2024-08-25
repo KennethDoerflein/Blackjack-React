@@ -178,6 +178,7 @@ export default function App() {
     }, 1000); // Adjust the delay time as needed
 
     return () => clearTimeout(timer); // Cleanup the timer on component unmount
+    // eslint-disable-next-line
   }, [currentHand]);
 
   // Split the player's hand into two separate hands
