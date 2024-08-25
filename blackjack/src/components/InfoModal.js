@@ -1,6 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { Modal } from "bootstrap";
 
-export default function InfoModal() {
+export default function InfoModal({ newGame }) {
+  useEffect(() => {
+    // Show the modal when the component mounts
+    const modalElement = document.getElementById("infoModal");
+    const modal = new Modal(modalElement, {
+      keyboard: false,
+    });
+    modal.show();
+
+    // Cleanup function to remove the backdrop
+    const handleModalHidden = () => {
+      const backdrop = document.querySelector(".modal-backdrop");
+      if (backdrop) {
+        backdrop.parentNode.removeChild(backdrop);
+      }
+    };
+
+    modalElement.addEventListener("hidden.bs.modal", handleModalHidden);
+
+    return () => {
+      modalElement.removeEventListener("hidden.bs.modal", handleModalHidden);
+    };
+  }, []);
+
   return (
     <>
       <div className="modal fade" id="infoModal" tabIndex="-1" aria-labelledby="infoModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -77,7 +101,7 @@ export default function InfoModal() {
             </div>
 
             <div className="modal-footer bg-primary">
-              <button type="button" className="mx-auto btn btn-warning" data-bs-dismiss="modal">
+              <button onClick={newGame} type="button" className="mx-auto btn btn-warning" data-bs-dismiss="modal">
                 I Acknowledge and Accept
               </button>
             </div>

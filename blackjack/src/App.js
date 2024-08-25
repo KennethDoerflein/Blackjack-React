@@ -24,7 +24,6 @@ import {
 import { calculateTotal, addCard, flipCard, shouldDealerHit, autoStandOn21 } from "./game_logic/gameFunctions.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-// import { Modal } from "bootstrap";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import "./styles.css";
 
@@ -64,15 +63,6 @@ export default function App() {
         toggleHiddenElement(document.getElementById(playerHandNames[i]));
       }
     }
-  };
-
-  // Start the game and show the info modal
-  window.onload = () => {
-    // const infoModal = new Modal(document.getElementById("infoModal"), {
-    //   keyboard: false,
-    // });
-    // infoModal.show();
-    newGame();
   };
 
   // Deal initial cards to player and dealer
@@ -290,7 +280,7 @@ export default function App() {
         endHand={endHand}
         playerTotals={playerTotals}
       />
-      <InfoModal />
+      <InfoModal newGame={newGame} />
     </>
   );
 }
