@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 class Card {
   constructor(rank, suit, pointValue, image) {
     this.rank = rank;
