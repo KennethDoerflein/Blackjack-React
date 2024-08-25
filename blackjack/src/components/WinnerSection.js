@@ -16,6 +16,7 @@ export default function WinnerSection({ playersHands, playerTotals, playerPoints
             messageDiv.removeChild(messageDiv.firstChild);
           }
           let outcomes = [[], []];
+          let newPlayerPoints = playerPoints;
 
           for (let handIndex = 0; handIndex < playersHands.length; handIndex++) {
             if (playersHands[handIndex].length === 0) continue;
@@ -39,7 +40,7 @@ export default function WinnerSection({ playersHands, playerTotals, playerPoints
               outcome = "Push (Tie)";
             }
 
-            setPlayerPoints(playerPoints + Math.ceil(currentWager[handIndex] * wagerMultiplier));
+            newPlayerPoints += Math.ceil(currentWager[handIndex] * wagerMultiplier);
             outcomes[handIndex] = splitCount > 0 ? `Hand ${handIndex + 1}: ${outcome}` : outcome;
 
             let winnerElement = createWinnerElement(outcomes[handIndex]);
@@ -47,6 +48,7 @@ export default function WinnerSection({ playersHands, playerTotals, playerPoints
           }
 
           setCurrentWager([0, 0, 0, 0]);
+          setPlayerPoints(newPlayerPoints);
           if (playerPoints === 0) {
             let message = createWinnerElement("You are out of points, thank you for playing!");
             message.classList.add("mt-2", "mb-5");
