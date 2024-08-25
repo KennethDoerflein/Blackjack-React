@@ -49,7 +49,7 @@ export default function WinnerSection({ playersHands, playerTotals, playerPoints
 
           setCurrentWager([0, 0, 0, 0]);
           setPlayerPoints(newPlayerPoints);
-          if (playerPoints === 0) {
+          if (newPlayerPoints === 0) {
             let message = createWinnerElement("You are out of points, thank you for playing!");
             message.classList.add("mt-2", "mb-5");
             document.getElementById("bottomDiv").appendChild(message);
