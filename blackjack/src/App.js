@@ -12,7 +12,6 @@ import CardDeck from "./game_logic/CardDeck.js";
 
 import {
   toggleHiddenElement,
-  toggleDisabledElement,
   enableGameButtons,
   delay,
   hideGameButtons,
@@ -28,6 +27,13 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import "./styles.css";
 
 export default function App() {
+  const [showInfo, setShowInfo] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
+  const handleShowInfo = () => setShowInfo(true);
+  const handleCloseInfo = () => setShowInfo(false);
+  const handleShowSettings = () => setShowSettings(true);
+  const handleCloseSettings = () => setShowSettings(false);
+
   document.documentElement.setAttribute("data-bs-theme", "dark");
   const [deck, setDeck] = useState(new CardDeck());
   const [playersHands, setPlayerHand] = useState([[], [], [], []]);
@@ -137,8 +143,6 @@ export default function App() {
       document.getElementById("dealersHand").classList.remove("activeHand");
       if (pointsLeft > 0) toggleHiddenElement(document.getElementById("newGameBtn"));
 
-      toggleDisabledElement(document.getElementById("soft17Switch"));
-      toggleDisabledElement(document.getElementById("splitSwitch"));
       toggleHiddenElement(document.getElementById("resultsAlert"));
     } else if (currentHand !== splitCount) {
       advanceHand(currentHand + 1);
@@ -227,7 +231,7 @@ export default function App() {
 
   return (
     <>
-      <TopButtons />
+      <TopButtons showInfoModal={handleShowInfo} showSettingsModal={handleShowSettings} />
       <div id="main" className="container-fluid my-2">
         <WinnerSection
           playerPoints={playerPoints}
@@ -279,8 +283,10 @@ export default function App() {
         playerPoints={playerPoints}
         endHand={endHand}
         playerTotals={playerTotals}
+        show={showSettings}
+        handleClose={handleCloseSettings}
       />
-      <InfoModal newGame={newGame} />
+      <InfoModal newGame={newGame} show={showInfo} handleClose={handleCloseInfo} />
     </>
   );
 }

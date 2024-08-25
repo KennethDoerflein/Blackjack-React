@@ -1,10 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { Modal, Button } from "react-bootstrap";
 
-export default function InfoModal({ newGame }) {
-  const [show, setShow] = useState(true);
-
-  const handleClose = () => setShow(false);
+export default function InfoModal({ show, handleClose, newGame }) {
   return (
     <Modal show={show} onHide={handleClose} centered backdrop="static" keyboard={false}>
       <Modal.Header className="bg-primary text-white">

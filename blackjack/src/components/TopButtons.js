@@ -1,14 +1,15 @@
 import React from "react";
+import { Button } from "react-bootstrap";
 
-export default function TopButtons() {
+export default function TopButtons({ showInfoModal, showSettingsModal }) {
   return (
     <>
-      <button type="button" className="px-1 py-1 btn btn-sm btn-dark position-absolute top-0 start-0" data-bs-toggle="modal" data-bs-target="#infoModal">
+      <Button variant="dark" size="sm" className="px-1 py-1 position-absolute top-0 start-0" onClick={showInfoModal}>
         ℹ️
-      </button>
-      <button type="button" className="px-1 py-1 btn btn-sm btn-dark position-absolute top-0 end-0" data-bs-toggle="modal" data-bs-target="#settingsModal">
+      </Button>
+      <Button variant="dark" size="sm" className="px-1 py-1 position-absolute top-0 end-0" onClick={showSettingsModal}>
         ⚙️
-      </button>
+      </Button>
       <audio id="backgroundMusic" loop className="container text-center">
         <source src="./assets/casino-funky-background-upbeat-and-uplifting-music-intro-theme-120445.mp3" type="audio/mpeg" />
       </audio>

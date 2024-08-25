@@ -134,9 +134,11 @@ export const isSplitAllowed = (playersHands, currentHand, splitCount, currentWag
   if (!playersHands[currentHand] || playersHands[currentHand].length < 2) {
     return false;
   }
-  const isMatchingRankOrValue = splitSwitch.checked
-    ? playersHands[currentHand][0].rank === playersHands[currentHand][1].rank
-    : playersHands[currentHand][0].pointValue === playersHands[currentHand][1].pointValue;
+  const isMatchingRankOrValue =
+    splitSwitch && splitSwitch.checked
+      ? playersHands[currentHand][0].rank === playersHands[currentHand][1].rank
+      : playersHands[currentHand][0].pointValue === playersHands[currentHand][1].pointValue;
+
   return splitCount < 3 && playersHands[currentHand].length === 2 && isMatchingRankOrValue && isWagerAllowed(currentWager[currentHand], playerPoints);
 };
 
