@@ -183,9 +183,11 @@ export default function App() {
     disableGameButtons();
     const newSplitCount = splitCount + 1;
     setSplitCount(newSplitCount);
-    setPreviousHand(currentHand);
-    let newPlayersHands = [...playersHands];
-    let newPlayerHandElements = [...playersHandElements];
+    const newPlayersHands = [...playersHands];
+    const newPlayerHandElements = [...playersHandElements];
+    const newCurrentWager = [...currentWager];
+    newCurrentWager[newSplitCount] = newCurrentWager[currentHand];
+
     newPlayersHands[newSplitCount].push(newPlayersHands[currentHand].pop());
     newPlayerHandElements[newSplitCount].push({ ...newPlayerHandElements[currentHand].pop(), key: "1" });
 
@@ -198,6 +200,8 @@ export default function App() {
     setPlayerTotal(newTotals);
     setPlayerHand(newPlayersHands);
     setPlayersHandElements(newPlayerHandElements);
+    setCurrentWager(newCurrentWager);
+    setPlayerPoints(playerPoints - newCurrentWager[newSplitCount]);
     document.getElementById(playerHandNames[newSplitCount]).toggleAttribute("hidden");
     await delay(750);
     await hit("player", "split", currentHand);
