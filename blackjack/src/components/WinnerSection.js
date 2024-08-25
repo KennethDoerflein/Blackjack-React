@@ -61,7 +61,7 @@ export default function WinnerSection({ playersHands, playerTotals, playerPoints
       observer.disconnect();
     };
     // eslint-disable-next-line
-  }, [dealerTotal, currentWager]);
+  }, [playersHands, playerTotals, playerPoints, dealerTotal, currentWager, setPlayerPoints, splitCount, setCurrentWager]);
 
   function createWinnerElement(outcome) {
     let winner = document.createElement("h6");
