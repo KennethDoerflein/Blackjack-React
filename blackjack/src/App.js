@@ -7,7 +7,7 @@ import GameControls from "./components/GameControls.js";
 import SettingsModal from "./components/SettingsModal.js";
 import InfoModal from "./components/InfoModal.js";
 import TopButtons from "./components/TopButtons.js";
-
+import WinnerSection from "./components/WinnerSection.js";
 import CardDeck from "./game_logic/CardDeck.js";
 
 import {
@@ -68,7 +68,6 @@ export default function App() {
       setDealersHandElements([]);
       toggleHiddenElement(document.getElementById("wagerDiv"));
       const resultsDiv = document.getElementById("resultsAlert");
-      document.getElementById("message").innerHTML = "";
       if (!resultsDiv.hidden) toggleHiddenElement(resultsDiv);
       for (let i = 1; i <= splitCount; i++) {
         toggleHiddenElement(document.getElementById(playerHandNames[i]));
@@ -120,7 +119,7 @@ export default function App() {
       updateGameButtons(newTotals[hand], newPlayersHands, hand, splitCount, currentWager, playerPoints);
       if (newTotals[hand] > 21) {
         hideGameButtons();
-        await delay(750);
+        await delay(500);
         await endHand();
       } else if (autoStandOn21(newTotals[hand]) && origin !== "doubleDown" && origin !== "split" && dealersHandElements.length > 2) {
         await delay(500);
@@ -142,7 +141,7 @@ export default function App() {
       hideGameButtons();
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
       let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
-      await delay(800);
+      await delay(500);
       flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
       await playDealer();
       document.getElementById("dealersHand").classList.remove("activeHand");
@@ -150,7 +149,7 @@ export default function App() {
 
       toggleDisabledElement(document.getElementById("soft17Switch"));
       toggleDisabledElement(document.getElementById("splitSwitch"));
-      displayWinner();
+      toggleHiddenElement(document.getElementById("resultsAlert"));
     } else if (currentHand !== splitCount) {
       advanceHand(currentHand + 1);
     }
@@ -206,7 +205,7 @@ export default function App() {
     setCurrentWager(newCurrentWager);
     setPlayerPoints(playerPoints - newCurrentWager[newSplitCount]);
     document.getElementById(playerHandNames[newSplitCount]).toggleAttribute("hidden");
-    await delay(750);
+    await delay(500);
     await hit("player", "split", currentHand);
     await hit("player", "split", newSplitCount);
 
@@ -228,71 +227,28 @@ export default function App() {
   // Play the dealer's hand according to the rules
   const playDealer = async () => {
     let newDealerTotal = dealerTotal;
+    await delay(550);
     while (shouldDealerHit(newDealerTotal, dealersHand)) {
-      await delay(550);
       await hit("dealer", "endGame");
       newDealerTotal = await calculateTotal(dealersHand);
       setDealerTotal(newDealerTotal);
     }
   };
 
-  // Display the outcome of the game and update player points
-  function displayWinner() {
-    let outcomes = [[], []];
-
-    for (let handIndex = 0; handIndex < playersHands.length; handIndex++) {
-      if (playersHands[handIndex].length === 0) continue;
-
-      let outcome = "";
-      let wagerMultiplier = 1;
-      if (playerTotals[handIndex] > 21) {
-        outcome = "Player Busted, Dealer Wins";
-        wagerMultiplier = 0;
-      } else if (dealerTotal > 21 || playerTotals[handIndex] > dealerTotal) {
-        if (playerTotals[handIndex] === 21 && playersHands[handIndex].length === 2) {
-          outcome = "Blackjack, Player Wins";
-        } else {
-          outcome = dealerTotal > 21 ? "Dealer Busted, Player Wins" : "Player Wins";
-        }
-        wagerMultiplier = playerTotals[handIndex] === 21 && playersHands[handIndex].length === 2 ? 2.2 : 2;
-      } else if (dealerTotal > playerTotals[handIndex]) {
-        outcome = "Dealer Wins";
-        wagerMultiplier = 0;
-      } else {
-        outcome = "Push (Tie)";
-      }
-
-      setPlayerPoints(playerPoints + Math.ceil(currentWager[handIndex] * wagerMultiplier));
-      outcomes[handIndex] = splitCount > 0 ? `Hand ${handIndex + 1}: ${outcome}` : outcome;
-
-      let winnerElement = createWinnerElement(outcomes[handIndex]);
-      document.getElementById("message").append(winnerElement);
-    }
-
-    setCurrentWager([0, 0, 0, 0]);
-    if (playerPoints === 0) {
-      let message = createWinnerElement("You are out of points, thank you for playing!");
-      message.classList.add("mt-2", "mb-5");
-      document.getElementById("bottomDiv").appendChild(message);
-    }
-    toggleHiddenElement(document.getElementById("resultsAlert"));
-  }
-
-  // Create and return a winner element with the outcome text
-  function createWinnerElement(outcome) {
-    let winner = document.createElement("h6");
-    winner.classList.add("my-1");
-    winner.textContent = outcome;
-    return winner;
-  }
-
   return (
     <>
       <TopButtons />
       <div id="main" className="container-fluid my-2">
-        <div hidden id="resultsAlert" className="alert alert-info alert-dismissible fade show w-75 mx-auto px-0" role="alert">
-          <div id="message" className="container text-center"></div>
-        </div>
+        <WinnerSection
+          playerPoints={playerPoints}
+          setPlayerPoints={setPlayerPoints}
+          currentWager={currentWager}
+          playersHands={playersHands}
+          splitCount={splitCount}
+          playerTotals={playerTotals}
+          dealerTotal={dealerTotal}
+          setCurrentWager={setCurrentWager}
+        />
         <DealerSection dealersHandElements={dealersHandElements} dealerTotal={dealerTotal} />
         <PlayerSection playersHandElements={playersHandElements} playerTotals={playerTotals} splitCount={splitCount} />
         <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
@@ -313,8 +269,9 @@ export default function App() {
             updateWager={updateWager}
             playerPoints={playerPoints}
             setPlayerPoints={setPlayerPoints}
-            currentHandWager={currentWager[currentHand]}
+            currentWager={currentWager}
             splitHand={splitHand}
+            currentHand={currentHand}
           />
         </div>
         <div id="disclaimer" className="container text-center mt-3">

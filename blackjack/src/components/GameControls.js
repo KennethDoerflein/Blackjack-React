@@ -1,11 +1,13 @@
 import React from "react";
 import { delay } from "../utils/utils";
 
-export default function GameControls({ hit, newGame, endHand, doubleDownAllowed, updateWager, playerPoints, setPlayerPoints, currentHandWager, splitHand }) {
+export default function GameControls({ hit, newGame, endHand, doubleDownAllowed, updateWager, playerPoints, setPlayerPoints, currentWager, splitHand, currentHand }) {
   async function doubleDown() {
     if (doubleDownAllowed) {
-      updateWager(currentHandWager * 2);
-      const pointsLeft = playerPoints - currentHandWager;
+      const newWagers = [...currentWager];
+      newWagers[currentHand] *= 2;
+      const pointsLeft = playerPoints - currentWager[currentHand];
+      updateWager(newWagers);
       setPlayerPoints(pointsLeft);
       await hit("player", "doubleDown");
       await delay(750);
