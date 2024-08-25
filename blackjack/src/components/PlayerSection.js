@@ -14,7 +14,7 @@ export default function PlayerSection({ playersHandElements, playerTotals, split
                   totalPerHand += ", ";
                 }
               }
-              return totalPerHand;
+              return `(${totalPerHand})`;
             })()
           : `(Total: ${playerTotals[0]})`}
       </h6>
