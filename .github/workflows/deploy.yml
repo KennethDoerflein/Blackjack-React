@@ -15,7 +15,6 @@ jobs:
 
       - name: Install dependencies and build
         run: |
-          cd blackjack
           npm install
           npm run build
         working-directory: blackjack
