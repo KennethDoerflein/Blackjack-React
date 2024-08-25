@@ -67,6 +67,8 @@ export default function App() {
       setPlayersHandElements([[], [], [], []]);
       setDealersHandElements([]);
       toggleHiddenElement(document.getElementById("wagerDiv"));
+      const resultsDiv = document.getElementById("resultsAlert");
+      if (!resultsDiv.hidden) toggleHiddenElement(resultsDiv);
       for (let i = 1; i <= splitCount; i++) {
         toggleHiddenElement(document.getElementById(playerHandNames[i]));
       }
@@ -147,6 +149,7 @@ export default function App() {
 
       toggleDisabledElement(document.getElementById("soft17Switch"));
       toggleDisabledElement(document.getElementById("splitSwitch"));
+      displayWinner();
     } else if (currentHand !== splitCount) {
       advanceHand(currentHand + 1);
     }
@@ -230,6 +233,56 @@ export default function App() {
       setDealerTotal(newDealerTotal);
     }
   };
+
+  // Display the outcome of the game and update player points
+  function displayWinner() {
+    let outcomes = [[], []];
+
+    for (let handIndex = 0; handIndex < playersHands.length; handIndex++) {
+      if (playersHands[handIndex].length === 0) continue;
+
+      let outcome = "";
+      let wagerMultiplier = 1;
+      if (playerTotals[handIndex] > 21) {
+        outcome = "Player Busted, Dealer Wins";
+        wagerMultiplier = 0;
+      } else if (dealerTotal > 21 || playerTotals[handIndex] > dealerTotal) {
+        if (playerTotals[handIndex] === 21 && playersHands[handIndex].length === 2) {
+          outcome = "Blackjack, Player Wins";
+        } else {
+          outcome = dealerTotal > 21 ? "Dealer Busted, Player Wins" : "Player Wins";
+        }
+        wagerMultiplier = playerTotals[handIndex] === 21 && playersHands[handIndex].length === 2 ? 2.2 : 2;
+      } else if (dealerTotal > playerTotals[handIndex]) {
+        outcome = "Dealer Wins";
+        wagerMultiplier = 0;
+      } else {
+        outcome = "Push (Tie)";
+      }
+
+      setPlayerPoints(playerPoints + Math.ceil(currentWager[handIndex] * wagerMultiplier));
+      outcomes[handIndex] = splitCount > 0 ? `Hand ${handIndex + 1}: ${outcome}` : outcome;
+
+      let winnerElement = createWinnerElement(outcomes[handIndex]);
+      document.getElementById("message").append(winnerElement);
+    }
+
+    setCurrentWager([0, 0, 0, 0]);
+    if (playerPoints === 0) {
+      let message = createWinnerElement("You are out of points, thank you for playing!");
+      message.classList.add("mt-2", "mb-5");
+      document.getElementById("bottomDiv").appendChild(message);
+    }
+    toggleHiddenElement(document.getElementById("resultsAlert"));
+  }
+
+  // Create and return a winner element with the outcome text
+  function createWinnerElement(outcome) {
+    let winner = document.createElement("h6");
+    winner.classList.add("my-1");
+    winner.textContent = outcome;
+    return winner;
+  }
 
   return (
     <>
