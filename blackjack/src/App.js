@@ -68,6 +68,7 @@ export default function App() {
       setDealersHandElements([]);
       toggleHiddenElement(document.getElementById("wagerDiv"));
       const resultsDiv = document.getElementById("resultsAlert");
+      document.getElementById("message").innerHTML = "";
       if (!resultsDiv.hidden) toggleHiddenElement(resultsDiv);
       for (let i = 1; i <= splitCount; i++) {
         toggleHiddenElement(document.getElementById(playerHandNames[i]));
