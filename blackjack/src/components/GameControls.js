@@ -1,4 +1,5 @@
 import React from "react";
+import { Button, ButtonGroup, Container } from "react-bootstrap";
 import { delay } from "../utils/utils";
 
 export default function GameControls({ hit, newGame, endHand, doubleDownAllowed, updateWager, playerPoints, setPlayerPoints, currentWager, splitHand, currentHand }) {
@@ -16,26 +17,26 @@ export default function GameControls({ hit, newGame, endHand, doubleDownAllowed,
   }
 
   return (
-    <>
-      <div id="gameActions" className="d-flex justify-content-center w-100 mt-2">
-        <button onClick={() => hit()} hidden id="hitBtn" type="button" className="btn-sm btn btn-warning mx-2">
+    <Container className="d-flex justify-content-center w-100 mt-2" id="gameActions">
+      <ButtonGroup>
+        <Button onClick={() => hit()} hidden id="hitBtn" variant="warning" size="sm" className="mx-2">
           Hit
-        </button>
-        <button onClick={() => splitHand()} hidden id="splitBtn" type="button" className="btn-sm btn btn-primary mx-2">
+        </Button>
+        <Button onClick={() => splitHand()} hidden id="splitBtn" variant="primary" size="sm" className="mx-2">
           Split
-        </button>
-        <button onClick={() => doubleDown()} hidden id="doubleDownBtn" type="button" className="btn-sm btn btn-light mx-2">
+        </Button>
+        <Button onClick={() => doubleDown()} hidden id="doubleDownBtn" variant="light" size="sm" className="mx-2">
           Double
           <br />
           Down
-        </button>
-        <button onClick={() => endHand()} hidden id="standBtn" type="button" className="btn-sm btn btn-danger mx-2">
+        </Button>
+        <Button onClick={() => endHand()} hidden id="standBtn" variant="danger" size="sm" className="mx-2">
           Stand
-        </button>
-        <button onClick={() => newGame()} hidden id="newGameBtn" type="button" className="btn-sm btn btn-success mx-auto my-1">
+        </Button>
+        <Button onClick={() => newGame()} hidden id="newGameBtn" variant="success" size="sm" className="mx-auto my-1">
           New Game
-        </button>
-      </div>
-    </>
+        </Button>
+      </ButtonGroup>
+    </Container>
   );
 }

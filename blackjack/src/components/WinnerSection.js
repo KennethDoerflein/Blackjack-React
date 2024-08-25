@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Alert, Container } from "react-bootstrap";
 
 export default function WinnerSection({ playersHands, playerTotals, playerPoints, dealerTotal, currentWager, setPlayerPoints, splitCount, setCurrentWager }) {
   useEffect(() => {
@@ -71,10 +72,8 @@ export default function WinnerSection({ playersHands, playerTotals, playerPoints
   }
 
   return (
-    <>
-      <div hidden id="resultsAlert" className="alert alert-info alert-dismissible fade show w-75 mx-auto px-0" role="alert">
-        <div id="message" className="container text-center"></div>
-      </div>
-    </>
+    <Alert hidden id="resultsAlert" variant="info" className="alert-dismissible fade show w-75 mx-auto px-0" role="alert">
+      <Container id="message" className="text-center"></Container>
+    </Alert>
   );
 }

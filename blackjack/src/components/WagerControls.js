@@ -1,4 +1,5 @@
 import React from "react";
+import { Button, Container, Image } from "react-bootstrap";
 import { toggleHiddenElement, toggleDisabledElement, animateElement } from "../utils/utils.js";
 
 export default function WagerControls({ currentWager, updateWager, currentHand, playerPoints, setPlayerPoints, initialDeal }) {
@@ -16,7 +17,7 @@ export default function WagerControls({ currentWager, updateWager, currentHand, 
     }
   };
 
-  const clearWager = (e) => {
+  const clearWager = () => {
     updateWager(0);
   };
 
@@ -36,32 +37,29 @@ export default function WagerControls({ currentWager, updateWager, currentHand, 
       toggleDisabledElement(document.getElementById("soft17Switch"));
       toggleDisabledElement(document.getElementById("splitSwitch"));
       await initialDeal(updatedPoints);
-      // clearDiv(messageDiv);
     } else {
       alert("The wager must be a number and greater than 0.");
     }
   };
 
   return (
-    <>
-      <div hidden id="wagerDiv" className="mt-2">
-        <img onClick={addChipValue} className="chip" src="./assets/1Chip.jpg" data-value="1" alt="1 point chip" />
-        <img onClick={addChipValue} className="chip" src="./assets/5Chip.jpg" data-value="5" alt="5 point chip" />
-        <img onClick={addChipValue} className="chip" src="./assets/10Chip.jpg" data-value="10" alt="10 point chip" />
-        <img onClick={addChipValue} className="chip" src="./assets/20Chip.jpg" data-value="20" alt="20 point chip" />
-        <img onClick={addChipValue} className="chip" src="./assets/50Chip.jpg" data-value="50" alt="50 point chip" />
-        <div>
-          <button onClick={clearWager} id="wagerRst" className="btn-sm btn btn-danger align-middle ms-2 my-3">
-            Reset Wager
-          </button>
-          <button onClick={placeWager} id="allInBtn" className="btn-sm btn btn-warning align-middle ms-2 my-3">
-            Max Wager
-          </button>
-          <button onClick={placeWager} id="wagerBtn" className="btn-sm btn btn-primary align-middle ms-2 my-3">
-            Place Wager
-          </button>
-        </div>
+    <Container hidden id="wagerDiv" className="mt-2">
+      <Image onClick={addChipValue} className="chip" src="./assets/1Chip.jpg" data-value="1" alt="1 point chip" />
+      <Image onClick={addChipValue} className="chip" src="./assets/5Chip.jpg" data-value="5" alt="5 point chip" />
+      <Image onClick={addChipValue} className="chip" src="./assets/10Chip.jpg" data-value="10" alt="10 point chip" />
+      <Image onClick={addChipValue} className="chip" src="./assets/20Chip.jpg" data-value="20" alt="20 point chip" />
+      <Image onClick={addChipValue} className="chip" src="./assets/50Chip.jpg" data-value="50" alt="50 point chip" />
+      <div>
+        <Button onClick={clearWager} id="wagerRst" variant="danger" size="sm" className="align-middle ms-2 my-3">
+          Reset Wager
+        </Button>
+        <Button onClick={placeWager} id="allInBtn" variant="warning" size="sm" className="align-middle ms-2 my-3">
+          Max Wager
+        </Button>
+        <Button onClick={placeWager} id="wagerBtn" variant="primary" size="sm" className="align-middle ms-2 my-3">
+          Place Wager
+        </Button>
       </div>
-    </>
+    </Container>
   );
 }
