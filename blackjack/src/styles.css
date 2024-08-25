@@ -21,6 +21,8 @@
   min-width: 22vh;
   background-color: rgb(9, 59, 9);
   overflow: hidden;
+
+  padding-left: 5vh;
 }
 
 #dealersHand img,
