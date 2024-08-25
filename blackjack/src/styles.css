@@ -16,7 +16,8 @@
   min-height: 18vh !important;
   height: 18vh !important;
   max-width: 85vw !important;
-  width: fit-content;
+  /* width: fit-content; */
+  /* min-width: 22vh; */
   min-width: 22vh;
   background-color: rgb(9, 59, 9);
   overflow: hidden;
@@ -25,15 +26,17 @@
 #dealersHand img,
 #playersHands > div img {
   max-height: 100% !important;
-  margin-right: 11px;
-  margin-left: 0px;
+  /* margin-right: 11px;
+  margin-left: 0px; */
+  margin-right: -4vh;
+  margin-left: -4vh;
   transform-style: preserve-3d;
 }
 
 #dealersHand img:last-child,
 #playersHands > div img:last-child {
   margin-right: 0px;
-  margin-left: 0px;
+  /* margin-left: 0px; */
 }
 
 #hitBtn {
