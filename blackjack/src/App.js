@@ -43,15 +43,6 @@ export default function App() {
   const [splitCount, setSplitCount] = useState(0);
   const playerHandNames = ["playersHand", "playersSecondHand", "playersThirdHand", "playersFourthHand"];
 
-  // Start the game and show the info modal
-  window.onload = async () => {
-    const infoModal = new Modal(document.getElementById("infoModal"), {
-      keyboard: false,
-    });
-    infoModal.show();
-    newGame();
-  };
-
   // Start a new game by shuffling the deck and resetting the UI
   const newGame = () => {
     if (playerPoints > 0) {
@@ -73,6 +64,15 @@ export default function App() {
         toggleHiddenElement(document.getElementById(playerHandNames[i]));
       }
     }
+  };
+
+  // Start the game and show the info modal
+  window.onload = () => {
+    const infoModal = new Modal(document.getElementById("infoModal"), {
+      keyboard: false,
+    });
+    infoModal.show();
+    newGame();
   };
 
   // Deal initial cards to player and dealer
