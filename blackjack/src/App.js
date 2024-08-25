@@ -40,7 +40,6 @@ export default function App() {
   const [playerTotals, setPlayerTotal] = useState([0, 0, 0, 0]);
   const [currentWager, setCurrentWager] = useState([0, 0, 0, 0]);
   const [currentHand, setCurrentHand] = useState(0);
-  const [previousHand, setPreviousHand] = useState(0);
   const [splitCount, setSplitCount] = useState(0);
   const playerHandNames = ["playersHand", "playersSecondHand", "playersThirdHand", "playersFourthHand"];
 
@@ -64,7 +63,6 @@ export default function App() {
       setPlayerTotal([0, 0, 0, 0]);
       setCurrentWager([0, 0, 0, 0]);
       setCurrentHand(0);
-      setPreviousHand(-1);
       setSplitCount(0);
       setPlayersHandElements([[], [], [], []]);
       setDealersHandElements([]);
