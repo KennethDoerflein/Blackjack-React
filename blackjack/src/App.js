@@ -286,7 +286,7 @@ export default function App() {
         show={showSettings}
         handleClose={handleCloseSettings}
       />
-      <InfoModal newGame={newGame} show={showInfo} handleClose={handleCloseInfo} />
+      <InfoModal newGame={newGame} show={showInfo} handleClose={handleCloseInfo} currentWager={currentWager} />
     </>
   );
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
 
-export default function InfoModal({ show, handleClose, newGame }) {
+export default function InfoModal({ show, handleClose, newGame, currentWager }) {
   return (
     <Modal show={show} onHide={handleClose} centered backdrop="static" keyboard={false}>
       <Modal.Header className="bg-primary text-white">
@@ -74,7 +74,7 @@ export default function InfoModal({ show, handleClose, newGame }) {
       <Modal.Footer className="bg-primary">
         <Button
           onClick={() => {
-            newGame();
+            if (document.getElementById("wagerDiv").hidden && currentWager[0] === 0) newGame();
             handleClose();
           }}
           variant="warning"
