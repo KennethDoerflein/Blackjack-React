@@ -74,8 +74,10 @@ export default function WinnerSection({ playersHands, playerTotals, playerPoints
   }
 
   return (
-    <Alert hidden id="resultsAlert" variant="info" className="alert-dismissible fade show w-75 mx-auto px-0" role="alert">
-      <Container id="message" className="text-center"></Container>
-    </Alert>
+    <Container>
+      <Alert hidden id="resultsAlert" variant="info" className="alert-dismissible fade show w-75 mx-auto px-0 py-1" role="alert">
+        <Container id="message" className="text-center"></Container>
+      </Alert>
+    </Container>
   );
 }
