@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Alert } from "react-bootstrap";
+import { Alert, Container } from "react-bootstrap";
 import DealerSection from "./components/DealerSection.js";
 import PlayerSection from "./components/PlayerSection.js";
 import PointSection from "./components/PointSection.js";
@@ -214,9 +214,11 @@ export default function App() {
   return (
     <>
       <TopButtons showInfoModal={handleShowInfo} showSettingsModal={handleShowSettings} />
-      <Alert className="w-75 text-center mx-auto my-2 p-2" variant="warning">
-        <strong>Alpha Version:</strong> This site is still under development and may contain bugs.
-      </Alert>
+      <Container>
+        <Alert className="w-75 text-center mx-auto my-1 p-1" variant="warning">
+          <strong>Alpha Version:</strong> This site is still under development and may contain bugs.
+        </Alert>
+      </Container>
       <div id="main" className="container-fluid my-2">
         <WinnerSection
           playerPoints={playerPoints}
