@@ -10,7 +10,7 @@ import TopButtons from "./components/TopButtons.js";
 import WinnerSection from "./components/WinnerSection.js";
 import CardDeck from "./game_logic/CardDeck.js";
 
-import { toggleHiddenElement, enableGameButtons, delay, disableGameButtons } from "./utils/utils.js";
+import { toggleHiddenElement, enableGameButtons, delay, disableGameButtons, hideGameButtons } from "./utils/utils.js";
 
 import { calculateTotal, addCard, flipCard, shouldDealerHit, autoStandOn21 } from "./game_logic/gameFunctions.js";
 
@@ -117,6 +117,7 @@ export default function App() {
   // End the current hand and proceed to the next hand or end the game
   const endHand = async (pointsLeft = playerPoints) => {
     if (currentHand === splitCount) {
+      hideGameButtons();
       document.getElementById(playerHandNames[currentHand]).classList.remove("activeHand");
       document.getElementById("dealersHand").classList.add("activeHand");
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
@@ -249,6 +250,7 @@ export default function App() {
             playersHands={playersHands}
             playerTotals={playerTotals}
             splitCount={splitCount}
+            dealersHandElements={dealersHandElements}
           />
         </div>
         <div id="disclaimer" className="container text-center mt-3">
