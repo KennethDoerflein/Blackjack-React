@@ -219,7 +219,7 @@ export default function App() {
           <strong>Alpha Version:</strong> This site is still under development and may contain bugs.
         </Alert>
       </Container>
-      <div id="main" className="container-fluid my-2">
+      <Container fluid className="my-2" id="main">
         <WinnerSection
           playerPoints={playerPoints}
           setPlayerPoints={setPlayerPoints}
@@ -233,7 +233,7 @@ export default function App() {
         <DealerSection dealersHandElements={dealersHandElements} dealerTotal={dealerTotal} />
         <PlayerSection playersHandElements={playersHandElements} playerTotals={playerTotals} splitCount={splitCount} />
         <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
-        <div id="bottomDiv" className="container text-center">
+        <Container className="text-center" id="bottomDiv">
           <WagerControls
             playerPoints={playerPoints}
             setPlayerPoints={setPlayerPoints}
@@ -258,13 +258,13 @@ export default function App() {
             splitCount={splitCount}
             dealersHandElements={dealersHandElements}
           />
-        </div>
-        <div id="disclaimer" className="container text-center mt-3">
+        </Container>
+        <Container className="text-center mt-3" id="disclaimer">
           <p className="small text-muted my-0 px-5">
             <strong>* Disclaimer:</strong> Points in this game have <strong>no monetary value</strong> and are for <strong>entertainment purposes only</strong>.
           </p>
-        </div>
-      </div>
+        </Container>
+      </Container>
 
       <SettingsModal
         playersHands={playersHands}
