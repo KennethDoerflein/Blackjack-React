@@ -83,7 +83,7 @@ export default function InfoModal({ show, handleClose, newGame, currentWager }) 
       <Modal.Footer className="bg-primary p-2">
         <Button
           onClick={() => {
-            if (document.getElementById("wagerDiv").hidden && currentWager[0] === 0) newGame();
+            if (document.getElementById("newGameBtn").hidden && currentWager[0] === 0) newGame();
             handleClose();
           }}
           variant="warning"
