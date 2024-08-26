@@ -1,8 +1,8 @@
 import React from "react";
 import { Button, Container, Image } from "react-bootstrap";
-import { toggleHiddenElement, animateElement } from "../utils/utils.js";
+import { animateElement } from "../utils/utils.js";
 
-export default function WagerControls({ currentWager, updateWager, currentHand, playerPoints, setPlayerPoints, initialDeal }) {
+export default function WagerControls({ currentWager, updateWager, currentHand, playerPoints, setPlayerPoints, initialDeal, playersHands }) {
   const addChipValue = (e) => {
     animateElement(e.target, "chipFlip", 700);
     animateElement(document.getElementById("wagerDisplay"), "highlight", 700);
@@ -33,7 +33,6 @@ export default function WagerControls({ currentWager, updateWager, currentHand, 
         updatedPoints = playerPoints - currentWager[currentHand];
       }
       setPlayerPoints(updatedPoints);
-      toggleHiddenElement(document.getElementById("wagerDiv"));
       await initialDeal(updatedPoints);
     } else {
       alert("The wager must be a number and greater than 0.");
@@ -41,7 +40,7 @@ export default function WagerControls({ currentWager, updateWager, currentHand, 
   };
 
   return (
-    <Container hidden id="wagerDiv" className="mt-2">
+    <Container hidden={playersHands[0].length !== 0} id="wagerDiv" className="mt-2">
       <Image onClick={addChipValue} className="chip" src="./assets/1Chip.jpg" data-value="1" alt="1 point chip" />
       <Image onClick={addChipValue} className="chip" src="./assets/5Chip.jpg" data-value="5" alt="5 point chip" />
       <Image onClick={addChipValue} className="chip" src="./assets/10Chip.jpg" data-value="10" alt="10 point chip" />

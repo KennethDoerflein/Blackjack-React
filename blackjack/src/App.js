@@ -10,20 +10,11 @@ import TopButtons from "./components/TopButtons.js";
 import WinnerSection from "./components/WinnerSection.js";
 import CardDeck from "./game_logic/CardDeck.js";
 
-import {
-  toggleHiddenElement,
-  enableGameButtons,
-  delay,
-  hideGameButtons,
-  updateGameButtons,
-  isDoubleDownAllowed,
-  disableGameButtons,
-} from "./utils/utils.js";
+import { toggleHiddenElement, enableGameButtons, delay, disableGameButtons } from "./utils/utils.js";
 
 import { calculateTotal, addCard, flipCard, shouldDealerHit, autoStandOn21 } from "./game_logic/gameFunctions.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min";
 import "./styles.css";
 
 export default function App() {
@@ -62,12 +53,8 @@ export default function App() {
       setSplitCount(0);
       setPlayersHandElements([[], [], [], []]);
       setDealersHandElements([]);
-      toggleHiddenElement(document.getElementById("wagerDiv"));
       const resultsDiv = document.getElementById("resultsAlert");
       if (!resultsDiv.hidden) toggleHiddenElement(resultsDiv);
-      for (let i = 1; i <= splitCount; i++) {
-        toggleHiddenElement(document.getElementById(playerHandNames[i]));
-      }
     }
   };
 
@@ -82,7 +69,7 @@ export default function App() {
     if (autoStandOn21(newTotal)) {
       await delay(500);
       await endHand();
-    } else updateGameButtons(playerTotals[currentHand], playersHands, currentHand, splitCount, currentWager, updatedPoints);
+    }
   };
 
   const updateWager = (value) => {
@@ -112,9 +99,7 @@ export default function App() {
     setDealerTotal(newDealerTotal);
     setPlayerHand(newPlayersHands);
     if (entity !== "dealer" && origin === "user") {
-      updateGameButtons(newTotals[hand], newPlayersHands, hand, splitCount, currentWager, playerPoints);
       if (newTotals[hand] > 21) {
-        hideGameButtons();
         await delay(500);
         await endHand();
       } else if (autoStandOn21(newTotals[hand]) && origin !== "doubleDown" && origin !== "split" && dealersHandElements.length > 2) {
@@ -134,14 +119,12 @@ export default function App() {
     if (currentHand === splitCount) {
       document.getElementById(playerHandNames[currentHand]).classList.remove("activeHand");
       document.getElementById("dealersHand").classList.add("activeHand");
-      hideGameButtons();
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
       let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
       await delay(500);
       flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
       await playDealer();
       document.getElementById("dealersHand").classList.remove("activeHand");
-      if (pointsLeft > 0) toggleHiddenElement(document.getElementById("newGameBtn"));
 
       toggleHiddenElement(document.getElementById("resultsAlert"));
     } else if (currentHand !== splitCount) {
@@ -152,7 +135,6 @@ export default function App() {
   // Advance to the next player hand if splits occurred
   function advanceHand(newHand) {
     if (currentHand < splitCount && splitCount > 0) {
-      updateGameButtons(playerTotals[newHand], playersHands, newHand, splitCount, currentWager, playerPoints);
       document.getElementById(playerHandNames[newHand]).classList.add("activeHand");
       document.getElementById(playerHandNames[currentHand]).classList.remove("activeHand");
       setCurrentHand(newHand);
@@ -198,7 +180,6 @@ export default function App() {
     setPlayersHandElements(newPlayerHandElements);
     setCurrentWager(newCurrentWager);
     setPlayerPoints(playerPoints - newCurrentWager[newSplitCount]);
-    document.getElementById(playerHandNames[newSplitCount]).toggleAttribute("hidden");
     await delay(500);
     await hit("player", "split", currentHand);
     await hit("player", "split", newSplitCount);
@@ -209,7 +190,6 @@ export default function App() {
     }
 
     setPlayerTotal(newTotals);
-    updateGameButtons(newTotals[currentHand], newPlayersHands, currentHand, newSplitCount, currentWager, playerPoints);
     if (autoStandOn21(newTotals[currentHand])) {
       await delay(500);
       endHand();
@@ -254,18 +234,21 @@ export default function App() {
             updateWager={updateWager}
             currentHand={currentHand}
             initialDeal={initialDeal}
+            playersHands={playersHands}
           />
           <GameControls
             hit={hit}
             newGame={newGame}
             endHand={endHand}
-            doubleDownAllowed={isDoubleDownAllowed(playersHands, currentHand, playerTotals[currentHand], currentWager, playerPoints)}
             updateWager={updateWager}
             playerPoints={playerPoints}
             setPlayerPoints={setPlayerPoints}
             currentWager={currentWager}
             splitHand={splitHand}
             currentHand={currentHand}
+            playersHands={playersHands}
+            playerTotals={playerTotals}
+            splitCount={splitCount}
           />
         </div>
         <div id="disclaimer" className="container text-center mt-3">

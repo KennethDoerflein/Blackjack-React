@@ -56,33 +56,6 @@ export async function preloadAndGetImage(src) {
   return src;
 }
 
-// Update game buttons based on current game state
-export function updateGameButtons(playerTotal, playersHands, currentHand, splitCount, currentWager, playerPoints) {
-  const canPlay = playerTotal <= 21;
-  const hitBtn = document.getElementById("hitBtn");
-  const standBtn = document.getElementById("standBtn");
-  const doubleDownBtn = document.getElementById("doubleDownBtn");
-
-  // Update button visibility
-  hitBtn.hidden = !canPlay;
-  standBtn.hidden = false;
-  checkSplitButton(playersHands, currentHand, splitCount, currentWager, playerPoints);
-
-  doubleDownBtn.hidden = !isDoubleDownAllowed(playersHands, currentHand, playerTotal, currentWager, playerPoints);
-}
-
-// Hide game buttons from view
-export function hideGameButtons() {
-  const hitBtn = document.getElementById("hitBtn");
-  const standBtn = document.getElementById("standBtn");
-  const splitBtn = document.getElementById("splitBtn");
-  const doubleDownBtn = document.getElementById("doubleDownBtn");
-  hitBtn.hidden = true;
-  standBtn.hidden = true;
-  splitBtn.hidden = true;
-  doubleDownBtn.hidden = true;
-}
-
 export function toggleDisabledGameButtons() {
   const hitBtn = document.getElementById("hitBtn");
   const standBtn = document.getElementById("standBtn");

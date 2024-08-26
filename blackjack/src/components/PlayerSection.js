@@ -23,13 +23,13 @@ export default function PlayerSection({ playersHandElements, playerTotals, split
       </Container>
       <span id="playersHands">
         <Container id="playersHand">{playersHandElements[0]}</Container>
-        <Container hidden id="playersSecondHand">
+        <Container hidden={playersHandElements[1].length === 0} id="playersSecondHand">
           {playersHandElements[1]}
         </Container>
-        <Container hidden id="playersThirdHand">
+        <Container hidden={playersHandElements[2].length === 0} id="playersThirdHand">
           {playersHandElements[2]}
         </Container>
-        <Container hidden id="playersFourthHand">
+        <Container hidden={playersHandElements[3].length === 0} id="playersFourthHand">
           {playersHandElements[3]}
         </Container>
       </span>
