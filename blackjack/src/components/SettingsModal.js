@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import appInfo from "../../package.json";
+import { Modal, Button, Form, Container } from "react-bootstrap";
 import { disableGameButtons } from "../utils/utils.js";
 
 export default function SettingsModal({
@@ -78,6 +79,7 @@ export default function SettingsModal({
           Close
         </Button>
       </Modal.Footer>
+      <Container className="text-center pb-2">App Version: {appInfo.version}</Container>
     </Modal>
   );
 }

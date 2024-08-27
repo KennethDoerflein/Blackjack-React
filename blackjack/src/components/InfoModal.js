@@ -1,12 +1,16 @@
 import React from "react";
-import { Modal, Button } from "react-bootstrap";
+import appInfo from "../../package.json";
+import { Modal, Button, Container } from "react-bootstrap";
 
 export default function InfoModal({ show, handleClose, newGame, currentWager }) {
   return (
     <Modal show={show} onHide={handleClose} centered backdrop="static" keyboard={false}>
       <Modal.Header className="bg-primary text-white p-2">
-        <Modal.Title className="mx-auto fw-bold" style={{ fontSize: "1rem" }}>
-          Game Info
+        <Modal.Title className="mx-auto fw-bold" style={{ fontSize: "1.2rem" }}>
+          <Container className="text-center">Game Info</Container>
+          <Container className="text-center" style={{ fontSize: "0.7rem" }}>
+            App Version: {appInfo.version}
+          </Container>
         </Modal.Title>
       </Modal.Header>
 
