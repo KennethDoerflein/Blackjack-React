@@ -15,6 +15,7 @@ export default function GameControls({
   playersHands,
   playerTotals,
   splitCount,
+  splitTypeChecked,
 }) {
   async function doubleDown() {
     if (isDoubleDownAllowed(playersHands, currentHand, playerTotals[currentHand], currentWager, playerPoints)) {
@@ -44,7 +45,7 @@ export default function GameControls({
         <Button
           onClick={() => splitHand()}
           hidden={
-            !isSplitAllowed(playersHands, currentHand, splitCount, currentWager, playerPoints) ||
+            !isSplitAllowed(playersHands, currentHand, splitCount, currentWager, playerPoints, splitTypeChecked) ||
             playersHands[currentHand].length < 2 ||
             !document.getElementById("resultsAlert").hidden
           }

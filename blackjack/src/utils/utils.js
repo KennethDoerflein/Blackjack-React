@@ -103,26 +103,14 @@ export function hideGameButtons() {
   doubleDownBtn.hidden = true;
 }
 
-// Check if the split button should be shown based on split switch (point value or rank)
-export function checkSplitButton(playersHand, currentHand, splitCount, currentWager, playerPoints) {
-  const hitBtn = document.getElementById("hitBtn");
-  const splitBtn = document.getElementById("splitBtn");
-  if (hitBtn && splitBtn) {
-    const isSplitAllowedResult = isSplitAllowed(playersHand, currentHand, splitCount, currentWager, playerPoints);
-    splitBtn.hidden = !hitBtn.hidden && isSplitAllowedResult ? false : true;
-  }
-}
-
 // Check if splitting is allowed based on current hand and rules
-export const isSplitAllowed = (playersHands, currentHand, splitCount, currentWager, playerPoints) => {
-  const splitSwitch = document.getElementById("splitSwitch");
+export const isSplitAllowed = (playersHands, currentHand, splitCount, currentWager, playerPoints, splitTypeChecked) => {
   if (!playersHands[currentHand] || playersHands[currentHand].length < 2) {
     return false;
   }
-  const isMatchingRankOrValue =
-    splitSwitch && splitSwitch.checked
-      ? playersHands[currentHand][0].rank === playersHands[currentHand][1].rank
-      : playersHands[currentHand][0].pointValue === playersHands[currentHand][1].pointValue;
+  const isMatchingRankOrValue = splitTypeChecked
+    ? playersHands[currentHand][0].rank === playersHands[currentHand][1].rank
+    : playersHands[currentHand][0].pointValue === playersHands[currentHand][1].pointValue;
 
   return splitCount < 3 && playersHands[currentHand].length === 2 && isMatchingRankOrValue && isWagerAllowed(currentWager[currentHand], playerPoints);
 };

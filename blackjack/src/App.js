@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import appInfo from "../package.json";
 import { Alert, Container } from "react-bootstrap";
 import DealerSection from "./components/DealerSection.js";
@@ -14,7 +14,7 @@ import CardDeck from "./game_logic/CardDeck.js";
 
 import { toggleHiddenElement, enableGameButtons, delay, disableGameButtons, hideGameButtons } from "./utils/utils.js";
 
-import { calculateTotal, addCard, flipCard, shouldDealerHit, autoStandOn21 } from "./game_logic/gameFunctions.js";
+import { calculateTotal, addCard, flipCard, shouldDealerHit } from "./game_logic/gameFunctions.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
@@ -28,6 +28,8 @@ export default function App() {
   const handleCloseSettings = () => setShowSettings(false);
 
   const [soft17Checked, setSoft17Checked] = useState(true);
+  const [autoStandChecked, setAutoStandChecked] = useState(false);
+  const [splitTypeChecked, setSplitTypeChecked] = useState(false);
 
   document.documentElement.setAttribute("data-bs-theme", "dark");
   const [deck] = useState(new CardDeck());
@@ -63,16 +65,14 @@ export default function App() {
   };
 
   // Deal initial cards to player and dealer
-  const initialDeal = async (updatedPoints) => {
+  const initialDeal = async () => {
     await hit("player", "init");
     await hit("dealer", "init");
     const newTotal = await hit("player", "init");
     await hit("dealer", "init");
-    document.getElementById("playersHand").classList.add("activeHand");
-    enableGameButtons();
-    if (autoStandOn21(newTotal)) {
-      await delay(500);
-      await endHand();
+    if (newTotal !== 21 || !autoStandChecked) {
+      document.getElementById("playersHand").classList.add("activeHand");
+      enableGameButtons();
     }
   };
 
@@ -106,9 +106,6 @@ export default function App() {
       if (newTotals[hand] > 21) {
         await delay(500);
         await endHand();
-      } else if (autoStandOn21(newTotals[hand]) && origin !== "doubleDown" && origin !== "split" && dealersHandElements.length > 2) {
-        await delay(500);
-        await endHand();
       }
       enableGameButtons();
     }
@@ -119,7 +116,7 @@ export default function App() {
   };
 
   // End the current hand and proceed to the next hand or end the game
-  const endHand = async (pointsLeft = playerPoints) => {
+  const endHand = async () => {
     if (currentHand === splitCount) {
       hideGameButtons();
       document.getElementById(playerHandNames[currentHand]).classList.remove("activeHand");
@@ -143,23 +140,11 @@ export default function App() {
       document.getElementById(playerHandNames[newHand]).classList.add("activeHand");
       document.getElementById(playerHandNames[currentHand]).classList.remove("activeHand");
       setCurrentHand(newHand);
-      if (!autoStandOn21(playerTotals[newHand])) {
+      if (playerTotals[newHand] !== 21 || !autoStandChecked) {
         enableGameButtons();
       }
     }
   }
-
-  // Use useEffect to watch for changes in currentHand with a delay
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (autoStandOn21(playerTotals[currentHand])) {
-        endHand();
-      }
-    }, 1000); // Adjust the delay time as needed
-
-    return () => clearTimeout(timer); // Cleanup the timer on component unmount
-    // eslint-disable-next-line
-  }, [currentHand]);
 
   // Split the player's hand into two separate hands
   const splitHand = async () => {
@@ -193,14 +178,8 @@ export default function App() {
     for (let i = 0; i < newPlayersHands.length; i++) {
       newTotals[i] = await calculateTotal(newPlayersHands[i]);
     }
-
     setPlayerTotal(newTotals);
-    if (autoStandOn21(newTotals[currentHand])) {
-      await delay(500);
-      endHand();
-    } else {
-      enableGameButtons();
-    }
+    enableGameButtons();
   };
 
   // Play the dealer's hand according to the rules
@@ -260,6 +239,7 @@ export default function App() {
             playerTotals={playerTotals}
             splitCount={splitCount}
             dealersHandElements={dealersHandElements}
+            splitTypeChecked={splitTypeChecked}
           />
         </Container>
         <Container className="text-center mt-3" id="disclaimer">
@@ -269,7 +249,21 @@ export default function App() {
         </Container>
       </Container>
 
-      <SettingsModal currentWager={currentWager} show={showSettings} handleClose={handleCloseSettings} soft17Checked={soft17Checked} setSoft17Checked={setSoft17Checked} />
+      <SettingsModal
+        currentWager={currentWager}
+        show={showSettings}
+        handleClose={handleCloseSettings}
+        soft17Checked={soft17Checked}
+        setSoft17Checked={setSoft17Checked}
+        autoStandChecked={autoStandChecked}
+        setAutoStandChecked={setAutoStandChecked}
+        splitTypeChecked={splitTypeChecked}
+        setSplitTypeChecked={setSplitTypeChecked}
+        endHand={endHand}
+        playerTotals={playerTotals}
+        currentHand={currentHand}
+        dealersHandElements={dealersHandElements}
+      />
       <InfoModal newGame={newGame} show={showInfo} handleClose={handleCloseInfo} currentWager={currentWager} />
     </>
   );

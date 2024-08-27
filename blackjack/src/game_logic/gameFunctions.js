@@ -97,9 +97,3 @@ function calculateTotalWithoutAces(cards) {
 function countAces(cards) {
   return cards.filter((card) => card.rank === "ace").length;
 }
-
-// Return true if player’s total is 21 and auto stand is on
-export function autoStandOn21(currentHandTotal) {
-  const standSwitch = document.getElementById("standSwitch");
-  return currentHandTotal === 21 && standSwitch && standSwitch.checked;
-}
