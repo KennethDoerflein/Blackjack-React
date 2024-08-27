@@ -240,6 +240,7 @@ export default function App() {
             splitCount={splitCount}
             dealersHandElements={dealersHandElements}
             splitTypeChecked={splitTypeChecked}
+            autoStandChecked={autoStandChecked}
           />
         </Container>
         <Container className="text-center mt-3" id="disclaimer">

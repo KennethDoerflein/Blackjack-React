@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, ButtonGroup, Container } from "react-bootstrap";
-import { delay, isSplitAllowed, isDoubleDownAllowed } from "../utils/utils";
+import { isSplitAllowed, isDoubleDownAllowed } from "../utils/utils";
 
 export default function GameControls({
   hit,
@@ -16,6 +16,7 @@ export default function GameControls({
   playerTotals,
   splitCount,
   splitTypeChecked,
+  autoStandChecked,
 }) {
   async function doubleDown() {
     if (isDoubleDownAllowed(playersHands, currentHand, playerTotals[currentHand], currentWager, playerPoints)) {
@@ -24,9 +25,10 @@ export default function GameControls({
       newWagers[currentHand] *= 2;
       updateWager(newWagers);
       setPlayerPoints(pointsLeft);
-      await hit("player", "doubleDown");
-      await delay(750);
-      endHand(pointsLeft);
+      const newTotal = await hit("player", "doubleDown");
+      if (!autoStandChecked || newTotal !== 21) {
+        endHand();
+      }
     }
   }
 
