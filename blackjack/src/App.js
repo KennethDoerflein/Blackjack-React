@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import appInfo from "../package.json";
 import { Alert, Container } from "react-bootstrap";
 import DealerSection from "./components/DealerSection.js";
 import PlayerSection from "./components/PlayerSection.js";
@@ -216,7 +217,7 @@ export default function App() {
       <TopButtons showInfoModal={handleShowInfo} showSettingsModal={handleShowSettings} />
       <Container>
         <Alert className="w-75 text-center mx-auto my-1 p-1" variant="warning">
-          <strong>Alpha Version:</strong> This site is still under development and may contain bugs.
+          <strong>Alpha V{appInfo.version}:</strong> This site is still under development and may contain bugs.
         </Alert>
       </Container>
       <Container fluid className="my-2" id="main">
