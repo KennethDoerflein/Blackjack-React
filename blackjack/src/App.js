@@ -28,7 +28,7 @@ export default function App() {
   const handleCloseSettings = () => setShowSettings(false);
 
   document.documentElement.setAttribute("data-bs-theme", "dark");
-  const [deck, setDeck] = useState(new CardDeck());
+  const [deck] = useState(new CardDeck());
   const [playersHands, setPlayerHand] = useState([[], [], [], []]);
   const [playersHandElements, setPlayersHandElements] = useState([[], [], [], []]);
   const [dealersHand, setDealersHand] = useState([]);
