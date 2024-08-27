@@ -18,7 +18,7 @@ export default function PlayerSection({ playersHandElements, playerTotals, split
                 }
                 return `(${totalPerHand})`;
               })()
-            : `(Total: ${playerTotals[0]})`}
+            : playerTotals[0] > 0 && `(Total: ${playerTotals[0]})`}
         </h6>
       </Container>
       <span id="playersHands">
