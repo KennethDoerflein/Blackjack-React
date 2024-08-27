@@ -45,7 +45,7 @@ export default function App() {
   const newGame = () => {
     if (playerPoints > 0) {
       document.getElementById("newGameBtn").hidden = true;
-      setDeck(new CardDeck());
+      deck.reshuffle();
       setPlayerHand([[], [], [], []]);
       setDealersHand([]);
       setDealerTotal(0);
