@@ -27,6 +27,8 @@ export default function App() {
   const handleShowSettings = () => setShowSettings(true);
   const handleCloseSettings = () => setShowSettings(false);
 
+  const [soft17Checked, setSoft17Checked] = useState(true);
+
   document.documentElement.setAttribute("data-bs-theme", "dark");
   const [deck] = useState(new CardDeck());
   const [playersHands, setPlayerHand] = useState([[], [], [], []]);
@@ -205,7 +207,7 @@ export default function App() {
   const playDealer = async () => {
     let newDealerTotal = dealerTotal;
     await delay(550);
-    while (shouldDealerHit(newDealerTotal, dealersHand)) {
+    while (shouldDealerHit(newDealerTotal, dealersHand, soft17Checked)) {
       await hit("dealer", "endGame");
       newDealerTotal = await calculateTotal(dealersHand);
       setDealerTotal(newDealerTotal);
@@ -267,17 +269,7 @@ export default function App() {
         </Container>
       </Container>
 
-      <SettingsModal
-        playersHands={playersHands}
-        currentHand={currentHand}
-        splitCount={splitCount}
-        currentWager={currentWager}
-        playerPoints={playerPoints}
-        endHand={endHand}
-        playerTotals={playerTotals}
-        show={showSettings}
-        handleClose={handleCloseSettings}
-      />
+      <SettingsModal currentWager={currentWager} show={showSettings} handleClose={handleCloseSettings} soft17Checked={soft17Checked} setSoft17Checked={setSoft17Checked} />
       <InfoModal newGame={newGame} show={showInfo} handleClose={handleCloseInfo} currentWager={currentWager} />
     </>
   );
