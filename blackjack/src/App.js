@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import appInfo from "../package.json";
 import { Alert, Container } from "react-bootstrap";
 import DealerSection from "./components/DealerSection.js";
@@ -14,7 +14,7 @@ import CardDeck from "./game_logic/CardDeck.js";
 
 import { toggleHiddenElement, enableGameButtons, delay, disableGameButtons, hideGameButtons } from "./utils/utils.js";
 
-import { calculateTotal, addCard, flipCard, shouldDealerHit } from "./game_logic/gameFunctions.js";
+import { calculateTotal, addCard, flipCard, shouldDealerHit, adjustCardMargins } from "./game_logic/gameFunctions.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
@@ -192,6 +192,25 @@ export default function App() {
       setDealerTotal(newDealerTotal);
     }
   };
+  useEffect(() => {
+    const handleResize = () => {
+      requestAnimationFrame(() => {
+        if (playersHandElements[0].length > 2) {
+          playersHandElements.forEach((hand, i) => {
+            if (hand.length > 0) {
+              adjustCardMargins(document.getElementById(playerHandNames[i]), true);
+            }
+          });
+        }
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+    // eslint-disable-next-line
+  }, [playersHandElements, dealersHandElements]);
 
   return (
     <>
