@@ -1,7 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Container } from "react-bootstrap";
+import { adjustCardMargins } from "../game_logic/gameFunctions.js";
 
-export default function PlayerSection({ playersHandElements, playerTotals, splitCount }) {
+export default function PlayerSection({ playersHandElements, playerTotals, splitCount, playerHandNames }) {
+  useEffect(() => {
+    const adjustMargins = () => {
+      if (playersHandElements[0].length > 2) {
+        playersHandElements.forEach((hand, i) => {
+          if (hand.length > 0) {
+            adjustCardMargins(document.getElementById(playerHandNames[i]));
+          }
+        });
+      }
+    };
+    requestAnimationFrame(adjustMargins);
+  }, [playersHandElements, playerHandNames]);
+
   return (
     <>
       <Container className="text-center my-3">
@@ -22,14 +36,16 @@ export default function PlayerSection({ playersHandElements, playerTotals, split
         </h6>
       </Container>
       <span id="playersHands">
-        <Container id="playersHand">{playersHandElements[0]}</Container>
-        <Container hidden={playersHandElements[1].length === 0} id="playersSecondHand">
+        <Container fluid id="playersHand">
+          {playersHandElements[0]}
+        </Container>
+        <Container fluid hidden={playersHandElements[1].length === 0} id="playersSecondHand">
           {playersHandElements[1]}
         </Container>
-        <Container hidden={playersHandElements[2].length === 0} id="playersThirdHand">
+        <Container fluid hidden={playersHandElements[2].length === 0} id="playersThirdHand">
           {playersHandElements[2]}
         </Container>
-        <Container hidden={playersHandElements[3].length === 0} id="playersFourthHand">
+        <Container fluid hidden={playersHandElements[3].length === 0} id="playersFourthHand">
           {playersHandElements[3]}
         </Container>
       </span>

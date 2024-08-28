@@ -23,7 +23,10 @@ export const addCard = async (cards, div, entity, origin, deck, setHandElements,
   const imgElement = await createCardImage("./assets/cards-1.3/back.png");
   let reactImgElement = createReactImageElement(cards.length, imgElement.src, card.image, "imgSlide");
 
-  updateHandElements(setHandElements, entity, currentHand, reactImgElement);
+  requestAnimationFrame(() => {
+    updateHandElements(setHandElements, entity, currentHand, reactImgElement);
+  });
+
   await delay(300);
 
   if (shouldFlipCard(entity, cards)) {
@@ -52,7 +55,16 @@ export const flipCard = async (reactImgElement, card, setHandElements, entity, c
   const newSrc = await preloadAndGetImage(finalImgPath);
   const flippedReactImgElement = createReactImageElement(reactImgElement.key, newSrc, card.image, "imgFlip");
 
-  updateFlippedHandElements(setHandElements, entity, currentHand, flippedReactImgElement);
+  requestAnimationFrame(() => {
+    updateFlippedHandElements(setHandElements, entity, currentHand, flippedReactImgElement);
+  });
+
+  const normalReactImgElement = createReactImageElement(reactImgElement.key, newSrc, card.image, "");
+  await delay(300);
+
+  requestAnimationFrame(() => {
+    updateFlippedHandElements(setHandElements, entity, currentHand, normalReactImgElement);
+  });
 };
 
 const updateFlippedHandElements = (setHandElements, entity, currentHand, flippedReactImgElement) => {
@@ -96,4 +108,51 @@ function calculateTotalWithoutAces(cards) {
 // Count the number of Aces in a hand
 function countAces(cards) {
   return cards.filter((card) => card.rank === "ace").length;
+}
+
+// Calculate and adjust card margins to avoid overflow
+export async function adjustCardMargins(div, resize = false) {
+  const images = div.querySelectorAll("img");
+  if (images[images.length - 1].className !== "imgSlide" && !resize) return;
+  await Promise.all(
+    Array.from(images).map((img) => {
+      return new Promise((resolve) => {
+        if (img.complete) resolve();
+        else img.onload = resolve;
+      });
+    })
+  );
+
+  const viewportWidth = getViewportWidth();
+  const cardCount = images.length;
+  let allWidth = 0;
+
+  images.forEach((img, index) => {
+    const computedStyle = window.getComputedStyle(img);
+    const marginLeft = parseFloat(computedStyle.marginLeft) || 0;
+    const marginRight = parseFloat(computedStyle.marginRight) || 0;
+    allWidth += marginLeft + marginRight + img.offsetWidth;
+    if (index === cardCount - 3) {
+      allWidth += marginLeft + marginRight + img.offsetWidth || 0;
+    }
+  });
+
+  const imgWidthPx = images[1].offsetWidth;
+  const overlapFactor = window.innerHeight > window.innerWidth ? 0.9 : 0.75;
+  const maxImageOffsetPx = -imgWidthPx * overlapFactor;
+  let marginLeftPx = -(allWidth - viewportWidth) / (cardCount - 1);
+  marginLeftPx += parseFloat(window.getComputedStyle(images[1]).marginLeft) || 0;
+  marginLeftPx = marginLeftPx > 0 ? 0 : marginLeftPx;
+
+  const finalMarginPx = Math.max(marginLeftPx, maxImageOffsetPx);
+
+  images.forEach((img, index) => {
+    if (index !== 0) {
+      img.style.marginLeft = `${finalMarginPx}px`;
+    }
+  });
+}
+
+function getViewportWidth() {
+  return window.innerWidth < 1000 ? window.innerWidth : window.innerWidth * 0.5;
 }

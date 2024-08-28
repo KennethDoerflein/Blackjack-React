@@ -213,7 +213,7 @@ export default function App() {
           setCurrentWager={setCurrentWager}
         />
         <DealerSection dealersHandElements={dealersHandElements} dealerTotal={dealerTotal} />
-        <PlayerSection playersHandElements={playersHandElements} playerTotals={playerTotals} splitCount={splitCount} />
+        <PlayerSection playersHandElements={playersHandElements} playerTotals={playerTotals} splitCount={splitCount} playerHandNames={playerHandNames} />
         <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
         <Container className="text-center" id="bottomDiv">
           <WagerControls
