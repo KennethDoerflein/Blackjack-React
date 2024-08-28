@@ -109,7 +109,7 @@ export default function App() {
       }
       enableGameButtons();
     }
-    await delay(725);
+    await delay(600);
     if (entity !== "dealer") {
       return newTotals[hand];
     }

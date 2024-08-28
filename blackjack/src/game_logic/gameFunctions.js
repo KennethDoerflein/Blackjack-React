@@ -20,6 +20,10 @@ export const addCard = async (cards, div, entity, origin, deck, setHandElements,
   const card = deck.getCard();
   cards.push(card);
 
+  // Add a conditional delay for the first card to ensure uniformity
+  const isFirstCard = cards.length === 1;
+  const delayTime = isFirstCard ? 100 : 0;
+
   const imgElement = await createCardImage("./assets/cards-1.3/back.png");
   let reactImgElement = createReactImageElement(cards.length, imgElement.src, card.image, "imgSlide");
 
@@ -27,7 +31,7 @@ export const addCard = async (cards, div, entity, origin, deck, setHandElements,
     updateHandElements(setHandElements, entity, currentHand, reactImgElement);
   });
 
-  await delay(300);
+  await delay(300 + delayTime);
 
   if (shouldFlipCard(entity, cards)) {
     await flipCard(reactImgElement, card, setHandElements, entity, currentHand);
