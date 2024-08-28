@@ -5,7 +5,7 @@ import { animateElement } from "../utils/utils.js";
 export default function WagerControls({ currentWager, updateWager, currentHand, playerPoints, setPlayerPoints, initialDeal, playersHands }) {
   const addChipValue = (e) => {
     animateElement(e.target, "chipFlip", 700);
-    animateElement(document.getElementById("wagerDisplay"), "highlight", 700);
+    animateElement(document.getElementById("wagerDisplay"), "highlight", 500);
 
     const chipValue = parseInt(e.target.getAttribute("data-value"), 10);
     const newWager = currentWager[currentHand] + chipValue;

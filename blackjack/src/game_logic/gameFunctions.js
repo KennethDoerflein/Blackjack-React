@@ -60,7 +60,7 @@ export const flipCard = async (reactImgElement, card, setHandElements, entity, c
   });
 
   const normalReactImgElement = createReactImageElement(reactImgElement.key, newSrc, card.image, "");
-  await delay(300);
+  await delay(500);
 
   requestAnimationFrame(() => {
     updateFlippedHandElements(setHandElements, entity, currentHand, normalReactImgElement);
