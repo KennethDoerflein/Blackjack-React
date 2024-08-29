@@ -206,8 +206,10 @@ export default function App() {
               document.getElementById(playerHandNames[i]).classList.remove("viewportResize");
             }
           });
+        }
+        if (dealersHandElements.length > 2) {
           document.getElementById("dealersHand").classList.add("viewportResize");
-          adjustCardMargins(document.getElementById("dealersHand"));
+          adjustCardMargins(document.getElementById("dealersHand"), true);
           await delay(300);
           document.getElementById("dealersHand").classList.remove("viewportResize");
         }
@@ -227,7 +229,7 @@ export default function App() {
       <TopButtons showInfoModal={handleShowInfo} showSettingsModal={handleShowSettings} />
       <Container>
         <Alert className="w-75 text-center mx-auto my-1 p-1" variant="warning">
-          <strong>Alpha V{appInfo.version}:</strong> This site is still under development and may contain bugs.
+          <strong>V{appInfo.version}:</strong> This site is still under development and may contain bugs.
         </Alert>
       </Container>
       <Container fluid className="my-2" id="main">
