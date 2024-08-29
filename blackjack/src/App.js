@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import _ from "lodash";
 import appInfo from "../package.json";
 import { Alert, Container } from "react-bootstrap";
 import DealerSection from "./components/DealerSection.js";
@@ -194,7 +195,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    const handleResize = () => {
+    const handleViewportChange = _.throttle(() => {
       requestAnimationFrame(() => {
         if (playersHandElements[0].length > 2) {
           playersHandElements.forEach((hand, i) => {
@@ -205,30 +206,11 @@ export default function App() {
           adjustCardMargins(document.getElementById("dealersHand"));
         }
       });
-    };
+    }, 300); // Throttle by 300ms
 
-    const handleViewportChange = () => {
-      requestAnimationFrame(() => {
-        if (playersHandElements[0].length > 2) {
-          playersHandElements.forEach((hand, i) => {
-            if (hand.length > 0) {
-              adjustCardMargins(document.getElementById(playerHandNames[i]), true);
-            }
-          });
-          adjustCardMargins(document.getElementById("dealersHand"));
-        }
-      });
-    };
-
-    // Initial adjustment on mount
-    handleResize();
-
-    // Add listeners for resize, orientation change, and viewport change
-    window.addEventListener("resize", handleResize);
     window.visualViewport?.addEventListener("resize", handleViewportChange);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
       window.visualViewport?.removeEventListener("resize", handleViewportChange);
     };
     // eslint-disable-next-line
