@@ -170,6 +170,6 @@
   animation: highlight 0.5s linear;
 }
 
-.viewportResize {
-  transition: margin-left 0.03s ease-in-out;
+.viewportResize img {
+  transition: margin-left 0.3s ease-in-out;
 }

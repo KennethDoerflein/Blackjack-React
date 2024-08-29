@@ -196,14 +196,20 @@ export default function App() {
 
   useEffect(() => {
     const handleViewportChange = _.throttle(() => {
-      requestAnimationFrame(() => {
+      requestAnimationFrame(async () => {
         if (playersHandElements[0].length > 2) {
-          playersHandElements.forEach((hand, i) => {
+          playersHandElements.forEach(async (hand, i) => {
             if (hand.length > 0) {
+              document.getElementById(playerHandNames[i]).classList.add("viewportResize");
               adjustCardMargins(document.getElementById(playerHandNames[i]), true);
+              await delay(300);
+              document.getElementById(playerHandNames[i]).classList.remove("viewportResize");
             }
           });
+          document.getElementById("dealersHand").classList.add("viewportResize");
           adjustCardMargins(document.getElementById("dealersHand"));
+          await delay(300);
+          document.getElementById("dealersHand").classList.remove("viewportResize");
         }
       });
     }, 300); // Throttle by 300ms
