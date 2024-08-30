@@ -46,6 +46,12 @@ class CardDeck {
   }
 
   shuffle() {
+    this.durstenfeldShuffle();
+    this.overhandShuffle();
+    this.riffleShuffle();
+  }
+
+  durstenfeldShuffle() {
     const array = this.cards;
     const n = array.length;
 
@@ -53,8 +59,6 @@ class CardDeck {
       const j = this.getRandomInt(0, i);
       [array[i], array[j]] = [array[j], array[i]];
     }
-    this.overhandShuffle();
-    this.riffleShuffle();
   }
 
   overhandShuffle() {
