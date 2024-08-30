@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Container, Image } from "react-bootstrap";
-import { animateElement } from "../utils/utils.js";
+import { animateElement } from "../utils/uiUtils.js";
 
 export default function WagerControls({ currentWager, updateWager, currentHand, playerPoints, setPlayerPoints, initialDeal, playersHands }) {
   const addChipValue = (e) => {

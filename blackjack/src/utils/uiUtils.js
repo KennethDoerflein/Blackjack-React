@@ -1,20 +1,4 @@
-import { preloadAndGetImage, shouldFlipCard, createCardImage, delay } from "../utils/utils.js";
-
-export const calculateTotal = async (cards) => {
-  let total = 0;
-  let aces = 0;
-  for (let i = 0; i < cards.length; i++) {
-    total += cards[i].pointValue;
-    if (cards[i].rank === "ace") {
-      aces++;
-    }
-  }
-  while (total > 21 && aces > 0) {
-    total -= 10;
-    aces--;
-  }
-  return total;
-};
+import { delay } from "./utils";
 
 export const addCard = async (cards, div, entity, origin, deck, setHandElements, currentHand) => {
   const card = deck.getCard();
@@ -83,35 +67,45 @@ const updateFlippedHandElements = (setHandElements, entity, currentHand, flipped
   });
 };
 
-// Determine if the dealer should hit based on game rules
-export function shouldDealerHit(total, hand, soft17Checked) {
-  if (soft17Checked) {
-    return total < 17 || (total === 17 && isSoft17(hand));
-  }
-  return total < 17;
+// Animate the card with a given class and delay
+export function animateElement(element, animationClass, delayTime) {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      element.classList.add(animationClass);
+    });
+    requestAnimationFrame(async () => {
+      await delay(delayTime);
+      element.classList.remove(animationClass);
+      resolve();
+    });
+  });
 }
 
-// Check if a hand is a soft 17 (total 17 with an Ace counted as 11)
-function isSoft17(cards) {
-  const totalWithoutAces = calculateTotalWithoutAces(cards);
-  const numAces = countAces(cards);
-  return totalWithoutAces === 6 && numAces > 0;
+// Create an HTML image element
+export async function createCardImage(initialSrc) {
+  await preloadImage(initialSrc);
+  const imgElement = document.createElement("img");
+  imgElement.src = initialSrc;
+  return imgElement;
 }
 
-// Calculate total points for a hand, excluding reduction of Aces to 1
-function calculateTotalWithoutAces(cards) {
-  let total = 0;
-  for (let i = 0; i < cards.length; i++) {
-    if (cards[i].rank !== "ace") {
-      total += cards[i].pointValue;
-    }
-  }
-  return total;
+export function shouldFlipCard(entity, cards) {
+  return entity !== "dealer" || cards.length !== 2;
 }
 
-// Count the number of Aces in a hand
-function countAces(cards) {
-  return cards.filter((card) => card.rank === "ace").length;
+// Preload an image and return its src
+export async function preloadAndGetImage(src) {
+  await preloadImage(src);
+  return src;
+}
+
+// Preload an image
+export function preloadImage(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = src;
+    img.onload = resolve;
+  });
 }
 
 // Calculate and adjust card margins to avoid overflow

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import _ from "lodash";
-import appInfo from "../package.json";
-import { Alert, Container } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import DealerSection from "./components/DealerSection.js";
 import PlayerSection from "./components/PlayerSection.js";
 import PointSection from "./components/PointSection.js";
@@ -15,7 +14,9 @@ import CardDeck from "./CardDeck.js";
 
 import { toggleHiddenElement, enableGameButtons, delay, disableGameButtons, hideGameButtons } from "./utils/utils.js";
 
-import { calculateTotal, addCard, flipCard, shouldDealerHit, adjustCardMargins } from "./game_logic/gameFunctions.js";
+import { calculateTotal, shouldDealerHit } from "./utils/blackjackUtils.js";
+
+import { addCard, flipCard, adjustCardMargins } from "./utils/uiUtils.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
@@ -227,11 +228,6 @@ export default function App() {
   return (
     <>
       <TopButtons showInfoModal={handleShowInfo} showSettingsModal={handleShowSettings} />
-      <Container>
-        <Alert className="w-75 text-center mx-auto my-1 p-1" variant="warning">
-          <strong>V{appInfo.version}:</strong> This site is still under development and may contain bugs.
-        </Alert>
-      </Container>
       <Container fluid className="my-2" id="main">
         <WinnerSection
           playerPoints={playerPoints}

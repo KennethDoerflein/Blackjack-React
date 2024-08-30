@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, ButtonGroup, Container } from "react-bootstrap";
-import { isSplitAllowed, isDoubleDownAllowed } from "../utils/utils";
+import { isSplitAllowed, isDoubleDownAllowed } from "../utils/blackjackUtils";
 
 export default function GameControls({
   hit,

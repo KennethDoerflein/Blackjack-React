@@ -15,47 +15,6 @@ export function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// Preload an image
-export function preloadImage(src) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.src = src;
-    img.onload = resolve;
-  });
-}
-
-// Animate the card with a given class and delay
-export function animateElement(element, animationClass, delayTime) {
-  return new Promise((resolve) => {
-    requestAnimationFrame(() => {
-      element.classList.add(animationClass);
-    });
-    requestAnimationFrame(async () => {
-      await delay(delayTime);
-      element.classList.remove(animationClass);
-      resolve();
-    });
-  });
-}
-
-// Create an HTML image element
-export async function createCardImage(initialSrc) {
-  await preloadImage(initialSrc);
-  const imgElement = document.createElement("img");
-  imgElement.src = initialSrc;
-  return imgElement;
-}
-
-export function shouldFlipCard(entity, cards) {
-  return entity !== "dealer" || cards.length !== 2;
-}
-
-// Preload an image and return its src
-export async function preloadAndGetImage(src) {
-  await preloadImage(src);
-  return src;
-}
-
 export function toggleDisabledGameButtons() {
   const hitBtn = document.getElementById("hitBtn");
   const standBtn = document.getElementById("standBtn");
@@ -101,26 +60,4 @@ export function hideGameButtons() {
   standBtn.hidden = true;
   splitBtn.hidden = true;
   doubleDownBtn.hidden = true;
-}
-
-// Check if splitting is allowed based on current hand and rules
-export const isSplitAllowed = (playersHands, currentHand, splitCount, currentWager, playerPoints, splitTypeChecked) => {
-  if (!playersHands[currentHand] || playersHands[currentHand].length < 2) {
-    return false;
-  }
-  const isMatchingRankOrValue = splitTypeChecked
-    ? playersHands[currentHand][0].rank === playersHands[currentHand][1].rank
-    : playersHands[currentHand][0].pointValue === playersHands[currentHand][1].pointValue;
-
-  return splitCount < 3 && playersHands[currentHand].length === 2 && isMatchingRankOrValue && isWagerAllowed(currentWager[currentHand], playerPoints);
-};
-
-// Check if the current wager is allowed based on player points
-export function isWagerAllowed(currentWager, playerPoints) {
-  return currentWager <= playerPoints;
-}
-
-// Check if doubling down is allowed based on current hand and rules
-export function isDoubleDownAllowed(playersHands, currentHand, playerTotal, currentWager, playerPoints) {
-  return playersHands[currentHand].length === 2 && playerTotal <= 21 && isWagerAllowed(currentWager[currentHand], playerPoints);
 }

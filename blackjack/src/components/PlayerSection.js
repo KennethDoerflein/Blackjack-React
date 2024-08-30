@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Container } from "react-bootstrap";
-import { adjustCardMargins } from "../game_logic/gameFunctions.js";
+import { adjustCardMargins } from "../utils/uiUtils.js";
 
 export default function PlayerSection({ playersHandElements, playerTotals, splitCount, playerHandNames }) {
   useEffect(() => {
