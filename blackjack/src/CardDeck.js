@@ -22,16 +22,13 @@ class CardDeck {
   }
 
   createDeck() {
-    let deck = [];
-
-    for (let rank of this.RANKS) {
-      for (let suit of this.SUITS) {
+    return this.RANKS.flatMap((rank) =>
+      this.SUITS.map((suit) => {
         let pointValue = this.POINT_VALUES[this.RANKS.indexOf(rank)];
         let image = `${rank}_of_${suit}.png`;
-        deck.push(new Card(rank, suit, pointValue, image));
-      }
-    }
-    return deck;
+        return new Card(rank, suit, pointValue, image);
+      })
+    );
   }
 
   preloadImages() {
@@ -49,11 +46,57 @@ class CardDeck {
   }
 
   shuffle() {
-    // Durstenfeld shuffle
-    for (let i = this.cards.length - 1; i > 0; i--) {
-      let j = Math.floor(Math.random() * (i + 1));
-      [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+    const array = this.cards;
+    const n = array.length;
+
+    for (let i = n - 1; i > 0; i--) {
+      const j = this.getRandomInt(0, i);
+      [array[i], array[j]] = [array[j], array[i]];
     }
+    this.overhandShuffle();
+    this.riffleShuffle();
+  }
+
+  overhandShuffle() {
+    let tempDeck = [];
+
+    while (this.cards.length > 0) {
+      const chunkSize = this.getRandomInt(1, this.cards.length);
+
+      const chunk = this.cards.splice(0, chunkSize);
+
+      if (Math.random() < 0.5) {
+        tempDeck = tempDeck.concat(chunk);
+      } else {
+        tempDeck = chunk.concat(tempDeck);
+      }
+    }
+
+    this.cards = tempDeck;
+  }
+
+  riffleShuffle() {
+    const half = Math.floor(this.cards.length / 2);
+    let leftHalf = this.cards.slice(0, half);
+    let rightHalf = this.cards.slice(half);
+
+    let shuffledDeck = [];
+    while (leftHalf.length > 0 && rightHalf.length > 0) {
+      if (Math.random() < 0.5) {
+        shuffledDeck.push(leftHalf.shift());
+      } else {
+        shuffledDeck.push(rightHalf.shift());
+      }
+    }
+
+    this.cards = shuffledDeck.concat(leftHalf).concat(rightHalf);
+  }
+
+  getRandomInt(min, max) {
+    const range = max - min + 1;
+    const randomArray = new Uint32Array(1);
+    window.crypto.getRandomValues(randomArray);
+    return min + (randomArray[0] % range);
   }
 
   reshuffle() {
