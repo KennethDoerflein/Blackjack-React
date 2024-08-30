@@ -34,7 +34,7 @@ export default function App() {
   const [splitTypeChecked, setSplitTypeChecked] = useState(false);
 
   document.documentElement.setAttribute("data-bs-theme", "dark");
-  const [deck] = useState(new CardDeck());
+  const [deck, setCardDeck] = useState(null);
   const [playersHands, setPlayerHand] = useState([[], [], [], []]);
   const [playersHandElements, setPlayersHandElements] = useState([[], [], [], []]);
   const [dealersHand, setDealersHand] = useState([]);
@@ -51,7 +51,8 @@ export default function App() {
   const newGame = () => {
     if (playerPoints > 0) {
       document.getElementById("newGameBtn").hidden = true;
-      deck.reshuffle();
+      if (deck) deck.reshuffle();
+      else setCardDeck(new CardDeck());
       setPlayerHand([[], [], [], []]);
       setDealersHand([]);
       setDealerTotal(0);
