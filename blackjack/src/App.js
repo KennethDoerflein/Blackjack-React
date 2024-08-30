@@ -14,7 +14,7 @@ import CardDeck from "./CardDeck.js";
 
 import { toggleHiddenElement, enableGameButtons, delay, disableGameButtons, hideGameButtons } from "./utils/utils.js";
 
-import { calculateTotal, shouldDealerHit } from "./utils/blackjackUtils.js";
+import { calculateTotal, shouldDealerHit, calculateAndReturnTotals } from "./utils/blackjackUtils.js";
 
 import { addCard, flipCard, adjustCardMargins } from "./utils/uiUtils.js";
 
@@ -95,11 +95,7 @@ export default function App() {
     }
 
     // Calculate the new totals before updating the state
-    const newTotals = [...playerTotals];
-    for (let i = 0; i < newPlayersHands.length; i++) {
-      newTotals[i] = await calculateTotal(newPlayersHands[i]);
-    }
-    const newDealerTotal = await calculateTotal(dealersHand);
+    const { newTotals, newDealerTotal } = await calculateAndReturnTotals(newPlayersHands, playerTotals, dealersHand);
 
     setPlayerTotal(newTotals);
     setDealerTotal(newDealerTotal);
@@ -162,10 +158,7 @@ export default function App() {
     newPlayerHandElements[newSplitCount].push({ ...newPlayerHandElements[currentHand].pop(), key: "1" });
 
     // Calculate the new totals before updating the state
-    const newTotals = [...playerTotals];
-    for (let i = 0; i < newPlayersHands.length; i++) {
-      newTotals[i] = await calculateTotal(newPlayersHands[i]);
-    }
+    let { newTotals } = await calculateAndReturnTotals(newPlayersHands, playerTotals, dealersHand);
 
     setPlayerTotal(newTotals);
     setPlayerHand(newPlayersHands);
@@ -176,10 +169,9 @@ export default function App() {
     await hit("player", "split", currentHand);
     await hit("player", "split", newSplitCount);
 
-    // Calculate the new totals before updating the state
-    for (let i = 0; i < newPlayersHands.length; i++) {
-      newTotals[i] = await calculateTotal(newPlayersHands[i]);
-    }
+    // Recalculate the new totals after hitting
+    ({ newTotals } = await calculateAndReturnTotals(newPlayersHands, playerTotals, dealersHand));
+
     setPlayerTotal(newTotals);
     enableGameButtons();
   };

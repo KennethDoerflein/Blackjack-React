@@ -67,3 +67,13 @@ export function isWagerAllowed(currentWager, playerPoints) {
 export function isDoubleDownAllowed(playersHands, currentHand, playerTotal, currentWager, playerPoints) {
   return playersHands[currentHand].length === 2 && playerTotal <= 21 && isWagerAllowed(currentWager[currentHand], playerPoints);
 }
+
+// Calculate total points for all hands and return them
+export async function calculateAndReturnTotals(newPlayersHands, playerTotals, dealersHand) {
+  const newTotals = [...playerTotals];
+  for (let i = 0; i < newPlayersHands.length; i++) {
+    newTotals[i] = await calculateTotal(newPlayersHands[i]);
+  }
+  const newDealerTotal = await calculateTotal(dealersHand);
+  return { newTotals, newDealerTotal };
+}
