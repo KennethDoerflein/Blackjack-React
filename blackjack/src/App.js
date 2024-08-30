@@ -11,7 +11,7 @@ import SettingsModal from "./components/SettingsModal.js";
 import InfoModal from "./components/InfoModal.js";
 import TopButtons from "./components/TopButtons.js";
 import WinnerSection from "./components/WinnerSection.js";
-import CardDeck from "./game_logic/CardDeck.js";
+import CardDeck from "./CardDeck.js";
 
 import { toggleHiddenElement, enableGameButtons, delay, disableGameButtons, hideGameButtons } from "./utils/utils.js";
 
