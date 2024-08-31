@@ -63,17 +63,20 @@ class CardDeck {
 
   overhandShuffle() {
     let tempDeck = [];
+    let maxIterations = 100;
+    let iterations = 0;
 
-    while (this.cards.length > 0) {
+    while (this.cards.length > 0 && iterations < maxIterations) {
       const chunkSize = this.getRandomInt(1, this.cards.length);
 
       const chunk = this.cards.splice(0, chunkSize);
 
-      if (Math.random() < 0.5) {
+      if (this.getRandomInt(1, 101) <= 50) {
         tempDeck = tempDeck.concat(chunk);
       } else {
         tempDeck = chunk.concat(tempDeck);
       }
+      iterations++;
     }
 
     this.cards = tempDeck;
@@ -86,7 +89,7 @@ class CardDeck {
 
     let shuffledDeck = [];
     while (leftHalf.length > 0 && rightHalf.length > 0) {
-      if (Math.random() < 0.5) {
+      if (this.getRandomInt(1, 101) <= 50) {
         shuffledDeck.push(leftHalf.shift());
       } else {
         shuffledDeck.push(rightHalf.shift());
