@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import _ from "lodash";
 import { Container } from "react-bootstrap";
-import DealerSection from "./components/DealerSection.js";
-import PlayerSection from "./components/PlayerSection.js";
-import PointSection from "./components/PointSection.js";
-import WagerControls from "./components/WagerControls.js";
-import GameControls from "./components/GameControls.js";
-import SettingsModal from "./components/SettingsModal.js";
-import InfoModal from "./components/InfoModal.js";
-import TopButtons from "./components/TopButtons.js";
-import WinnerSection from "./components/WinnerSection.js";
+import DealerSection from "./components/DealerSection.jsx";
+import PlayerSection from "./components/PlayerSection.jsx";
+import PointSection from "./components/PointSection.jsx";
+import WagerControls from "./components/WagerControls.jsx";
+import GameControls from "./components/GameControls.jsx";
+import SettingsModal from "./components/SettingsModal.jsx";
+import InfoModal from "./components/InfoModal.jsx";
+import TopButtons from "./components/TopButtons.jsx";
+import WinnerSection from "./components/WinnerSection.jsx";
 import CardDeck from "./CardDeck.js";
 
 import { toggleHiddenElement, enableGameButtons, delay, disableGameButtons, hideGameButtons } from "./utils/utils.js";
