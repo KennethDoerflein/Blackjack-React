@@ -3,37 +3,42 @@ class Card {
     this.rank = rank;
     this.suit = suit;
     this.pointValue = pointValue;
-    // https://code.google.com/archive/p/vector-playing-cards/
-    this.image = image;
+    this.image = image; // https://code.google.com/archive/p/vector-playing-cards/
   }
 }
 
 class CardDeck {
-  constructor() {
+  constructor(decks = 6) {
     this.RANKS = ["ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"];
     this.SUITS = ["spades", "hearts", "diamonds", "clubs"];
     this.POINT_VALUES = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
+    this.numberOfDecks = decks;
 
     this.cards = this.createDeck();
     this.dealtCards = [];
     this.preloadImages().then(() => {
-      this.shuffle();
+      this.casinoShuffle();
     });
   }
 
   createDeck() {
-    return this.RANKS.flatMap((rank) =>
-      this.SUITS.map((suit) => {
-        let pointValue = this.POINT_VALUES[this.RANKS.indexOf(rank)];
-        let image = `${rank}_of_${suit}.png`;
-        return new Card(rank, suit, pointValue, image);
-      })
-    );
+    let deck = [];
+    for (let i = 0; i < this.numberOfDecks; i++) {
+      deck = deck.concat(
+        this.RANKS.flatMap((rank) =>
+          this.SUITS.map((suit) => {
+            let pointValue = this.POINT_VALUES[this.RANKS.indexOf(rank)];
+            let image = `${rank}_of_${suit}.png`;
+            return new Card(rank, suit, pointValue, image);
+          })
+        )
+      );
+    }
+    return deck;
   }
 
   preloadImages() {
     let images = this.cards.map((card) => `./assets/cards-1.3/${card.image}`);
-
     let promises = images.map((src) => {
       return new Promise((resolve) => {
         const img = new Image();
@@ -41,20 +46,27 @@ class CardDeck {
         img.onload = resolve;
       });
     });
-
     return Promise.all(promises);
   }
 
-  shuffle() {
+  getRandomInt(min, max) {
+    const range = max - min + 1;
+    const randomArray = new Uint32Array(1);
+    window.crypto.getRandomValues(randomArray);
+    return min + (randomArray[0] % range);
+  }
+
+  casinoShuffle() {
     this.durstenfeldShuffle();
     this.overhandShuffle();
     this.riffleShuffle();
+    this.stripShuffle();
+    this.cutDeck();
   }
 
   durstenfeldShuffle() {
     const array = this.cards;
     const n = array.length;
-
     for (let i = n - 1; i > 0; i--) {
       const j = this.getRandomInt(0, i);
       [array[i], array[j]] = [array[j], array[i]];
@@ -67,8 +79,7 @@ class CardDeck {
     let iterations = 0;
 
     while (this.cards.length > 0 && iterations < maxIterations) {
-      const chunkSize = this.getRandomInt(1, this.cards.length);
-
+      const chunkSize = this.getRandomInt(1, Math.min(10, this.cards.length));
       const chunk = this.cards.splice(0, chunkSize);
 
       if (this.getRandomInt(1, 101) <= 50) {
@@ -99,17 +110,27 @@ class CardDeck {
     this.cards = shuffledDeck.concat(leftHalf).concat(rightHalf);
   }
 
-  getRandomInt(min, max) {
-    const range = max - min + 1;
-    const randomArray = new Uint32Array(1);
-    window.crypto.getRandomValues(randomArray);
-    return min + (randomArray[0] % range);
+  stripShuffle() {
+    let topIndex = this.getRandomInt(0, this.cards.length / 2);
+    let bottomIndex = this.getRandomInt(this.cards.length / 2, this.cards.length);
+
+    let topPortion = this.cards.slice(0, topIndex);
+    let middlePortion = this.cards.slice(topIndex, bottomIndex);
+    let bottomPortion = this.cards.slice(bottomIndex);
+
+    this.cards = bottomPortion.concat(middlePortion).concat(topPortion);
+  }
+
+  cutDeck() {
+    const cutIndex = this.getRandomInt(this.cards.length / 4, (3 * this.cards.length) / 4);
+    const cutPart = this.cards.splice(0, cutIndex);
+    this.cards = this.cards.concat(cutPart);
   }
 
   reshuffle() {
     this.cards = this.cards.concat(this.dealtCards);
     this.dealtCards = [];
-    this.shuffle();
+    this.casinoShuffle();
   }
 
   getCard() {
