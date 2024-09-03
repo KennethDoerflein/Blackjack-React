@@ -16,7 +16,7 @@ import { toggleHiddenElement, enableGameButtons, delay, disableGameButtons, hide
 
 import { calculateTotal, shouldDealerHit, calculateAndReturnTotals } from "./utils/blackjackUtils.js";
 
-import { addCard, flipCard, adjustCardMargins } from "./utils/uiUtils.js";
+import { addCard, flipCard, adjustCardMargins, preloadImage } from "./utils/uiUtils.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
@@ -46,6 +46,13 @@ export default function App() {
   const [currentHand, setCurrentHand] = useState(0);
   const [splitCount, setSplitCount] = useState(0);
   const playerHandNames = ["playersHand", "playersSecondHand", "playersThirdHand", "playersFourthHand"];
+  const chipNames = ["1Chip", "5Chip", "10Chip", "20Chip", "50Chip"];
+
+  window.onload = () => {
+    chipNames.forEach((chipName) => {
+      preloadImage("./assets/" + chipName + ".jpg");
+    });
+  };
 
   // Start a new game by shuffling the deck and resetting the UI
   const newGame = () => {
@@ -244,6 +251,7 @@ export default function App() {
             currentHand={currentHand}
             initialDeal={initialDeal}
             playersHands={playersHands}
+            showInfo={showInfo}
           />
           <GameControls
             hit={hit}
