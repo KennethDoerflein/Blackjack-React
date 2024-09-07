@@ -35,17 +35,17 @@ export default function App() {
 
   document.documentElement.setAttribute("data-bs-theme", "dark");
   const [deck, setCardDeck] = useState(null);
-  const [playersHands, setPlayerHand] = useState([[], [], [], []]);
-  const [playersHandElements, setPlayersHandElements] = useState([[], [], [], []]);
+  const [playersHands, setPlayerHand] = useState([[]]);
+  const [playersHandElements, setPlayersHandElements] = useState([[]]);
   const [dealersHand, setDealersHand] = useState([]);
   const [dealersHandElements, setDealersHandElements] = useState([]);
   const [playerPoints, setPlayerPoints] = useState(100);
   const [dealerTotal, setDealerTotal] = useState(0);
-  const [playerTotals, setPlayerTotal] = useState([0, 0, 0, 0]);
-  const [currentWager, setCurrentWager] = useState([0, 0, 0, 0]);
+  const [playerTotals, setPlayerTotal] = useState([0]);
+  const [currentWager, setCurrentWager] = useState([0]);
   const [currentHand, setCurrentHand] = useState(0);
   const [splitCount, setSplitCount] = useState(0);
-  const playerHandNames = ["playersHand", "playersSecondHand", "playersThirdHand", "playersFourthHand"];
+  const [playersHandNames, setPlayersHandNames] = useState(["playersHand0"]);
 
   // Start a new game by shuffling the deck and resetting the UI
   const newGame = () => {
@@ -53,14 +53,15 @@ export default function App() {
       document.getElementById("newGameBtn").hidden = true;
       if (deck) deck.reshuffle();
       else setCardDeck(new CardDeck());
-      setPlayerHand([[], [], [], []]);
+      setPlayersHandNames(["playersHand0"]);
+      setPlayerHand([[]]);
       setDealersHand([]);
       setDealerTotal(0);
-      setPlayerTotal([0, 0, 0, 0]);
-      setCurrentWager([0, 0, 0, 0]);
+      setPlayerTotal([0]);
+      setCurrentWager([0]);
       setCurrentHand(0);
       setSplitCount(0);
-      setPlayersHandElements([[], [], [], []]);
+      setPlayersHandElements([[]]);
       setDealersHandElements([]);
       const resultsDiv = document.getElementById("resultsAlert");
       if (!resultsDiv.hidden) toggleHiddenElement(resultsDiv);
@@ -74,7 +75,7 @@ export default function App() {
     const newTotal = await hit("player", "init");
     await hit("dealer", "init");
     if (newTotal !== 21 || !autoStandChecked) {
-      document.getElementById("playersHand").classList.add("activeHand");
+      document.getElementById("playersHand0").classList.add("activeHand");
       enableGameButtons();
     }
   };
@@ -86,9 +87,9 @@ export default function App() {
   };
 
   // Deal a card to the player or dealer
-  const hit = async (entity = "player", origin = "user", hand = currentHand) => {
+  const hit = async (entity = "player", origin = "user", hand = currentHand, newPlayersHands = [...playersHands]) => {
     disableGameButtons();
-    const newPlayersHands = [...playersHands];
+
     if (entity !== "dealer") {
       await addCard(newPlayersHands[hand], playersHandElements[hand], entity, origin, deck, setPlayersHandElements, hand);
     } else {
@@ -118,7 +119,7 @@ export default function App() {
   const endHand = async () => {
     if (currentHand === splitCount) {
       hideGameButtons();
-      document.getElementById(playerHandNames[currentHand]).classList.remove("activeHand");
+      document.getElementById(playersHandNames[currentHand]).classList.remove("activeHand");
       document.getElementById("dealersHand").classList.add("activeHand");
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
       let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
@@ -136,8 +137,8 @@ export default function App() {
   // Advance to the next player hand if splits occurred
   function advanceHand(newHand) {
     if (currentHand < splitCount && splitCount > 0) {
-      document.getElementById(playerHandNames[newHand]).classList.add("activeHand");
-      document.getElementById(playerHandNames[currentHand]).classList.remove("activeHand");
+      document.getElementById(playersHandNames[newHand]).classList.add("activeHand");
+      document.getElementById(playersHandNames[currentHand]).classList.remove("activeHand");
       setCurrentHand(newHand);
       if (playerTotals[newHand] !== 21 || !autoStandChecked) {
         enableGameButtons();
@@ -149,31 +150,34 @@ export default function App() {
   const splitHand = async () => {
     disableGameButtons();
     const newSplitCount = splitCount + 1;
+    const newPlayerHandNames = [...playersHandNames, `${"playersHand" + newSplitCount}`];
     setSplitCount(newSplitCount);
-    const newPlayersHands = [...playersHands];
-    const newPlayerHandElements = [...playersHandElements];
-    const newCurrentWager = [...currentWager];
+    setPlayersHandNames(newPlayerHandNames);
+    const newPlayersHands = [...playersHands, []];
+    const newPlayerHandElements = [...playersHandElements, []];
+    const newCurrentWager = [...currentWager, 0];
     newCurrentWager[newSplitCount] = newCurrentWager[currentHand];
 
     newPlayersHands[newSplitCount].push(newPlayersHands[currentHand].pop());
     newPlayerHandElements[newSplitCount].push({ ...newPlayerHandElements[currentHand].pop(), key: "1" });
 
+    const newPlayerTotals = [...playerTotals, 0];
     // Calculate the new totals before updating the state
-    let { newTotals } = await calculateAndReturnTotals(newPlayersHands, playerTotals, dealersHand);
-
+    let { newTotals } = await calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand);
     setPlayerTotal(newTotals);
+
     setPlayerHand(newPlayersHands);
     setPlayersHandElements(newPlayerHandElements);
     setCurrentWager(newCurrentWager);
     setPlayerPoints(playerPoints - newCurrentWager[newSplitCount]);
     await delay(500);
-    await hit("player", "split", currentHand);
-    await hit("player", "split", newSplitCount);
+    await hit("player", "split", currentHand, newPlayersHands);
+    await hit("player", "split", newSplitCount, newPlayersHands);
 
     // Recalculate the new totals after hitting
-    ({ newTotals } = await calculateAndReturnTotals(newPlayersHands, playerTotals, dealersHand));
-
+    ({ newTotals } = await calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
     setPlayerTotal(newTotals);
+
     enableGameButtons();
   };
 
@@ -194,10 +198,10 @@ export default function App() {
         if (playersHandElements[0].length > 2) {
           playersHandElements.forEach(async (hand, i) => {
             if (hand.length > 0) {
-              document.getElementById(playerHandNames[i]).classList.add("viewportResize");
-              adjustCardMargins(document.getElementById(playerHandNames[i]), true);
+              document.getElementById(playersHandNames[i]).classList.add("viewportResize");
+              adjustCardMargins(document.getElementById(playersHandNames[i]), true);
               await delay(300);
-              document.getElementById(playerHandNames[i]).classList.remove("viewportResize");
+              document.getElementById(playersHandNames[i]).classList.remove("viewportResize");
             }
           });
         }
@@ -233,7 +237,7 @@ export default function App() {
           setCurrentWager={setCurrentWager}
         />
         <DealerSection dealersHandElements={dealersHandElements} dealerTotal={dealerTotal} />
-        <PlayerSection playersHandElements={playersHandElements} playerTotals={playerTotals} splitCount={splitCount} playerHandNames={playerHandNames} />
+        <PlayerSection playersHandElements={playersHandElements} playerTotals={playerTotals} splitCount={splitCount} playersHandNames={playersHandNames} />
         <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
         <Container className="text-center" id="bottomDiv">
           <WagerControls

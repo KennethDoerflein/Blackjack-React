@@ -2,19 +2,19 @@ import React, { useEffect } from "react";
 import { Container } from "react-bootstrap";
 import { adjustCardMargins } from "../utils/uiUtils.js";
 
-export default function PlayerSection({ playersHandElements, playerTotals, splitCount, playerHandNames }) {
+export default function PlayerSection({ playersHandElements, playerTotals, splitCount, playersHandNames }) {
   useEffect(() => {
     const adjustMargins = () => {
       if (playersHandElements[0].length > 2) {
         playersHandElements.forEach((hand, i) => {
           if (hand.length > 0) {
-            adjustCardMargins(document.getElementById(playerHandNames[i]));
+            adjustCardMargins(document.getElementById(playersHandNames[i]));
           }
         });
       }
     };
     requestAnimationFrame(adjustMargins);
-  }, [playersHandElements, playerHandNames]);
+  }, [playersHandElements, playersHandNames]);
 
   return (
     <>
@@ -36,18 +36,11 @@ export default function PlayerSection({ playersHandElements, playerTotals, split
         </h6>
       </Container>
       <span id="playersHands">
-        <Container fluid id="playersHand">
-          {playersHandElements[0]}
-        </Container>
-        <Container fluid hidden={playersHandElements[1].length === 0} id="playersSecondHand">
-          {playersHandElements[1]}
-        </Container>
-        <Container fluid hidden={playersHandElements[2].length === 0} id="playersThirdHand">
-          {playersHandElements[2]}
-        </Container>
-        <Container fluid hidden={playersHandElements[3].length === 0} id="playersFourthHand">
-          {playersHandElements[3]}
-        </Container>
+        {playersHandElements.map((hand, i) => (
+          <Container fluid key={i} id={playersHandNames[i]}>
+            {hand}
+          </Container>
+        ))}
       </span>
     </>
   );

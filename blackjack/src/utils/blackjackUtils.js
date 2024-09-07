@@ -55,7 +55,7 @@ export const isSplitAllowed = (playersHands, currentHand, splitCount, currentWag
     ? playersHands[currentHand][0].rank === playersHands[currentHand][1].rank
     : playersHands[currentHand][0].pointValue === playersHands[currentHand][1].pointValue;
 
-  return splitCount < 3 && playersHands[currentHand].length === 2 && isMatchingRankOrValue && isWagerAllowed(currentWager[currentHand], playerPoints);
+  return playersHands[currentHand].length === 2 && isMatchingRankOrValue && isWagerAllowed(currentWager[currentHand], playerPoints);
 };
 
 // Check if the current wager is allowed based on player points
