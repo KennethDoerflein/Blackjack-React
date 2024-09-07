@@ -28,6 +28,7 @@ export default function App() {
   const handleCloseInfo = () => setShowInfo(false);
   const handleShowSettings = () => setShowSettings(true);
   const handleCloseSettings = () => setShowSettings(false);
+  const [resultsAlertHidden, setResultsAlertHidden] = useState(true);
 
   const [soft17Checked, setSoft17Checked] = useState(true);
   const [autoStandChecked, setAutoStandChecked] = useState(false);
@@ -59,12 +60,10 @@ export default function App() {
       setDealerTotal(0);
       setPlayerTotal([0]);
       setCurrentWager([0]);
-      setCurrentHand(0);
       setSplitCount(0);
       setPlayersHandElements([[]]);
       setDealersHandElements([]);
-      const resultsDiv = document.getElementById("resultsAlert");
-      if (!resultsDiv.hidden) toggleHiddenElement(resultsDiv);
+      if (!resultsAlertHidden) setResultsAlertHidden(true);
     }
   };
 
@@ -127,8 +126,7 @@ export default function App() {
       flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
       await playDealer();
       document.getElementById("dealersHand").classList.remove("activeHand");
-
-      toggleHiddenElement(document.getElementById("resultsAlert"));
+      setResultsAlertHidden(false);
     } else if (currentHand !== splitCount) {
       advanceHand(currentHand + 1);
     }
@@ -235,6 +233,8 @@ export default function App() {
           playerTotals={playerTotals}
           dealerTotal={dealerTotal}
           setCurrentWager={setCurrentWager}
+          resultsAlertHidden={resultsAlertHidden}
+          setCurrentHand={setCurrentHand}
         />
         <DealerSection dealersHandElements={dealersHandElements} dealerTotal={dealerTotal} />
         <PlayerSection playersHandElements={playersHandElements} playerTotals={playerTotals} splitCount={splitCount} playersHandNames={playersHandNames} />
@@ -266,6 +266,7 @@ export default function App() {
             dealersHandElements={dealersHandElements}
             splitTypeChecked={splitTypeChecked}
             autoStandChecked={autoStandChecked}
+            resultsAlertHidden={resultsAlertHidden}
           />
         </Container>
         <Container className="text-center mt-3" id="disclaimer">
