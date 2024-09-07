@@ -7,7 +7,7 @@ export default function WinnerSection({ playersHands, playerTotals, playerPoints
 
     const observer = new MutationObserver((mutationsList) => {
       for (let mutation of mutationsList) {
-        if (mutation.attributeName === "hidden") {
+        if (mutation.attributeName === "hidden" && !resultsAlert.hidden) {
           // This used to be `displayWinner()` in App.js
 
           const messageDiv = document.getElementById("message");
@@ -47,7 +47,6 @@ export default function WinnerSection({ playersHands, playerTotals, playerPoints
             messageDiv.append(winnerElement);
           }
 
-          setCurrentWager([0, 0, 0, 0]);
           setPlayerPoints(newPlayerPoints);
           if (newPlayerPoints === 0) {
             let message = createWinnerElement("You are out of points, thank you for playing!");
