@@ -12,7 +12,7 @@ import TopButtons from "./components/TopButtons.jsx";
 import WinnerSection from "./components/WinnerSection.jsx";
 import CardDeck from "./CardDeck.js";
 
-import { toggleHiddenElement, enableGameButtons, delay, disableGameButtons, hideGameButtons } from "./utils/utils.js";
+import { enableGameButtons, delay, disableGameButtons, hideGameButtons } from "./utils/utils.js";
 
 import { calculateTotal, shouldDealerHit, calculateAndReturnTotals } from "./utils/blackjackUtils.js";
 
