@@ -33,6 +33,13 @@ export default function GameControls({
     }
   }
 
+  function resetPoints() {
+    if (playerPoints === 0) {
+      setPlayerPoints(100);
+      document.getElementById("bottomDiv").lastChild.remove();
+    }
+  }
+
   return (
     <Container className="d-flex justify-content-center w-100 mt-2" id="gameActions">
       <ButtonGroup>
@@ -84,6 +91,9 @@ export default function GameControls({
           size="sm"
           className="mx-auto my-1">
           New Game
+        </Button>
+        <Button onClick={() => resetPoints()} hidden={playerPoints !== 0 || resultsAlertHidden} id="resetPointsBtn" variant="info" size="sm" className="mx-auto my-1">
+          Reset Points
         </Button>
       </ButtonGroup>
     </Container>
