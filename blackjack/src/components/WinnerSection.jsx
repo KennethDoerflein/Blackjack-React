@@ -47,7 +47,7 @@ export default function WinnerSection({
           outcome = "Push (Tie)";
         }
 
-        newPlayerPoints += Math.ceil(currentWager[handIndex] * wagerMultiplier);
+        newPlayerPoints += Math.ceil((currentWager[handIndex] * wagerMultiplier).toFixed(2));
         outcomes[handIndex] = splitCount > 0 ? `Hand ${handIndex + 1}: ${outcome}` : outcome;
 
         let winnerElement = createWinnerElement(outcomes[handIndex]);
