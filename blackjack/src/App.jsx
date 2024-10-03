@@ -122,8 +122,9 @@ export default function App() {
       document.getElementById("dealersHand").classList.add("activeHand");
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
       let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
-      await delay(500);
+      await delay(800);
       flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
+      await delay(300);
       await playDealer();
       document.getElementById("dealersHand").classList.remove("activeHand");
       setResultsAlertHidden(false);
@@ -147,6 +148,7 @@ export default function App() {
   // Split the player's hand into two separate hands
   const splitHand = async () => {
     disableGameButtons();
+    const oldHand = currentHand;
     const newSplitCount = splitCount + 1;
     const newPlayerHandNames = [...playersHandNames, `${"playersHand" + newSplitCount}`];
     setSplitCount(newSplitCount);
@@ -170,7 +172,11 @@ export default function App() {
     setPlayerPoints(playerPoints - newCurrentWager[newSplitCount]);
     await delay(500);
     await hit("player", "split", currentHand, newPlayersHands);
+    setCurrentHand(newSplitCount);
+    await delay(1200);
     await hit("player", "split", newSplitCount, newPlayersHands);
+    await delay(500);
+    setCurrentHand(oldHand);
 
     // Recalculate the new totals after hitting
     ({ newTotals } = await calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
@@ -237,7 +243,13 @@ export default function App() {
           setCurrentHand={setCurrentHand}
         />
         <DealerSection dealersHandElements={dealersHandElements} dealerTotal={dealerTotal} />
-        <PlayerSection playersHandElements={playersHandElements} playerTotals={playerTotals} splitCount={splitCount} playersHandNames={playersHandNames} />
+        <PlayerSection
+          playersHandElements={playersHandElements}
+          playerTotals={playerTotals}
+          splitCount={splitCount}
+          playersHandNames={playersHandNames}
+          currentHand={currentHand}
+        />
         <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
         <Container className="text-center" id="bottomDiv">
           <WagerControls
