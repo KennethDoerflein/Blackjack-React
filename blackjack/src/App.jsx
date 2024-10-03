@@ -30,6 +30,9 @@ export default function App() {
   const handleCloseSettings = () => setShowSettings(false);
   const [resultsAlertHidden, setResultsAlertHidden] = useState(true);
 
+  const [showButtons, setShowButtons] = useState(true);
+  const [carousalInterval, setCarousalInterval] = useState(null);
+
   const [soft17Checked, setSoft17Checked] = useState(true);
   const [autoStandChecked, setAutoStandChecked] = useState(false);
   const [splitTypeChecked, setSplitTypeChecked] = useState(false);
@@ -53,7 +56,7 @@ export default function App() {
     if (playerPoints > 0) {
       document.getElementById("newGameBtn").hidden = true;
       if (deck) deck.reshuffle();
-      else setCardDeck(new CardDeck());
+      else setCardDeck(new CardDeck(10));
       setPlayersHandNames(["playersHand0"]);
       setPlayerHand([[]]);
       setDealersHand([]);
@@ -63,18 +66,21 @@ export default function App() {
       setSplitCount(0);
       setPlayersHandElements([[]]);
       setDealersHandElements([]);
+      setCarousalInterval(null);
       if (!resultsAlertHidden) setResultsAlertHidden(true);
     }
   };
 
   // Deal initial cards to player and dealer
   const initialDeal = async () => {
+    setShowButtons(false);
     await hit("player", "init");
     await hit("dealer", "init");
     const newTotal = await hit("player", "init");
     await hit("dealer", "init");
     if (newTotal !== 21 || !autoStandChecked) {
       document.getElementById("playersHand0").classList.add("activeHand");
+      setShowButtons(true);
       enableGameButtons();
     }
   };
@@ -122,12 +128,13 @@ export default function App() {
       document.getElementById("dealersHand").classList.add("activeHand");
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
       let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
-      await delay(800);
+      await delay(600);
       flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
-      await delay(300);
+      await delay(400);
       await playDealer();
       document.getElementById("dealersHand").classList.remove("activeHand");
       setResultsAlertHidden(false);
+      setCarousalInterval(1750);
     } else if (currentHand !== splitCount) {
       advanceHand(currentHand + 1);
     }
@@ -148,6 +155,7 @@ export default function App() {
   // Split the player's hand into two separate hands
   const splitHand = async () => {
     disableGameButtons();
+    setShowButtons(false);
     const oldHand = currentHand;
     const newSplitCount = splitCount + 1;
     const newPlayerHandNames = [...playersHandNames, `${"playersHand" + newSplitCount}`];
@@ -181,18 +189,21 @@ export default function App() {
     // Recalculate the new totals after hitting
     ({ newTotals } = await calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
     setPlayerTotal(newTotals);
-
+    await delay(600);
+    setShowButtons(true);
     enableGameButtons();
+    document.getElementById("playersHand" + oldHand).classList.add("activeHand");
   };
 
   // Play the dealer's hand according to the rules
   const playDealer = async () => {
+    await delay(500);
     let newDealerTotal = dealerTotal;
-    await delay(550);
     while (shouldDealerHit(newDealerTotal, dealersHand, soft17Checked)) {
       await hit("dealer", "endGame");
       newDealerTotal = await calculateTotal(dealersHand);
       setDealerTotal(newDealerTotal);
+      await delay(400);
     }
   };
 
@@ -230,18 +241,6 @@ export default function App() {
     <>
       <TopButtons showInfoModal={handleShowInfo} showSettingsModal={handleShowSettings} />
       <Container fluid className="my-2" id="main">
-        <WinnerSection
-          playerPoints={playerPoints}
-          setPlayerPoints={setPlayerPoints}
-          currentWager={currentWager}
-          playersHands={playersHands}
-          splitCount={splitCount}
-          playerTotals={playerTotals}
-          dealerTotal={dealerTotal}
-          setCurrentWager={setCurrentWager}
-          resultsAlertHidden={resultsAlertHidden}
-          setCurrentHand={setCurrentHand}
-        />
         <DealerSection dealersHandElements={dealersHandElements} dealerTotal={dealerTotal} />
         <PlayerSection
           playersHandElements={playersHandElements}
@@ -249,6 +248,7 @@ export default function App() {
           splitCount={splitCount}
           playersHandNames={playersHandNames}
           currentHand={currentHand}
+          carousalInterval={carousalInterval}
         />
         <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
         <Container className="text-center" id="bottomDiv">
@@ -261,6 +261,18 @@ export default function App() {
             initialDeal={initialDeal}
             playersHands={playersHands}
             showInfo={showInfo}
+          />
+          <WinnerSection
+            playerPoints={playerPoints}
+            setPlayerPoints={setPlayerPoints}
+            currentWager={currentWager}
+            playersHands={playersHands}
+            splitCount={splitCount}
+            playerTotals={playerTotals}
+            dealerTotal={dealerTotal}
+            setCurrentWager={setCurrentWager}
+            resultsAlertHidden={resultsAlertHidden}
+            setCurrentHand={setCurrentHand}
           />
           <GameControls
             hit={hit}
@@ -279,6 +291,7 @@ export default function App() {
             splitTypeChecked={splitTypeChecked}
             autoStandChecked={autoStandChecked}
             resultsAlertHidden={resultsAlertHidden}
+            showButtons={showButtons}
           />
         </Container>
         <Container className="text-center mt-3" id="disclaimer">

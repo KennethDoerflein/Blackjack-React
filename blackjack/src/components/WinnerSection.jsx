@@ -75,7 +75,7 @@ export default function WinnerSection({
 
   return (
     <Container fluid>
-      <Alert hidden={resultsAlertHidden} id="resultsAlert" variant="info" className="alert-dismissible fade show w-75 mx-auto px-0 py-1" role="alert">
+      <Alert hidden={resultsAlertHidden} id="resultsAlert" variant="info" className="alert-dismissible fade show mx-auto px-1 py-2 mt-3" role="alert">
         <Container id="message" className="text-center"></Container>
       </Alert>
     </Container>
