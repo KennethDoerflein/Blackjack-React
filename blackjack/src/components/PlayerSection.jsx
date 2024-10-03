@@ -31,7 +31,7 @@ export default function PlayerSection({ playersHandElements, playerTotals, split
 
   return (
     <>
-      <Carousel activeIndex={index} onSelect={handleSelect} interval={carousalInterval} controls={false} indicators={false} className="my-3">
+      <Carousel activeIndex={index} onSelect={handleSelect} interval={carousalInterval} controls={false} indicators={false} className="my-3 mx-auto">
         {playersHandElements.map((hand, i) => (
           <Carousel.Item key={i + hand}>
             <Container className="text-center my-3">
