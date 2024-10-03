@@ -39,7 +39,8 @@ export default function WinnerSection({
           } else {
             outcome = dealerTotal > 21 ? "Dealer Busted, Player Wins" : "Player Wins";
           }
-          wagerMultiplier = playerTotals[handIndex] === 21 && playersHands[handIndex].length === 2 ? 2.2 : 2;
+          wagerMultiplier =
+            playerTotals[handIndex] === 21 && playersHands[handIndex].length === 2 ? 2.2 : 2;
         } else if (dealerTotal > playerTotals[handIndex]) {
           outcome = "Dealer Wins";
           wagerMultiplier = 0;
@@ -75,7 +76,12 @@ export default function WinnerSection({
 
   return (
     <Container fluid>
-      <Alert hidden={resultsAlertHidden} id="resultsAlert" variant="info" className="alert-dismissible fade show mx-auto px-1 py-2 mt-3" role="alert">
+      <Alert
+        hidden={resultsAlertHidden}
+        id="resultsAlert"
+        variant="info"
+        className="alert-dismissible fade show mx-auto px-1 py-2 mt-3"
+        role="alert">
         <Container id="message" className="text-center"></Container>
       </Alert>
     </Container>

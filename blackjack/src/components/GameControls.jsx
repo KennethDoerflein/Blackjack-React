@@ -21,7 +21,15 @@ export default function GameControls({
   showButtons,
 }) {
   async function doubleDown() {
-    if (isDoubleDownAllowed(playersHands, currentHand, playerTotals[currentHand], currentWager, playerPoints)) {
+    if (
+      isDoubleDownAllowed(
+        playersHands,
+        currentHand,
+        playerTotals[currentHand],
+        currentWager,
+        playerPoints
+      )
+    ) {
       const newWagers = [...currentWager];
       const pointsLeft = playerPoints - newWagers[currentHand];
       newWagers[currentHand] *= 2;
@@ -46,7 +54,12 @@ export default function GameControls({
       <ButtonGroup>
         <Button
           onClick={() => hit()}
-          hidden={playerTotals[currentHand] > 21 || playersHands[currentHand].length < 2 || !resultsAlertHidden || !showButtons}
+          hidden={
+            playerTotals[currentHand] > 21 ||
+            playersHands[currentHand].length < 2 ||
+            !resultsAlertHidden ||
+            !showButtons
+          }
           id="hitBtn"
           variant="warning"
           size="sm"
@@ -56,7 +69,14 @@ export default function GameControls({
         <Button
           onClick={() => splitHand()}
           hidden={
-            !isSplitAllowed(playersHands, currentHand, splitCount, currentWager, playerPoints, splitTypeChecked) ||
+            !isSplitAllowed(
+              playersHands,
+              currentHand,
+              splitCount,
+              currentWager,
+              playerPoints,
+              splitTypeChecked
+            ) ||
             playersHands[currentHand].length < 2 ||
             !resultsAlertHidden ||
             !showButtons
@@ -69,7 +89,17 @@ export default function GameControls({
         </Button>
         <Button
           onClick={() => doubleDown()}
-          hidden={!isDoubleDownAllowed(playersHands, currentHand, playerTotals[currentHand], currentWager, playerPoints) || !resultsAlertHidden || !showButtons}
+          hidden={
+            !isDoubleDownAllowed(
+              playersHands,
+              currentHand,
+              playerTotals[currentHand],
+              currentWager,
+              playerPoints
+            ) ||
+            !resultsAlertHidden ||
+            !showButtons
+          }
           id="doubleDownBtn"
           variant="light"
           size="sm"
@@ -80,7 +110,12 @@ export default function GameControls({
         </Button>
         <Button
           onClick={() => endHand()}
-          hidden={playerTotals[currentHand] > 21 || playersHands[currentHand].length < 2 || !resultsAlertHidden || !showButtons}
+          hidden={
+            playerTotals[currentHand] > 21 ||
+            playersHands[currentHand].length < 2 ||
+            !resultsAlertHidden ||
+            !showButtons
+          }
           id="standBtn"
           variant="danger"
           size="sm"
@@ -89,7 +124,9 @@ export default function GameControls({
         </Button>
         <Button
           onClick={() => newGame()}
-          hidden={playersHands[0].length === 0 || playerPoints === 0 || resultsAlertHidden || !showButtons}
+          hidden={
+            playersHands[0].length === 0 || playerPoints === 0 || resultsAlertHidden || !showButtons
+          }
           id="newGameBtn"
           variant="success"
           size="sm"

@@ -60,7 +60,9 @@ export default function SettingsModal({
             type="switch"
             id="soft17Switch"
             label="Dealer Hits on Soft 17"
-            disabled={(dealersHandElements.length > 0 || playerTotals[0] > 0) && currentWager[0] > 0}
+            disabled={
+              (dealersHandElements.length > 0 || playerTotals[0] > 0) && currentWager[0] > 0
+            }
             checked={soft17Checked}
             onChange={() => setSoft17Checked(!soft17Checked)}
           />
@@ -68,7 +70,9 @@ export default function SettingsModal({
             type="switch"
             id="splitSwitch"
             label="Split Based on Rank"
-            disabled={(dealersHandElements.length > 0 || playerTotals[0] > 0) && currentWager[0] > 0}
+            disabled={
+              (dealersHandElements.length > 0 || playerTotals[0] > 0) && currentWager[0] > 0
+            }
             checked={splitTypeChecked}
             onChange={() => setSplitTypeChecked(!splitTypeChecked)}
           />

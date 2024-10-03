@@ -47,7 +47,14 @@ function countAces(cards) {
 }
 
 // Check if splitting is allowed based on current hand and rules
-export const isSplitAllowed = (playersHands, currentHand, splitCount, currentWager, playerPoints, splitTypeChecked) => {
+export const isSplitAllowed = (
+  playersHands,
+  currentHand,
+  splitCount,
+  currentWager,
+  playerPoints,
+  splitTypeChecked
+) => {
   if (!playersHands[currentHand] || playersHands[currentHand].length < 2) {
     return false;
   }
@@ -55,7 +62,11 @@ export const isSplitAllowed = (playersHands, currentHand, splitCount, currentWag
     ? playersHands[currentHand][0].rank === playersHands[currentHand][1].rank
     : playersHands[currentHand][0].pointValue === playersHands[currentHand][1].pointValue;
 
-  return playersHands[currentHand].length === 2 && isMatchingRankOrValue && isWagerAllowed(currentWager[currentHand], playerPoints);
+  return (
+    playersHands[currentHand].length === 2 &&
+    isMatchingRankOrValue &&
+    isWagerAllowed(currentWager[currentHand], playerPoints)
+  );
 };
 
 // Check if the current wager is allowed based on player points
@@ -64,8 +75,18 @@ export function isWagerAllowed(currentWager, playerPoints) {
 }
 
 // Check if doubling down is allowed based on current hand and rules
-export function isDoubleDownAllowed(playersHands, currentHand, playerTotal, currentWager, playerPoints) {
-  return playersHands[currentHand].length === 2 && playerTotal <= 21 && isWagerAllowed(currentWager[currentHand], playerPoints);
+export function isDoubleDownAllowed(
+  playersHands,
+  currentHand,
+  playerTotal,
+  currentWager,
+  playerPoints
+) {
+  return (
+    playersHands[currentHand].length === 2 &&
+    playerTotal <= 21 &&
+    isWagerAllowed(currentWager[currentHand], playerPoints)
+  );
 }
 
 // Calculate total points for all hands and return them

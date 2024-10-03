@@ -14,7 +14,11 @@ import CardDeck from "./CardDeck.js";
 
 import { enableGameButtons, delay, disableGameButtons, hideGameButtons } from "./utils/utils.js";
 
-import { calculateTotal, shouldDealerHit, calculateAndReturnTotals } from "./utils/blackjackUtils.js";
+import {
+  calculateTotal,
+  shouldDealerHit,
+  calculateAndReturnTotals,
+} from "./utils/blackjackUtils.js";
 
 import { addCard, flipCard, adjustCardMargins } from "./utils/uiUtils.js";
 
@@ -93,17 +97,34 @@ export default function App() {
   };
 
   // Deal a card to the player or dealer
-  const hit = async (entity = "player", origin = "user", hand = currentHand, newPlayersHands = [...playersHands]) => {
+  const hit = async (
+    entity = "player",
+    origin = "user",
+    hand = currentHand,
+    newPlayersHands = [...playersHands]
+  ) => {
     disableGameButtons();
 
     if (entity !== "dealer") {
-      await addCard(newPlayersHands[hand], playersHandElements[hand], entity, origin, deck, setPlayersHandElements, hand);
+      await addCard(
+        newPlayersHands[hand],
+        playersHandElements[hand],
+        entity,
+        origin,
+        deck,
+        setPlayersHandElements,
+        hand
+      );
     } else {
       await addCard(dealersHand, dealersHandElements, entity, origin, deck, setDealersHandElements);
     }
 
     // Calculate the new totals before updating the state
-    const { newTotals, newDealerTotal } = await calculateAndReturnTotals(newPlayersHands, playerTotals, dealersHand);
+    const { newTotals, newDealerTotal } = await calculateAndReturnTotals(
+      newPlayersHands,
+      playerTotals,
+      dealersHand
+    );
 
     setPlayerTotal(newTotals);
     setDealerTotal(newDealerTotal);
@@ -168,11 +189,18 @@ export default function App() {
     newCurrentWager[newSplitCount] = newCurrentWager[currentHand];
 
     newPlayersHands[newSplitCount].push(newPlayersHands[currentHand].pop());
-    newPlayerHandElements[newSplitCount].push({ ...newPlayerHandElements[currentHand].pop(), key: "1" });
+    newPlayerHandElements[newSplitCount].push({
+      ...newPlayerHandElements[currentHand].pop(),
+      key: "1",
+    });
 
     const newPlayerTotals = [...playerTotals, 0];
     // Calculate the new totals before updating the state
-    let { newTotals } = await calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand);
+    let { newTotals } = await calculateAndReturnTotals(
+      newPlayersHands,
+      newPlayerTotals,
+      dealersHand
+    );
     setPlayerTotal(newTotals);
 
     setPlayerHand(newPlayersHands);
@@ -297,7 +325,9 @@ export default function App() {
         </Container>
         <Container className="text-center mt-3" id="disclaimer">
           <p className="small text-muted my-0 px-5">
-            <strong>* Disclaimer:</strong> Points in this game have <strong>no monetary value</strong> and are for <strong>entertainment purposes only</strong>.
+            <strong>* Disclaimer:</strong> Points in this game have{" "}
+            <strong>no monetary value</strong> and are for{" "}
+            <strong>entertainment purposes only</strong>.
           </p>
         </Container>
       </Container>
@@ -317,7 +347,12 @@ export default function App() {
         currentHand={currentHand}
         dealersHandElements={dealersHandElements}
       />
-      <InfoModal newGame={newGame} show={showInfo} handleClose={handleCloseInfo} currentWager={currentWager} />
+      <InfoModal
+        newGame={newGame}
+        show={showInfo}
+        handleClose={handleCloseInfo}
+        currentWager={currentWager}
+      />
     </>
   );
 }

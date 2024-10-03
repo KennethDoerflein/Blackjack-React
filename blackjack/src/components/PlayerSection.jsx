@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Container, Carousel } from "react-bootstrap";
 import { adjustCardMargins } from "../utils/uiUtils.js";
 
-export default function PlayerSection({ playersHandElements, playerTotals, splitCount, playersHandNames, currentHand, carousalInterval }) {
+export default function PlayerSection({
+  playersHandElements,
+  playerTotals,
+  splitCount,
+  playersHandNames,
+  currentHand,
+  carousalInterval,
+}) {
   const [index, setIndex] = useState(currentHand); // Keep track of the current hand in Carousel
 
   // Sync the Carousel index with the current hand when it changes
@@ -30,7 +37,13 @@ export default function PlayerSection({ playersHandElements, playerTotals, split
 
   return (
     <>
-      <Carousel activeIndex={index} onSelect={handleSelect} interval={carousalInterval} controls={false} indicators={false} className="my-3 mx-auto">
+      <Carousel
+        activeIndex={index}
+        onSelect={handleSelect}
+        interval={carousalInterval}
+        controls={false}
+        indicators={false}
+        className="my-3 mx-auto">
         {playersHandElements.map((hand, i) => (
           <Carousel.Item key={i + hand}>
             <Container className="text-center my-3">
