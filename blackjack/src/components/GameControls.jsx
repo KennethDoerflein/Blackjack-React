@@ -18,6 +18,7 @@ export default function GameControls({
   splitTypeChecked,
   autoStandChecked,
   resultsAlertHidden,
+  showButtons,
 }) {
   async function doubleDown() {
     if (isDoubleDownAllowed(playersHands, currentHand, playerTotals[currentHand], currentWager, playerPoints)) {
@@ -45,7 +46,7 @@ export default function GameControls({
       <ButtonGroup>
         <Button
           onClick={() => hit()}
-          hidden={playerTotals[currentHand] > 21 || playersHands[currentHand].length < 2 || !resultsAlertHidden}
+          hidden={playerTotals[currentHand] > 21 || playersHands[currentHand].length < 2 || !resultsAlertHidden || !showButtons}
           id="hitBtn"
           variant="warning"
           size="sm"
@@ -55,7 +56,10 @@ export default function GameControls({
         <Button
           onClick={() => splitHand()}
           hidden={
-            !isSplitAllowed(playersHands, currentHand, splitCount, currentWager, playerPoints, splitTypeChecked) || playersHands[currentHand].length < 2 || !resultsAlertHidden
+            !isSplitAllowed(playersHands, currentHand, splitCount, currentWager, playerPoints, splitTypeChecked) ||
+            playersHands[currentHand].length < 2 ||
+            !resultsAlertHidden ||
+            !showButtons
           }
           id="splitBtn"
           variant="primary"
@@ -65,7 +69,7 @@ export default function GameControls({
         </Button>
         <Button
           onClick={() => doubleDown()}
-          hidden={!isDoubleDownAllowed(playersHands, currentHand, playerTotals[currentHand], currentWager, playerPoints) || !resultsAlertHidden}
+          hidden={!isDoubleDownAllowed(playersHands, currentHand, playerTotals[currentHand], currentWager, playerPoints) || !resultsAlertHidden || !showButtons}
           id="doubleDownBtn"
           variant="light"
           size="sm"
@@ -76,7 +80,7 @@ export default function GameControls({
         </Button>
         <Button
           onClick={() => endHand()}
-          hidden={playerTotals[currentHand] > 21 || playersHands[currentHand].length < 2 || !resultsAlertHidden}
+          hidden={playerTotals[currentHand] > 21 || playersHands[currentHand].length < 2 || !resultsAlertHidden || !showButtons}
           id="standBtn"
           variant="danger"
           size="sm"
@@ -85,14 +89,20 @@ export default function GameControls({
         </Button>
         <Button
           onClick={() => newGame()}
-          hidden={playersHands[0].length === 0 || playerPoints === 0 || resultsAlertHidden}
+          hidden={playersHands[0].length === 0 || playerPoints === 0 || resultsAlertHidden || !showButtons}
           id="newGameBtn"
           variant="success"
           size="sm"
           className="mx-auto my-1">
           New Game
         </Button>
-        <Button onClick={() => resetPoints()} hidden={playerPoints !== 0 || resultsAlertHidden} id="resetPointsBtn" variant="info" size="sm" className="mx-auto my-1">
+        <Button
+          onClick={() => resetPoints()}
+          hidden={playerPoints !== 0 || resultsAlertHidden || !showButtons}
+          id="resetPointsBtn"
+          variant="info"
+          size="sm"
+          className="mx-auto my-1">
           Reset Points
         </Button>
       </ButtonGroup>

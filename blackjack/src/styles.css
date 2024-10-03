@@ -173,3 +173,11 @@
 .viewportResize img {
   transition: margin-left 0.3s ease-in-out;
 }
+
+#resultsAlert {
+  max-width: fit-content;
+}
+
+.carousel {
+  max-width: fit-content;
+}

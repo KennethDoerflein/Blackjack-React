@@ -1,8 +1,20 @@
-import React, { useEffect } from "react";
-import { Container } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Container, Carousel } from "react-bootstrap";
 import { adjustCardMargins } from "../utils/uiUtils.js";
 
-export default function PlayerSection({ playersHandElements, playerTotals, splitCount, playersHandNames }) {
+export default function PlayerSection({ playersHandElements, playerTotals, splitCount, playersHandNames, currentHand, carousalInterval }) {
+  const [index, setIndex] = useState(currentHand); // Keep track of the current hand in Carousel
+
+  // Sync the Carousel index with the current hand when it changes
+  useEffect(() => {
+    setIndex(currentHand);
+  }, [currentHand, carousalInterval]);
+
+  const handleSelect = (selectedIndex) => {
+    setIndex(selectedIndex); // Update Carousel index
+    //setCurrentHand(selectedIndex); // Update the active hand in parent state
+  };
+
   useEffect(() => {
     const adjustMargins = () => {
       if (playersHandElements[0].length > 2) {
@@ -18,30 +30,22 @@ export default function PlayerSection({ playersHandElements, playerTotals, split
 
   return (
     <>
-      <Container className="text-center my-3">
-        <h6 id="playerHeader">
-          Player's Cards{" "}
-          {splitCount > 0
-            ? (() => {
-                let totalPerHand = "";
-                for (let i = 0; i <= splitCount; i++) {
-                  totalPerHand += `Hand ${i + 1}: ${playerTotals[i]}`;
-                  if (i < splitCount) {
-                    totalPerHand += ", ";
-                  }
-                }
-                return `(${totalPerHand})`;
-              })()
-            : playerTotals[0] > 0 && `(Total: ${playerTotals[0]})`}
-        </h6>
-      </Container>
-      <span id="playersHands">
+      <Carousel activeIndex={index} onSelect={handleSelect} interval={carousalInterval} controls={false} indicators={false} className="my-3 mx-auto">
         {playersHandElements.map((hand, i) => (
-          <Container fluid key={i} id={playersHandNames[i]}>
-            {hand}
-          </Container>
+          <Carousel.Item key={i + hand}>
+            <Container className="text-center my-3">
+              <h6 id="playerHeader">
+                Player's Hand{` ${splitCount > 0 ? i + 1 : ""}`} (Total: {playerTotals[i]})
+              </h6>
+            </Container>
+            <span id="playersHands">
+              <Container fluid key={i} id={playersHandNames[i]}>
+                {hand}
+              </Container>
+            </span>
+          </Carousel.Item>
         ))}
-      </span>
+      </Carousel>
     </>
   );
 }
