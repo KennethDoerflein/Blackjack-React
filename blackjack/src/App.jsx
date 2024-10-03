@@ -80,7 +80,7 @@ export default function App() {
     const newTotal = await hit("player", "init");
     await hit("dealer", "init");
     if (newTotal !== 21 || !autoStandChecked) {
-      document.getElementById("playersHand0").classList.add("activeHand");
+      // document.getElementById("playersHand0").classList.add("activeHand");
       setShowButtons(true);
       enableGameButtons();
     }
@@ -125,15 +125,15 @@ export default function App() {
   const endHand = async () => {
     if (currentHand === splitCount) {
       hideGameButtons();
-      document.getElementById(playersHandNames[currentHand]).classList.remove("activeHand");
-      document.getElementById("dealersHand").classList.add("activeHand");
+      // document.getElementById(playersHandNames[currentHand]).classList.remove("activeHand");
+      // document.getElementById("dealersHand").classList.add("activeHand");
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
       let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
       await delay(600);
       flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
       await delay(400);
       await playDealer();
-      document.getElementById("dealersHand").classList.remove("activeHand");
+      // document.getElementById("dealersHand").classList.remove("activeHand");
       setResultsAlertHidden(false);
       setCarousalInterval(1750);
     } else if (currentHand !== splitCount) {
@@ -144,8 +144,8 @@ export default function App() {
   // Advance to the next player hand if splits occurred
   function advanceHand(newHand) {
     if (currentHand < splitCount && splitCount > 0) {
-      document.getElementById(playersHandNames[newHand]).classList.add("activeHand");
-      document.getElementById(playersHandNames[currentHand]).classList.remove("activeHand");
+      // document.getElementById(playersHandNames[newHand]).classList.add("activeHand");
+      // document.getElementById(playersHandNames[currentHand]).classList.remove("activeHand");
       setCurrentHand(newHand);
       if (playerTotals[newHand] !== 21 || !autoStandChecked) {
         enableGameButtons();
@@ -193,7 +193,7 @@ export default function App() {
     await delay(600);
     setShowButtons(true);
     enableGameButtons();
-    document.getElementById("playersHand" + oldHand).classList.add("activeHand");
+    // document.getElementById("playersHand" + oldHand).classList.add("activeHand");
   };
 
   // Play the dealer's hand according to the rules
