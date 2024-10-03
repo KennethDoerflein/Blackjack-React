@@ -8,9 +8,8 @@ export default function PlayerSection({ playersHandElements, playerTotals, split
   // Sync the Carousel index with the current hand when it changes
   useEffect(() => {
     setIndex(currentHand);
-  }, [currentHand]);
+  }, [currentHand, carousalInterval]);
 
-  // Handle manual Carousel navigation
   const handleSelect = (selectedIndex) => {
     setIndex(selectedIndex); // Update Carousel index
     //setCurrentHand(selectedIndex); // Update the active hand in parent state

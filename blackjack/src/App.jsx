@@ -54,19 +54,20 @@ export default function App() {
   // Start a new game by shuffling the deck and resetting the UI
   const newGame = () => {
     if (playerPoints > 0) {
+      setCarousalInterval(null);
       document.getElementById("newGameBtn").hidden = true;
       if (deck) deck.reshuffle();
       else setCardDeck(new CardDeck(10));
       setPlayersHandNames(["playersHand0"]);
       setPlayerHand([[]]);
       setDealersHand([]);
+      setCurrentHand(0);
       setDealerTotal(0);
       setPlayerTotal([0]);
       setCurrentWager([0]);
       setSplitCount(0);
       setPlayersHandElements([[]]);
       setDealersHandElements([]);
-      setCarousalInterval(null);
       if (!resultsAlertHidden) setResultsAlertHidden(true);
     }
   };
