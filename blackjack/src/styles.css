@@ -181,3 +181,8 @@
 .carousel {
   max-width: fit-content;
 }
+
+.carousel-overlay {
+  background-color: transparent; /* Transparent overlay */
+  z-index: 2; /* Above the carousel */
+}

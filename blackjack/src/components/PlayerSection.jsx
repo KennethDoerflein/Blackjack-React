@@ -10,20 +10,14 @@ export default function PlayerSection({
   currentHand,
   carousalInterval,
 }) {
-  const [index, setIndex] = useState(currentHand); // Keep track of the current hand in Carousel
-  const [isAutoSliding, setIsAutoSliding] = useState(true); // Track whether it's auto sliding
+  const [index, setIndex] = useState(currentHand);
 
-  // Sync the Carousel index with the current hand when it changes
   useEffect(() => {
     setIndex(currentHand);
   }, [currentHand, carousalInterval]);
 
   const handleSelect = (selectedIndex, e) => {
-    // Only update index if auto sliding, not manual user input
-    if (isAutoSliding) {
-      setIndex(selectedIndex);
-    }
-    setIsAutoSliding(true); // Reset to auto sliding after every select
+    setIndex(selectedIndex);
   };
 
   useEffect(() => {
@@ -41,31 +35,31 @@ export default function PlayerSection({
 
   return (
     <>
-      <Carousel
-        activeIndex={index}
-        onSelect={handleSelect}
-        interval={carousalInterval}
-        controls={false}
-        indicators={false}
-        className="my-3 mx-auto"
-        pause={null}
-        onSlide={() => setIsAutoSliding(false)} // Detect if user manually interacts
-      >
-        {playersHandElements.map((hand, i) => (
-          <Carousel.Item key={i + hand}>
-            <Container className="text-center my-3">
-              <h6 id="playerHeader">
-                Player's Hand{` ${splitCount > 0 ? i + 1 : ""}`} (Total: {playerTotals[i]})
-              </h6>
-            </Container>
-            <span id="playersHands">
-              <Container fluid key={i} id={playersHandNames[i]}>
-                {hand}
+      <span className="carousel-overlay">
+        <Carousel
+          activeIndex={index}
+          onSelect={handleSelect}
+          interval={carousalInterval}
+          controls={false}
+          indicators={false}
+          className="my-3 mx-auto"
+          pause={null}>
+          {playersHandElements.map((hand, i) => (
+            <Carousel.Item key={i + hand}>
+              <Container className="text-center my-3">
+                <h6 id="playerHeader">
+                  Player's Hand{` ${splitCount > 0 ? i + 1 : ""}`} (Total: {playerTotals[i]})
+                </h6>
               </Container>
-            </span>
-          </Carousel.Item>
-        ))}
-      </Carousel>
+              <span id="playersHands">
+                <Container fluid key={i} id={playersHandNames[i]}>
+                  {hand}
+                </Container>
+              </span>
+            </Carousel.Item>
+          ))}
+        </Carousel>
+      </span>
     </>
   );
 }
