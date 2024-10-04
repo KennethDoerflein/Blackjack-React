@@ -16,8 +16,8 @@ export default function PlayerSection({
     setIndex(currentHand);
   }, [currentHand, carousalInterval]);
 
-  const handleSelect = (selectedIndex, e) => {
-    setIndex(selectedIndex);
+  const handleSelect = (selectedIndex) => {
+    if (carousalInterval !== null) setIndex(selectedIndex);
   };
 
   useEffect(() => {
@@ -35,31 +35,29 @@ export default function PlayerSection({
 
   return (
     <>
-      <span className="carousel-overlay">
-        <Carousel
-          activeIndex={index}
-          onSelect={handleSelect}
-          interval={carousalInterval}
-          controls={false}
-          indicators={false}
-          className="my-3 mx-auto"
-          pause={null}>
-          {playersHandElements.map((hand, i) => (
-            <Carousel.Item key={i + hand}>
-              <Container className="text-center my-3">
-                <h6 id="playerHeader">
-                  Player's Hand{` ${splitCount > 0 ? i + 1 : ""}`} (Total: {playerTotals[i]})
-                </h6>
+      <Carousel
+        activeIndex={index}
+        onSelect={handleSelect}
+        interval={carousalInterval}
+        controls={false}
+        indicators={false}
+        className="my-3 mx-auto"
+        pause={null}>
+        {playersHandElements.map((hand, i) => (
+          <Carousel.Item key={i + hand}>
+            <Container className="text-center my-3">
+              <h6 id="playerHeader">
+                Player's Hand{` ${splitCount > 0 ? i + 1 : ""}`} (Total: {playerTotals[i]})
+              </h6>
+            </Container>
+            <span id="playersHands">
+              <Container fluid key={i} id={playersHandNames[i]}>
+                {hand}
               </Container>
-              <span id="playersHands">
-                <Container fluid key={i} id={playersHandNames[i]}>
-                  {hand}
-                </Container>
-              </span>
-            </Carousel.Item>
-          ))}
-        </Carousel>
-      </span>
+            </span>
+          </Carousel.Item>
+        ))}
+      </Carousel>
     </>
   );
 }
