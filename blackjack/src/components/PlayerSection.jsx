@@ -48,7 +48,7 @@ export default function PlayerSection({
         controls={false}
         indicators={false}
         className="my-3 mx-auto"
-        pause="null"
+        pause={null}
         onSlide={() => setIsAutoSliding(false)} // Detect if user manually interacts
       >
         {playersHandElements.map((hand, i) => (
