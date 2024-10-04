@@ -11,15 +11,19 @@ export default function PlayerSection({
   carousalInterval,
 }) {
   const [index, setIndex] = useState(currentHand); // Keep track of the current hand in Carousel
+  const [isAutoSliding, setIsAutoSliding] = useState(true); // Track whether it's auto sliding
 
   // Sync the Carousel index with the current hand when it changes
   useEffect(() => {
     setIndex(currentHand);
   }, [currentHand, carousalInterval]);
 
-  const handleSelect = (selectedIndex) => {
-    setIndex(selectedIndex); // Update Carousel index
-    //setCurrentHand(selectedIndex); // Update the active hand in parent state
+  const handleSelect = (selectedIndex, e) => {
+    // Only update index if auto sliding, not manual user input
+    if (isAutoSliding) {
+      setIndex(selectedIndex);
+    }
+    setIsAutoSliding(true); // Reset to auto sliding after every select
   };
 
   useEffect(() => {
@@ -43,7 +47,10 @@ export default function PlayerSection({
         interval={carousalInterval}
         controls={false}
         indicators={false}
-        className="my-3 mx-auto">
+        className="my-3 mx-auto"
+        pause="null"
+        onSlide={() => setIsAutoSliding(false)} // Detect if user manually interacts
+      >
         {playersHandElements.map((hand, i) => (
           <Carousel.Item key={i + hand}>
             <Container className="text-center my-3">
