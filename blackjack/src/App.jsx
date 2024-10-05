@@ -278,6 +278,7 @@ export default function App() {
           playersHandNames={playersHandNames}
           currentHand={currentHand}
           carousalInterval={carousalInterval}
+          setCurrentHand={setCurrentHand}
         />
         <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
         <Container className="text-center" id="bottomDiv">
@@ -301,7 +302,7 @@ export default function App() {
             dealerTotal={dealerTotal}
             setCurrentWager={setCurrentWager}
             resultsAlertHidden={resultsAlertHidden}
-            setCurrentHand={setCurrentHand}
+            currentHand={currentHand}
           />
           <GameControls
             hit={hit}

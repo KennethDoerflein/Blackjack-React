@@ -9,6 +9,7 @@ export default function PlayerSection({
   playersHandNames,
   currentHand,
   carousalInterval,
+  setCurrentHand,
 }) {
   const [index, setIndex] = useState(currentHand);
 
@@ -17,7 +18,10 @@ export default function PlayerSection({
   }, [currentHand, carousalInterval]);
 
   const handleSelect = (selectedIndex) => {
-    if (carousalInterval !== null) setIndex(selectedIndex);
+    if (carousalInterval !== null) {
+      setIndex(selectedIndex);
+      setCurrentHand(selectedIndex);
+    }
   };
 
   useEffect(() => {

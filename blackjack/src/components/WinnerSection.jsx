@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, Container } from "react-bootstrap";
 
 export default function WinnerSection({
@@ -11,25 +11,21 @@ export default function WinnerSection({
   splitCount,
   setCurrentWager,
   resultsAlertHidden,
-  setCurrentHand,
+  currentHand,
 }) {
+  const [outcomes, setOutcomes] = useState([]);
+
   useEffect(() => {
     if (!resultsAlertHidden) {
-      // This used to be `displayWinner()` in App.js
-
-      const messageDiv = document.getElementById("message");
-
-      while (messageDiv.firstChild) {
-        messageDiv.removeChild(messageDiv.firstChild);
-      }
-      let outcomes = [[], []];
       let newPlayerPoints = playerPoints;
+      let newOutcomes = []; // Create a local array to store the outcomes for this effect
 
       for (let handIndex = 0; handIndex < playersHands.length; handIndex++) {
         if (playersHands[handIndex].length === 0) continue;
 
         let outcome = "";
         let wagerMultiplier = 1;
+
         if (playerTotals[handIndex] > 21) {
           outcome = "Player Busted, Dealer Wins";
           wagerMultiplier = 0;
@@ -49,30 +45,22 @@ export default function WinnerSection({
         }
 
         newPlayerPoints += Math.ceil((currentWager[handIndex] * wagerMultiplier).toFixed(2));
-        outcomes[handIndex] = splitCount > 0 ? `Hand ${handIndex + 1}: ${outcome}` : outcome;
-
-        let winnerElement = createWinnerElement(outcomes[handIndex]);
-        messageDiv.append(winnerElement);
+        newOutcomes.push(splitCount > 0 ? `Hand ${handIndex + 1}: ${outcome}` : outcome);
       }
 
+      // Update the player's points and outcomes in state
       setPlayerPoints(newPlayerPoints);
-      if (newPlayerPoints === 0) {
-        let message = createWinnerElement("You are out of points, thank you for playing!");
-        message.classList.add("mt-2", "mb-5");
-        document.getElementById("bottomDiv").appendChild(message);
-      }
-      setCurrentWager([0]);
-      setCurrentHand(0);
+
+      // If the player runs out of points, add the final message
+      // if (newPlayerPoints === 0) {
+      //   newOutcomes.push("You are out of points, thank you for playing!");
+      // }
+
+      setOutcomes(newOutcomes); // Update outcomes state so that it triggers re-render
+      setCurrentWager([0]); // Reset the current wager
     }
     // eslint-disable-next-line
   }, [resultsAlertHidden]);
-
-  function createWinnerElement(outcome) {
-    let winner = document.createElement("h6");
-    winner.classList.add("my-1");
-    winner.textContent = outcome;
-    return winner;
-  }
 
   return (
     <Container fluid>
@@ -82,7 +70,11 @@ export default function WinnerSection({
         variant="info"
         className="alert-dismissible fade show mx-auto px-1 py-2 mt-3"
         role="alert">
-        <Container id="message" className="text-center"></Container>
+        <Container id="message" className="text-center">
+          <h6 key={currentHand} className="my-1">
+            {outcomes[currentHand]}
+          </h6>
+        </Container>
       </Alert>
     </Container>
   );

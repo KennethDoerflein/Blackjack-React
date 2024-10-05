@@ -12,7 +12,7 @@ export default function PointSection({ playerPoints, currentWager }) {
       <Container
         className="text-center ms-3 mb-2 px-2 border rounded d-flex align-items-center justify-content-center"
         id="wagerDisplay">
-        Current Hand's Wager: {currentWager}
+        Current Hand's Wager: {currentWager !== undefined ? currentWager : 0}
       </Container>
     </Container>
   );
