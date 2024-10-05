@@ -218,7 +218,7 @@ export default function App() {
     // Recalculate the new totals after hitting
     ({ newTotals } = await calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
     setPlayerTotal(newTotals);
-    await delay(600);
+    await delay(750);
     setShowButtons(true);
     enableGameButtons();
     // document.getElementById("playersHand" + oldHand).classList.add("activeHand");
