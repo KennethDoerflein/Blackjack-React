@@ -45,7 +45,6 @@ export default function GameControls({
   function resetPoints() {
     if (playerPoints === 0) {
       setPlayerPoints(100);
-      document.getElementById("bottomDiv").lastChild.remove();
     }
   }
 
