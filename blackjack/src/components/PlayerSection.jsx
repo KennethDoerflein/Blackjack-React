@@ -11,15 +11,9 @@ export default function PlayerSection({
   carousalInterval,
   setCurrentHand,
 }) {
-  const [index, setIndex] = useState(currentHand);
-
-  useEffect(() => {
-    setIndex(currentHand);
-  }, [currentHand, carousalInterval]);
 
   const handleSelect = (selectedIndex) => {
     if (carousalInterval !== null) {
-      setIndex(selectedIndex);
       setCurrentHand(selectedIndex);
     }
   };
@@ -40,7 +34,7 @@ export default function PlayerSection({
   return (
     <>
       <Carousel
-        activeIndex={index}
+        activeIndex={currentHand}
         onSelect={handleSelect}
         interval={carousalInterval}
         controls={false}
@@ -48,14 +42,14 @@ export default function PlayerSection({
         className="my-3 mx-auto"
         pause={null}>
         {playersHandElements.map((hand, i) => (
-          <Carousel.Item key={i + hand}>
+          <Carousel.Item key={i}>
             <Container className="text-center my-3">
               <h6 id="playerHeader">
                 Player's Hand{` ${splitCount > 0 ? i + 1 : ""}`} (Total: {playerTotals[i]})
               </h6>
             </Container>
             <span id="playersHands">
-              <Container fluid key={i} id={playersHandNames[i]}>
+              <Container fluid key={playersHandNames[i]} id={playersHandNames[i]}>
                 {hand}
               </Container>
             </span>

@@ -34,9 +34,6 @@ export default function App() {
   const handleCloseSettings = () => setShowSettings(false);
   const [resultsAlertHidden, setResultsAlertHidden] = useState(true);
 
-  const [showButtons, setShowButtons] = useState(true);
-  const [carousalInterval, setCarousalInterval] = useState(null);
-
   const [soft17Checked, setSoft17Checked] = useState(true);
   const [autoStandChecked, setAutoStandChecked] = useState(false);
   const [splitTypeChecked, setSplitTypeChecked] = useState(false);
@@ -55,17 +52,22 @@ export default function App() {
   const [splitCount, setSplitCount] = useState(0);
   const [playersHandNames, setPlayersHandNames] = useState(["playersHand0"]);
 
+  const [showButtons, setShowButtons] = useState(true);
+  const [carousalInterval, setCarousalInterval] = useState(null);
+  const [carouselKey, setCarouselKey] = useState(0);
+
   // Start a new game by shuffling the deck and resetting the UI
   const newGame = () => {
     if (playerPoints > 0) {
+      setCurrentHand(0);
       setCarousalInterval(null);
+      setCarouselKey((prevKey) => prevKey + 1);
       document.getElementById("newGameBtn").hidden = true;
       if (deck) deck.reshuffle();
       else setCardDeck(new CardDeck(10));
       setPlayersHandNames(["playersHand0"]);
       setPlayerHand([[]]);
       setDealersHand([]);
-      setCurrentHand(0);
       setDealerTotal(0);
       setPlayerTotal([0]);
       setCurrentWager([0]);
@@ -279,6 +281,7 @@ export default function App() {
           currentHand={currentHand}
           carousalInterval={carousalInterval}
           setCurrentHand={setCurrentHand}
+          key={carouselKey}
         />
         <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
         <Container className="text-center" id="bottomDiv">
