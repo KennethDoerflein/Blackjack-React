@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Container, Carousel } from "react-bootstrap";
 import { adjustCardMargins } from "../utils/uiUtils.js";
 
