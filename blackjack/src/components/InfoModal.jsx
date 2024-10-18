@@ -88,7 +88,11 @@ export default function InfoModal({ show, handleClose, newGame, currentWager }) 
         <Button
           onClick={() => {
             handleClose();
-            if (document.getElementById("newGameBtn").hidden && currentWager[0] === 0) newGame();
+            setTimeout(() => {
+              if (document.getElementById("newGameBtn").hidden && currentWager[0] === 0) {
+                newGame();
+              }
+            }, 200);
           }}
           variant="warning"
           className="mx-auto"
