@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Image as BSImage } from "react-bootstrap";
+import { Button, Container, Image as BSImage, Spinner } from "react-bootstrap"; // Import Spinner
 import { animateElement } from "../utils/uiUtils.js";
 
 const chipNames = ["1Chip", "5Chip", "10Chip", "20Chip", "50Chip"];
@@ -74,7 +74,12 @@ export default function WagerControls({
   };
 
   if (!imagesLoaded || loading) {
-    return <div className="mt-2">Loading assets...</div>;
+    return (
+      <div className="mt-2 d-flex justify-content-center align-items-center">
+        <Spinner animation="border" role="status" variant="primary" />
+        <span className="ms-2">Loading assets...</span>
+      </div>
+    );
   }
 
   return (
