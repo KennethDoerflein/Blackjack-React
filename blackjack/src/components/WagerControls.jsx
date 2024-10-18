@@ -24,6 +24,7 @@ export default function WagerControls({
   initialDeal,
   playersHands,
   showInfo,
+  loading,
 }) {
   const [imagesLoaded, setImagesLoaded] = useState(false);
 
@@ -72,8 +73,8 @@ export default function WagerControls({
     }
   };
 
-  if (!imagesLoaded) {
-    return <div className="mt-2">Loading...</div>;
+  if (!imagesLoaded && loading) {
+    return <div className="mt-2">Loading assets...</div>;
   }
 
   return (

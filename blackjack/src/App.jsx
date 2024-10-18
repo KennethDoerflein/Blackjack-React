@@ -40,6 +40,7 @@ export default function App() {
 
   document.documentElement.setAttribute("data-bs-theme", "dark");
   const [deck, setCardDeck] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [playersHands, setPlayerHand] = useState([[]]);
   const [playersHandElements, setPlayersHandElements] = useState([[]]);
   const [dealersHand, setDealersHand] = useState([]);
@@ -57,14 +58,33 @@ export default function App() {
   const [carouselKey, setCarouselKey] = useState(0);
 
   // Start a new game by shuffling the deck and resetting the UI
-  const newGame = () => {
+  const newGame = async () => {
     if (playerPoints > 0) {
       setCurrentHand(0);
       setCarousalInterval(null);
       setCarouselKey((prevKey) => prevKey + 1);
       document.getElementById("newGameBtn").hidden = true;
-      if (deck) deck.reshuffle();
-      else setCardDeck(new CardDeck(10));
+
+      if (!deck) {
+        // Create a new deck and wait for images to preload
+        const newDeck = new CardDeck(10);
+        setCardDeck(newDeck);
+
+        // Wait until deck loading is complete asynchronously
+        await new Promise((resolve) => {
+          const checkIfLoaded = setInterval(() => {
+            if (!newDeck.loading) {
+              clearInterval(checkIfLoaded);
+              resolve();
+            }
+          }, 200); // Check every 200ms
+        });
+      } else {
+        deck.reshuffle();
+      }
+
+      // Proceed to reset the game state after the deck is ready
+      setLoading(false);
       setPlayersHandNames(["playersHand0"]);
       setPlayerHand([[]]);
       setDealersHand([]);
@@ -74,6 +94,8 @@ export default function App() {
       setSplitCount(0);
       setPlayersHandElements([[]]);
       setDealersHandElements([]);
+
+      // Hide the results alert if it's showing
       if (!resultsAlertHidden) setResultsAlertHidden(true);
     }
   };
@@ -294,6 +316,7 @@ export default function App() {
             initialDeal={initialDeal}
             playersHands={playersHands}
             showInfo={showInfo}
+            loading={loading}
           />
           <WinnerSection
             playerPoints={playerPoints}

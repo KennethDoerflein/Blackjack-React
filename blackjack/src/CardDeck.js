@@ -13,11 +13,13 @@ class CardDeck {
     this.SUITS = ["spades", "hearts", "diamonds", "clubs"];
     this.POINT_VALUES = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
     this.numberOfDecks = decks;
+    this.loading = true;
 
     this.cards = this.createDeck();
     this.dealtCards = [];
     this.preloadImages().then(() => {
       this.casinoShuffle();
+      this.loading = false;
     });
   }
 
