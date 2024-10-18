@@ -73,7 +73,7 @@ export default function WagerControls({
     }
   };
 
-  if (!imagesLoaded && loading) {
+  if (!imagesLoaded || loading) {
     return <div className="mt-2">Loading assets...</div>;
   }
 
