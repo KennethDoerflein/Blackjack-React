@@ -17,6 +17,7 @@ class CardDeck {
 
     this.cards = this.createDeck();
     this.dealtCards = [];
+    this.initialDeckSize = this.cards.length;
     this.preloadImages().then(() => {
       this.casinoShuffle().then(() => {
         this.loading = false;
@@ -146,11 +147,16 @@ class CardDeck {
   }
 
   async reshuffle() {
-    this.loading = true;
-    this.cards = this.cards.concat(this.dealtCards);
-    this.dealtCards = [];
-    await this.casinoShuffle();
-    this.loading = false;
+    // Reshuffle when 75% of the deck has been dealt
+    const threshold = this.initialDeckSize * 0.75;
+    if (this.dealtCards.length >= threshold) {
+      this.loading = true;
+      this.cards = this.cards.concat(this.dealtCards);
+      this.dealtCards = [];
+      this.casinoShuffle().then(() => {
+        this.loading = false;
+      });
+    }
   }
 
   getCard() {
