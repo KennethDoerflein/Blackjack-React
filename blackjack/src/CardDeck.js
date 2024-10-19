@@ -18,8 +18,9 @@ class CardDeck {
     this.cards = this.createDeck();
     this.dealtCards = [];
     this.preloadImages().then(() => {
-      this.casinoShuffle();
-      this.loading = false;
+      this.casinoShuffle().then(() => {
+        this.loading = false;
+      });
     });
   }
 
@@ -59,80 +60,97 @@ class CardDeck {
   }
 
   casinoShuffle() {
-    this.durstenfeldShuffle();
-    this.overhandShuffle();
-    this.riffleShuffle();
-    this.stripShuffle();
-    this.cutDeck();
+    return this.durstenfeldShuffle()
+      .then(() => this.overhandShuffle())
+      .then(() => this.riffleShuffle())
+      .then(() => this.stripShuffle())
+      .then(() => this.cutDeck());
   }
 
   durstenfeldShuffle() {
-    const array = this.cards;
-    const n = array.length;
-    for (let i = n - 1; i > 0; i--) {
-      const j = this.getRandomInt(0, i);
-      [array[i], array[j]] = [array[j], array[i]];
-    }
+    return new Promise((resolve) => {
+      const array = this.cards;
+      const n = array.length;
+      for (let i = n - 1; i > 0; i--) {
+        const j = this.getRandomInt(0, i);
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      resolve();
+    });
   }
 
   overhandShuffle() {
-    let tempDeck = [];
-    let maxIterations = 100;
-    let iterations = 0;
+    return new Promise((resolve) => {
+      let tempDeck = [];
+      let maxIterations = 100;
+      let iterations = 0;
 
-    while (this.cards.length > 0 && iterations < maxIterations) {
-      const chunkSize = this.getRandomInt(1, Math.min(10, this.cards.length));
-      const chunk = this.cards.splice(0, chunkSize);
+      while (this.cards.length > 0 && iterations < maxIterations) {
+        const chunkSize = this.getRandomInt(1, Math.min(10, this.cards.length));
+        const chunk = this.cards.splice(0, chunkSize);
 
-      if (this.getRandomInt(1, 101) <= 50) {
-        tempDeck = tempDeck.concat(chunk);
-      } else {
-        tempDeck = chunk.concat(tempDeck);
+        if (this.getRandomInt(1, 101) <= 50) {
+          tempDeck = tempDeck.concat(chunk);
+        } else {
+          tempDeck = chunk.concat(tempDeck);
+        }
+        iterations++;
       }
-      iterations++;
-    }
 
-    this.cards = tempDeck;
+      this.cards = tempDeck;
+      resolve();
+    });
   }
 
   riffleShuffle() {
-    const half = Math.floor(this.cards.length / 2);
-    let leftHalf = this.cards.slice(0, half);
-    let rightHalf = this.cards.slice(half);
+    return new Promise((resolve) => {
+      const half = Math.floor(this.cards.length / 2);
+      let leftHalf = this.cards.slice(0, half);
+      let rightHalf = this.cards.slice(half);
 
-    let shuffledDeck = [];
-    while (leftHalf.length > 0 && rightHalf.length > 0) {
-      if (this.getRandomInt(1, 101) <= 50) {
-        shuffledDeck.push(leftHalf.shift());
-      } else {
-        shuffledDeck.push(rightHalf.shift());
+      let shuffledDeck = [];
+      while (leftHalf.length > 0 && rightHalf.length > 0) {
+        if (this.getRandomInt(1, 101) <= 50) {
+          shuffledDeck.push(leftHalf.shift());
+        } else {
+          shuffledDeck.push(rightHalf.shift());
+        }
       }
-    }
 
-    this.cards = shuffledDeck.concat(leftHalf).concat(rightHalf);
+      this.cards = shuffledDeck.concat(leftHalf).concat(rightHalf);
+      resolve();
+    });
   }
 
   stripShuffle() {
-    let topIndex = this.getRandomInt(0, this.cards.length / 2);
-    let bottomIndex = this.getRandomInt(this.cards.length / 2, this.cards.length);
+    return new Promise((resolve) => {
+      let topIndex = this.getRandomInt(0, this.cards.length / 2);
+      let bottomIndex = this.getRandomInt(this.cards.length / 2, this.cards.length);
 
-    let topPortion = this.cards.slice(0, topIndex);
-    let middlePortion = this.cards.slice(topIndex, bottomIndex);
-    let bottomPortion = this.cards.slice(bottomIndex);
+      let topPortion = this.cards.slice(0, topIndex);
+      let middlePortion = this.cards.slice(topIndex, bottomIndex);
+      let bottomPortion = this.cards.slice(bottomIndex);
 
-    this.cards = bottomPortion.concat(middlePortion).concat(topPortion);
+      this.cards = bottomPortion.concat(middlePortion).concat(topPortion);
+      resolve();
+    });
   }
 
   cutDeck() {
-    const cutIndex = this.getRandomInt(this.cards.length / 4, (3 * this.cards.length) / 4);
-    const cutPart = this.cards.splice(0, cutIndex);
-    this.cards = this.cards.concat(cutPart);
+    return new Promise((resolve) => {
+      const cutIndex = this.getRandomInt(this.cards.length / 4, (3 * this.cards.length) / 4);
+      const cutPart = this.cards.splice(0, cutIndex);
+      this.cards = this.cards.concat(cutPart);
+      resolve();
+    });
   }
 
-  reshuffle() {
+  async reshuffle() {
+    this.loading = true;
     this.cards = this.cards.concat(this.dealtCards);
     this.dealtCards = [];
-    this.casinoShuffle();
+    await this.casinoShuffle();
+    this.loading = false;
   }
 
   getCard() {

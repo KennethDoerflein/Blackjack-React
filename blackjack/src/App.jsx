@@ -187,12 +187,14 @@ export default function App() {
   };
 
   // Advance to the next player hand if splits occurred
-  function advanceHand(newHand) {
+  async function advanceHand(newHand) {
     if (currentHand < splitCount && splitCount > 0) {
       // document.getElementById(playersHandNames[newHand]).classList.add("activeHand");
       // document.getElementById(playersHandNames[currentHand]).classList.remove("activeHand");
+      disableGameButtons();
       setCurrentHand(newHand);
       if (playerTotals[newHand] !== 21 || !autoStandChecked) {
+        await delay(750);
         enableGameButtons();
       }
     }
