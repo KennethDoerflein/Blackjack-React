@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "https://KennethDoerflein.github.io/Blackjack-React/static/css/main.d455a2ba.css",
+    "main.css": "https://KennethDoerflein.github.io/Blackjack-React/static/css/main.09b1351d.css",
     "main.js": "https://KennethDoerflein.github.io/Blackjack-React/static/js/main.68a436ce.js",
     "static/js/488.ab87d1c1.chunk.js": "https://KennethDoerflein.github.io/Blackjack-React/static/js/488.ab87d1c1.chunk.js",
     "index.html": "https://KennethDoerflein.github.io/Blackjack-React/index.html",
-    "main.d455a2ba.css.map": "https://KennethDoerflein.github.io/Blackjack-React/static/css/main.d455a2ba.css.map",
+    "main.09b1351d.css.map": "https://KennethDoerflein.github.io/Blackjack-React/static/css/main.09b1351d.css.map",
     "main.68a436ce.js.map": "https://KennethDoerflein.github.io/Blackjack-React/static/js/main.68a436ce.js.map",
     "488.ab87d1c1.chunk.js.map": "https://KennethDoerflein.github.io/Blackjack-React/static/js/488.ab87d1c1.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.d455a2ba.css",
+    "static/css/main.09b1351d.css",
     "static/js/main.68a436ce.js"
   ]
 }
