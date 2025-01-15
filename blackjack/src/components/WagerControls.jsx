@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Image as BSImage, Spinner } from "react-bootstrap"; // Import Spinner
+import { Button, Container, Image as BSImage, Spinner } from "react-bootstrap";
 import { animateElement } from "../utils/uiUtils.js";
 
 const chipNames = ["1Chip", "5Chip", "10Chip", "20Chip", "50Chip"];
@@ -41,9 +41,9 @@ export default function WagerControls({
     if (newWager <= playerPoints && Number.isInteger(newWager)) {
       updateWager(newWager);
     } else if (newWager > playerPoints) {
-      alert(
-        "Oops! You don't have enough points to place that wager. Your wager has been adjusted to your remaining points."
-      );
+      // alert(
+      //   "Oops! You don't have enough points to place that wager. Your wager has been adjusted to your remaining points."
+      // );
       updateWager(playerPoints);
     }
   };
