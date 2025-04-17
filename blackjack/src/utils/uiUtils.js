@@ -1,5 +1,8 @@
 import { delay } from "./utils";
 
+// Animation timing constants
+const FLIP_ANIMATION_DURATION = 400; // ms for flip
+
 export const addCard = async (cards, div, entity, origin, deck, setHandElements, currentHand) => {
   const card = deck.getCard();
   cards.push(card);
@@ -52,22 +55,18 @@ export const flipCard = async (reactImgElement, card, setHandElements, entity, c
     card.image,
     "imgFlip"
   );
+  updateFlippedHandElements(setHandElements, entity, currentHand, flippedReactImgElement);
 
-  requestAnimationFrame(() => {
-    updateFlippedHandElements(setHandElements, entity, currentHand, flippedReactImgElement);
-  });
-
+  // Let the CSS animation handle the flip, no extra delay needed
+  await delay(FLIP_ANIMATION_DURATION); // Match this to your CSS animation duration
+  // Remove the flip class after animation
   const normalReactImgElement = createReactImageElement(
     reactImgElement.key,
     newSrc,
     card.image,
     ""
   );
-  await delay(500);
-
-  requestAnimationFrame(() => {
-    updateFlippedHandElements(setHandElements, entity, currentHand, normalReactImgElement);
-  });
+  updateFlippedHandElements(setHandElements, entity, currentHand, normalReactImgElement);
 };
 
 const updateFlippedHandElements = (

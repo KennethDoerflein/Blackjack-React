@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Container } from "react-bootstrap";
 import { adjustCardMargins } from "../utils/uiUtils.js";
 
 export default function DealerSection({ dealersHandElements, dealerTotal }) {
+  const dealerHandRef = useRef(null);
   useEffect(() => {
-    if (dealersHandElements.length > 2) {
-      adjustCardMargins(document.getElementById("dealersHand"));
+    if (dealersHandElements.length > 2 && dealerHandRef.current) {
+      adjustCardMargins(dealerHandRef.current);
     }
   }, [dealersHandElements]);
   return (
@@ -18,7 +19,7 @@ export default function DealerSection({ dealersHandElements, dealerTotal }) {
             : ""}
         </h6>
       </Container>
-      <Container fluid id="dealersHand">
+      <Container fluid id="dealersHand" ref={dealerHandRef}>
         {dealersHandElements}
       </Container>
     </>

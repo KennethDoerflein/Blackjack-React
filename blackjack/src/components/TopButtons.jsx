@@ -1,7 +1,7 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { Button } from "react-bootstrap";
 
-export default function TopButtons({ showInfoModal, showSettingsModal }) {
+const TopButtons = forwardRef(function TopButtons({ showInfoModal, showSettingsModal }, audioRef) {
   return (
     <>
       <Button
@@ -18,7 +18,7 @@ export default function TopButtons({ showInfoModal, showSettingsModal }) {
         onClick={showSettingsModal}>
         ⚙️
       </Button>
-      <audio id="backgroundMusic" loop className="container text-center">
+      <audio id="backgroundMusic" loop className="container text-center" ref={audioRef}>
         <source
           src="./assets/casino-funky-background-upbeat-and-uplifting-music-intro-theme-120445.mp3"
           type="audio/mpeg"
@@ -26,4 +26,6 @@ export default function TopButtons({ showInfoModal, showSettingsModal }) {
       </audio>
     </>
   );
-}
+});
+
+export default TopButtons;

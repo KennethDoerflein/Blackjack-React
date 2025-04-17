@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button, Container, Image as BSImage, Spinner } from "react-bootstrap";
 import { animateElement } from "../utils/uiUtils.js";
 
@@ -27,6 +27,7 @@ export default function WagerControls({
   loading,
 }) {
   const [imagesLoaded, setImagesLoaded] = useState(false);
+  const wagerDisplayRef = useRef(null);
 
   useEffect(() => {
     preloadImages(chipNames).then(() => setImagesLoaded(true));
@@ -34,16 +35,15 @@ export default function WagerControls({
 
   const addChipValue = (e) => {
     animateElement(e.target, "chipFlip", 700);
-    animateElement(document.getElementById("wagerDisplay"), "highlight", 500);
+    if (wagerDisplayRef.current) {
+      animateElement(wagerDisplayRef.current, "highlight", 500);
+    }
 
     const chipValue = parseInt(e.target.getAttribute("data-value"), 10);
     const newWager = currentWager[currentHand] + chipValue;
     if (newWager <= playerPoints && Number.isInteger(newWager)) {
       updateWager(newWager);
     } else if (newWager > playerPoints) {
-      // alert(
-      //   "Oops! You don't have enough points to place that wager. Your wager has been adjusted to your remaining points."
-      // );
       updateWager(playerPoints);
     }
   };

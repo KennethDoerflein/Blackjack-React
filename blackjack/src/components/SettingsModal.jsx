@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import appInfo from "../../package.json";
 import { Modal, Button, Form, Container } from "react-bootstrap";
-import { disableGameButtons } from "../utils/utils.js";
 
 export default function SettingsModal({
   currentWager,
@@ -17,11 +16,11 @@ export default function SettingsModal({
   playerTotals,
   currentHand,
   dealersHandElements,
+  audioRef,
 }) {
   const toggleMusic = () => {
-    const backgroundMusic = document.getElementById("backgroundMusic");
-    if (backgroundMusic) {
-      backgroundMusic.paused ? backgroundMusic.play() : backgroundMusic.pause();
+    if (audioRef && audioRef.current) {
+      audioRef.current.paused ? audioRef.current.play() : audioRef.current.pause();
     }
   };
 
@@ -29,7 +28,6 @@ export default function SettingsModal({
   useEffect(() => {
     if (dealersHandElements.length >= 2 && dealersHandElements[1].props.src.includes("back.png")) {
       if (autoStandChecked && playerTotals[currentHand] === 21) {
-        disableGameButtons();
         setTimeout(() => {
           endHand();
         }, 500);
