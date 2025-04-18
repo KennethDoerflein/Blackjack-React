@@ -166,12 +166,23 @@ export default function App() {
     }
 
     if (entity !== "dealer" && origin === "user") {
-      // Wait for totals to update before checking for bust
+      // Wait for totals to update before checking for bust or auto-stand
       await delay(400); // Give time for halfwayCallback to run
       // Use latestTotals instead of playerTotals
       if (latestTotals[hand] > 21) {
         await delay(500);
         await endHand();
+      } else if (
+        autoStandChecked &&
+        latestTotals[hand] === 21
+      ) {
+        await delay(500);
+        // If there are more hands, advance to next hand, else end the round
+        if (currentHand < splitCount) {
+          await advanceHand(currentHand + 1);
+        } else {
+          await endHand();
+        }
       }
     }
     // Animation delay only for pacing, not for state update
