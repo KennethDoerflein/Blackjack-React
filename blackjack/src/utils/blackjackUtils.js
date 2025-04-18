@@ -17,10 +17,6 @@ export const calculateTotal = (cards) => {
 
 // Determine if the dealer should hit based on game rules
 export function shouldDealerHit(total, hand, soft17Checked) {
-  // If dealer has exactly 2 cards and total is 21, that's a blackjack: stand
-  if (hand.length === 2 && total === 21) {
-    return false;
-  }
   if (soft17Checked) {
     return total < 17 || (total === 17 && isSoft17(hand));
   }
@@ -62,9 +58,11 @@ export const isSplitAllowed = (
   if (!playersHands[currentHand] || playersHands[currentHand].length < 2) {
     return false;
   }
+  const cardA = playersHands[currentHand][0];
+  const cardB = playersHands[currentHand][1];
   const isMatchingRankOrValue = splitTypeChecked
-    ? playersHands[currentHand][0].rank === playersHands[currentHand][1].rank
-    : playersHands[currentHand][0].pointValue === playersHands[currentHand][1].pointValue;
+    ? cardA.rank === cardB.rank // strict rank match
+    : cardA.pointValue === cardB.pointValue; // value match
 
   return (
     playersHands[currentHand].length === 2 &&

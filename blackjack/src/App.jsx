@@ -116,6 +116,8 @@ export default function App() {
     await hit("player", "init");
     await delay(120);
     await hit("dealer", "init");
+    // Recalculate and set dealer's total after initial deal
+    setDealerTotal(calculateTotal(dealersHand));
     setShowButtons(true);
   };
 
