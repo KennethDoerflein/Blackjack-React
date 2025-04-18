@@ -1,5 +1,5 @@
 // Calculate total points for a hand
-export const calculateTotal = async (cards) => {
+export const calculateTotal = (cards) => {
   let total = 0;
   let aces = 0;
   for (let i = 0; i < cards.length; i++) {
@@ -58,9 +58,11 @@ export const isSplitAllowed = (
   if (!playersHands[currentHand] || playersHands[currentHand].length < 2) {
     return false;
   }
+  const cardA = playersHands[currentHand][0];
+  const cardB = playersHands[currentHand][1];
   const isMatchingRankOrValue = splitTypeChecked
-    ? playersHands[currentHand][0].rank === playersHands[currentHand][1].rank
-    : playersHands[currentHand][0].pointValue === playersHands[currentHand][1].pointValue;
+    ? cardA.rank === cardB.rank // strict rank match
+    : cardA.pointValue === cardB.pointValue; // value match
 
   return (
     playersHands[currentHand].length === 2 &&
@@ -90,11 +92,11 @@ export function isDoubleDownAllowed(
 }
 
 // Calculate total points for all hands and return them
-export async function calculateAndReturnTotals(newPlayersHands, playerTotals, dealersHand) {
+export function calculateAndReturnTotals(newPlayersHands, playerTotals, dealersHand) {
   const newTotals = [...playerTotals];
   for (let i = 0; i < newPlayersHands.length; i++) {
-    newTotals[i] = await calculateTotal(newPlayersHands[i]);
+    newTotals[i] = calculateTotal(newPlayersHands[i]);
   }
-  const newDealerTotal = await calculateTotal(dealersHand);
+  const newDealerTotal = calculateTotal(dealersHand);
   return { newTotals, newDealerTotal };
 }

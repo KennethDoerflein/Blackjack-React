@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Button, Container, Image as BSImage, Spinner } from "react-bootstrap";
 import { animateElement } from "../utils/uiUtils.js";
 
@@ -25,34 +25,38 @@ export default function WagerControls({
   playersHands,
   showInfo,
   loading,
+  isBusy,
 }) {
   const [imagesLoaded, setImagesLoaded] = useState(false);
+  const wagerDisplayRef = useRef(null);
 
   useEffect(() => {
     preloadImages(chipNames).then(() => setImagesLoaded(true));
   }, []);
 
-  const addChipValue = (e) => {
+  const addChipValue = useCallback((e) => {
+    if (isBusy) return;
     animateElement(e.target, "chipFlip", 700);
-    animateElement(document.getElementById("wagerDisplay"), "highlight", 500);
+    if (wagerDisplayRef.current) {
+      animateElement(wagerDisplayRef.current, "highlight", 500);
+    }
 
     const chipValue = parseInt(e.target.getAttribute("data-value"), 10);
     const newWager = currentWager[currentHand] + chipValue;
     if (newWager <= playerPoints && Number.isInteger(newWager)) {
       updateWager(newWager);
     } else if (newWager > playerPoints) {
-      // alert(
-      //   "Oops! You don't have enough points to place that wager. Your wager has been adjusted to your remaining points."
-      // );
       updateWager(playerPoints);
     }
-  };
+  }, [currentWager, currentHand, playerPoints, updateWager, isBusy]);
 
-  const clearWager = () => {
+  const clearWager = useCallback(() => {
+    if (isBusy) return;
     updateWager(0);
-  };
+  }, [updateWager, isBusy]);
 
-  const placeWager = async (e) => {
+  const placeWager = useCallback(async (e) => {
+    if (isBusy) return;
     let id = e.target.id;
     let isAllIn = id === "allInBtn";
     let isWagerValid =
@@ -71,7 +75,7 @@ export default function WagerControls({
     } else {
       alert("The wager must be a number and greater than 0.");
     }
-  };
+  }, [currentWager, currentHand, playerPoints, setPlayerPoints, updateWager, initialDeal, isBusy]);
 
   if (!imagesLoaded || loading) {
     return (
@@ -85,35 +89,35 @@ export default function WagerControls({
   return (
     <Container hidden={playersHands[0].length !== 0 || showInfo} id="wagerDiv" className="mt-2">
       <BSImage
-        onClick={addChipValue}
+        onClick={isBusy ? undefined : addChipValue}
         className="chip"
         src="./assets/1Chip.jpg"
         data-value="1"
         alt="1 point chip"
       />
       <BSImage
-        onClick={addChipValue}
+        onClick={isBusy ? undefined : addChipValue}
         className="chip"
         src="./assets/5Chip.jpg"
         data-value="5"
         alt="5 point chip"
       />
       <BSImage
-        onClick={addChipValue}
+        onClick={isBusy ? undefined : addChipValue}
         className="chip"
         src="./assets/10Chip.jpg"
         data-value="10"
         alt="10 point chip"
       />
       <BSImage
-        onClick={addChipValue}
+        onClick={isBusy ? undefined : addChipValue}
         className="chip"
         src="./assets/20Chip.jpg"
         data-value="20"
         alt="20 point chip"
       />
       <BSImage
-        onClick={addChipValue}
+        onClick={isBusy ? undefined : addChipValue}
         className="chip"
         src="./assets/50Chip.jpg"
         data-value="50"
@@ -121,27 +125,30 @@ export default function WagerControls({
       />
       <div>
         <Button
-          onClick={clearWager}
+          onClick={isBusy ? undefined : clearWager}
           id="wagerRst"
           variant="danger"
           size="sm"
-          className="align-middle ms-2 my-3">
+          className="align-middle ms-2 my-3"
+        >
           Reset Wager
         </Button>
         <Button
-          onClick={placeWager}
+          onClick={isBusy ? undefined : placeWager}
           id="allInBtn"
           variant="warning"
           size="sm"
-          className="align-middle ms-2 my-3">
+          className="align-middle ms-2 my-3"
+        >
           Max Wager
         </Button>
         <Button
-          onClick={placeWager}
+          onClick={isBusy ? undefined : placeWager}
           id="wagerBtn"
           variant="primary"
           size="sm"
-          className="align-middle ms-2 my-3">
+          className="align-middle ms-2 my-3"
+        >
           Place Wager
         </Button>
       </div>
