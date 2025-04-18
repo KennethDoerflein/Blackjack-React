@@ -35,8 +35,8 @@ export default function App() {
   const [resultsAlertHidden, setResultsAlertHidden] = useState(true);
 
   const [soft17Checked, setSoft17Checked] = useState(true);
-  const [autoStandChecked, setAutoStandChecked] = useState(false);
   const [splitTypeChecked, setSplitTypeChecked] = useState(false);
+  const [autoStandChecked, setAutoStandChecked] = useState(false);
 
   const [deck, setCardDeck] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -110,13 +110,29 @@ export default function App() {
   const initialDeal = async () => {
     setShowButtons(false);
     await hit("player", "init");
-    await delay(120); // smoother pacing
+    await delay(120);
     await hit("dealer", "init");
     await delay(120);
     const newTotal = await hit("player", "init");
     await delay(120);
     await hit("dealer", "init");
-    if (newTotal !== 21 || !autoStandChecked) {
+
+    // Fix: handle auto stand for all hands after initial deal
+    if (autoStandChecked) {
+      let all21 = true;
+      for (let i = 0; i <= splitCount; i++) {
+        if (playerTotals[i] === 21) {
+          if (i < splitCount) {
+            await advanceHand(i + 1);
+          } else {
+            await endHand();
+          }
+        } else {
+          all21 = false;
+        }
+      }
+      if (!all21) setShowButtons(true);
+    } else {
       setShowButtons(true);
     }
   };
@@ -165,24 +181,31 @@ export default function App() {
         halfwayCallback
       );
     } else {
-      await addCard(dealersHand, dealersHandElements, entity, origin, deck, setDealersHandElements, undefined, halfwayCallback);
+      await addCard(
+        dealersHand,
+        dealersHandElements,
+        entity,
+        origin,
+        deck,
+        setDealersHandElements,
+        undefined,
+        halfwayCallback
+      );
     }
 
     if (entity !== "dealer" && origin === "user") {
-      // Wait for totals to update before checking for bust or auto-stand
+      // Wait for totals to update before checking for bust
       await delay(220); // was 400, now snappier
       // Use latestTotals instead of playerTotals
       if (latestTotals[hand] > 21) {
         await delay(250); // was 500
         await endHand();
-      } else if (
-        autoStandChecked &&
-        latestTotals[hand] === 21
-      ) {
-        await delay(250); // was 500
+      } else if (autoStandChecked && latestTotals[hand] === 21) {
+        await delay(250);
         // If there are more hands, advance to next hand, else end the round
-        if (currentHand < splitCount) {
-          await advanceHand(currentHand + 1);
+        if (hand < splitCount) {
+          await delay(250);
+          await advanceHand(hand + 1);
         } else {
           await endHand();
         }
@@ -217,8 +240,17 @@ export default function App() {
   async function advanceHand(newHand) {
     if (currentHand < splitCount && splitCount > 0) {
       setCurrentHand(newHand);
-      if (playerTotals[newHand] !== 21 || !autoStandChecked) {
-        await delay(750);
+      // If auto stand is enabled and the next hand is 21, auto-advance again
+      if (autoStandChecked && playerTotals[newHand] === 21) {
+        await delay(250);
+        if (newHand < splitCount) {
+          await advanceHand(newHand + 1);
+        } else {
+          await endHand();
+        }
+      } else {
+        await delay(350);
+        setShowButtons(true);
       }
     }
   }
