@@ -348,6 +348,7 @@ export default function App() {
             showButtons={showButtons}
             newGameBtnHidden={newGameBtnHidden}
             setNewGameBtnHidden={setNewGameBtnHidden}
+            setShowButtons={setShowButtons}
           />
         </Container>
         <Container className="text-center mt-3" id="disclaimer">

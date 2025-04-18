@@ -21,8 +21,11 @@ export default function GameControls({
   showButtons,
   newGameBtnHidden,
   setNewGameBtnHidden,
+  setShowButtons,
 }) {
   async function doubleDown() {
+    // Hide all action buttons immediately
+    if (typeof setShowButtons === "function") setShowButtons(false);
     if (
       isDoubleDownAllowed(
         playersHands,
