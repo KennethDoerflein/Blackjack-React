@@ -82,7 +82,7 @@ export default function GameControls({
       currentWager,
       playerPoints
     );
-  const canNewGame = !resultsAlertHidden && (playersHands[0].length > 0 || playerPoints === 0);
+  const canNewGame = !resultsAlertHidden && (playersHands[0].length > 0 && playerPoints > 0);
   const canResetPoints = !resultsAlertHidden && playerPoints === 0;
 
   return (
