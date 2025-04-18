@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { Container } from "react-bootstrap";
 import { adjustCardMargins } from "../utils/uiUtils.js";
 
-export default function DealerSection({ dealersHandElements, dealerTotal }) {
+export default React.memo(function DealerSection({ dealersHandElements, dealerTotal }) {
   const dealerHandRef = useRef(null);
   useEffect(() => {
     if (dealersHandElements.length > 2 && dealerHandRef.current) {
@@ -24,4 +24,4 @@ export default function DealerSection({ dealersHandElements, dealerTotal }) {
       </Container>
     </>
   );
-}
+});

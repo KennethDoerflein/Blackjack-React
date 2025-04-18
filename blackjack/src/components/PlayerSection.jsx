@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { Container, Carousel } from "react-bootstrap";
 import { adjustCardMargins } from "../utils/uiUtils.js";
 
-export default function PlayerSection({
+export default React.memo(function PlayerSection({
   playersHandElements,
   playerTotals,
   splitCount,
@@ -63,4 +63,4 @@ export default function PlayerSection({
       </Carousel>
     </>
   );
-}
+});

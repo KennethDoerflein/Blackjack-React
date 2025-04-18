@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Button, ButtonGroup, Container } from "react-bootstrap";
 import { isSplitAllowed, isDoubleDownAllowed } from "../utils/blackjackUtils";
 
@@ -57,6 +57,17 @@ export default function GameControls({
     }
   }
 
+  // Memoize handlers to avoid unnecessary re-renders
+  const handleHit = useCallback(() => hit(), [hit]);
+  const handleSplit = useCallback(() => splitHand(), [splitHand]);
+  const handleDoubleDown = useCallback(() => doubleDown(), [doubleDown]);
+  const handleStand = useCallback(() => endHand(), [endHand]);
+  const handleNewGame = useCallback(() => {
+    newGame();
+    setNewGameBtnHidden(false);
+  }, [newGame, setNewGameBtnHidden]);
+  const handleResetPoints = useCallback(() => resetPoints(), [resetPoints]);
+
   // Helper: Compute button visibility based on game state
   const canAct =
     resultsAlertHidden &&
@@ -89,7 +100,7 @@ export default function GameControls({
     <Container className="d-flex justify-content-center w-100 mt-2" id="gameActions">
       <ButtonGroup>
         <Button
-          onClick={() => hit()}
+          onClick={handleHit}
           hidden={!canAct}
           id="hitBtn"
           variant="warning"
@@ -98,7 +109,7 @@ export default function GameControls({
           Hit
         </Button>
         <Button
-          onClick={() => splitHand()}
+          onClick={handleSplit}
           hidden={!canSplit}
           id="splitBtn"
           variant="primary"
@@ -107,7 +118,7 @@ export default function GameControls({
           Split
         </Button>
         <Button
-          onClick={() => doubleDown()}
+          onClick={handleDoubleDown}
           hidden={!canDouble}
           id="doubleDownBtn"
           variant="light"
@@ -118,7 +129,7 @@ export default function GameControls({
           Down
         </Button>
         <Button
-          onClick={() => endHand()}
+          onClick={handleStand}
           hidden={!canAct}
           id="standBtn"
           variant="danger"
@@ -127,10 +138,7 @@ export default function GameControls({
           Stand
         </Button>
         <Button
-          onClick={() => {
-            newGame();
-            setNewGameBtnHidden(false);
-          }}
+          onClick={handleNewGame}
           hidden={!canNewGame}
           id="newGameBtn"
           variant="success"
@@ -139,7 +147,7 @@ export default function GameControls({
           New Game
         </Button>
         <Button
-          onClick={() => resetPoints()}
+          onClick={handleResetPoints}
           hidden={!canResetPoints}
           id="resetPointsBtn"
           variant="info"

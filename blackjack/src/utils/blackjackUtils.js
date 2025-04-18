@@ -1,5 +1,5 @@
 // Calculate total points for a hand
-export const calculateTotal = async (cards) => {
+export const calculateTotal = (cards) => {
   let total = 0;
   let aces = 0;
   for (let i = 0; i < cards.length; i++) {
@@ -94,11 +94,11 @@ export function isDoubleDownAllowed(
 }
 
 // Calculate total points for all hands and return them
-export async function calculateAndReturnTotals(newPlayersHands, playerTotals, dealersHand) {
+export function calculateAndReturnTotals(newPlayersHands, playerTotals, dealersHand) {
   const newTotals = [...playerTotals];
   for (let i = 0; i < newPlayersHands.length; i++) {
-    newTotals[i] = await calculateTotal(newPlayersHands[i]);
+    newTotals[i] = calculateTotal(newPlayersHands[i]);
   }
-  const newDealerTotal = await calculateTotal(dealersHand);
+  const newDealerTotal = calculateTotal(dealersHand);
   return { newTotals, newDealerTotal };
 }

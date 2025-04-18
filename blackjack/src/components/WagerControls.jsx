@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Button, Container, Image as BSImage, Spinner } from "react-bootstrap";
 import { animateElement } from "../utils/uiUtils.js";
 
@@ -33,7 +33,7 @@ export default function WagerControls({
     preloadImages(chipNames).then(() => setImagesLoaded(true));
   }, []);
 
-  const addChipValue = (e) => {
+  const addChipValue = useCallback((e) => {
     animateElement(e.target, "chipFlip", 700);
     if (wagerDisplayRef.current) {
       animateElement(wagerDisplayRef.current, "highlight", 500);
@@ -46,13 +46,13 @@ export default function WagerControls({
     } else if (newWager > playerPoints) {
       updateWager(playerPoints);
     }
-  };
+  }, [currentWager, currentHand, playerPoints, updateWager]);
 
-  const clearWager = () => {
+  const clearWager = useCallback(() => {
     updateWager(0);
-  };
+  }, [updateWager]);
 
-  const placeWager = async (e) => {
+  const placeWager = useCallback(async (e) => {
     let id = e.target.id;
     let isAllIn = id === "allInBtn";
     let isWagerValid =
@@ -71,7 +71,7 @@ export default function WagerControls({
     } else {
       alert("The wager must be a number and greater than 0.");
     }
-  };
+  }, [currentWager, currentHand, playerPoints, setPlayerPoints, updateWager, initialDeal]);
 
   if (!imagesLoaded || loading) {
     return (
