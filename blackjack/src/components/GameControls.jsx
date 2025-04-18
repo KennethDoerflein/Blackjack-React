@@ -42,7 +42,11 @@ export default function GameControls({
       setPlayerPoints(pointsLeft);
       const newTotal = await hit("player", "doubleDown");
       if (!autoStandChecked || newTotal !== 21) {
-        endHand();
+        await endHand();
+      }
+      // Show buttons for next split hand if there is one
+      if (typeof setShowButtons === "function" && currentHand < splitCount) {
+        setShowButtons(true);
       }
     }
   }
