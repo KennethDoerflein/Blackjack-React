@@ -100,14 +100,15 @@ const updateFlippedHandElements = (
 // Animate the card with a given class and delay
 export function animateElement(element, animationClass, delayTime) {
   return new Promise((resolve) => {
-    requestAnimationFrame(() => {
-      element.classList.add(animationClass);
-    });
-    requestAnimationFrame(async () => {
-      await delay(delayTime);
+    // Remove any lingering animation class before starting
+    element.classList.remove(animationClass);
+    // Force reflow to restart animation if needed
+    void element.offsetWidth;
+    element.classList.add(animationClass);
+    setTimeout(() => {
       element.classList.remove(animationClass);
       resolve();
-    });
+    }, delayTime);
   });
 }
 
