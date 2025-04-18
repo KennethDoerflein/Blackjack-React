@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import appInfo from "../../package.json";
 import { Modal, Button, Form, Container } from "react-bootstrap";
 
@@ -10,6 +10,8 @@ export default function SettingsModal({
   setSoft17Checked,
   splitTypeChecked,
   setSplitTypeChecked,
+  autoStandChecked,
+  setAutoStandChecked,
   dealersHandElements,
   audioRef,
 }) {
@@ -34,9 +36,7 @@ export default function SettingsModal({
             type="switch"
             id="soft17Switch"
             label="Dealer Hits on Soft 17"
-            disabled={
-              (dealersHandElements.length > 0 || currentWager[0] > 0)
-            }
+            disabled={dealersHandElements.length > 0 || currentWager[0] > 0}
             checked={soft17Checked}
             onChange={() => setSoft17Checked(!soft17Checked)}
           />
@@ -44,11 +44,17 @@ export default function SettingsModal({
             type="switch"
             id="splitSwitch"
             label="Split Based on Rank"
-            disabled={
-              (dealersHandElements.length > 0 || currentWager[0] > 0)
-            }
+            disabled={dealersHandElements.length > 0 || currentWager[0] > 0}
             checked={splitTypeChecked}
             onChange={() => setSplitTypeChecked(!splitTypeChecked)}
+          />
+          <Form.Check
+            type="switch"
+            id="autoStandSwitch"
+            label="Auto Stand on 21 (Player)"
+            disabled={dealersHandElements.length > 0 || currentWager[0] > 0}
+            checked={autoStandChecked}
+            onChange={() => setAutoStandChecked(!autoStandChecked)}
           />
         </Form>
       </Modal.Body>

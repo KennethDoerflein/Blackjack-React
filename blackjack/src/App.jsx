@@ -178,11 +178,18 @@ export default function App() {
     }
 
     if (entity !== "dealer" && origin === "user") {
-      // Wait for totals to update before checking for bust
+      // Wait for totals to update before checking for bust or auto-stand
       await delay(220); // was 400, now snappier
       // Use latestTotals instead of playerTotals
       if (latestTotals[hand] > 21) {
         await delay(250); // was 500
+        await endHand();
+      } else if (
+        autoStandChecked &&
+        latestTotals[hand] === 21 &&
+        playersHands[hand].length >= 2 // only auto-stand if at least 2 cards (not after bust)
+      ) {
+        await delay(250);
         await endHand();
       }
     }
