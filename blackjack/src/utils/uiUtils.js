@@ -1,7 +1,7 @@
 import { delay } from "./utils";
 
 // Animation timing constants
-const FLIP_ANIMATION_DURATION = 400; // ms for flip
+const FLIP_ANIMATION_DURATION = 700; // ms for flip (match CSS)
 
 export const addCard = async (cards, div, entity, origin, deck, setHandElements, currentHand) => {
   const card = deck.getCard();
@@ -12,8 +12,9 @@ export const addCard = async (cards, div, entity, origin, deck, setHandElements,
   const delayTime = isFirstCard ? 100 : 0;
 
   const imgElement = await createCardImage("./assets/cards-1.3/back.png");
+  // Use a unique, stable key for each card (e.g., card.rank + card.suit + cards.length)
   let reactImgElement = createReactImageElement(
-    cards.length,
+    `${card.rank}_${card.suit}_${cards.length}`,
     imgElement.src,
     card.image,
     "imgSlide"
@@ -23,7 +24,7 @@ export const addCard = async (cards, div, entity, origin, deck, setHandElements,
     updateHandElements(setHandElements, entity, currentHand, reactImgElement);
   });
 
-  await delay(300 + delayTime);
+  await delay(400 + delayTime); // match new slide duration
 
   if (shouldFlipCard(entity, cards)) {
     await flipCard(reactImgElement, card, setHandElements, entity, currentHand);

@@ -174,9 +174,10 @@ export default function App() {
       setShowButtons(false);
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
       let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
-      await delay(600);
-      flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
-      await delay(400);
+      // Reduce the delay before flipping the dealer's card for a snappier feel
+      await delay(200); // was 600
+      await flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
+      await delay(400); // keep this for the flip animation
       await playDealer();
       setResultsAlertHidden(false);
       setCarousalInterval(1750);
