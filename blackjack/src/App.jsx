@@ -131,6 +131,25 @@ export default function App() {
     hand = currentHand,
     newPlayersHands = [...playersHands]
   ) => {
+    let halfwayTotalsUpdated = false;
+    let latestTotals = playerTotals;
+    // Define a callback to update totals halfway through the flip
+    const halfwayCallback = async () => {
+      if (!halfwayTotalsUpdated) {
+        halfwayTotalsUpdated = true;
+        const { newTotals, newDealerTotal } = await calculateAndReturnTotals(
+          newPlayersHands,
+          playerTotals,
+          dealersHand
+        );
+        setPlayerTotal(newTotals);
+        setDealerTotal(newDealerTotal);
+        setPlayerHand(newPlayersHands);
+        latestTotals = newTotals;
+        return { newTotals, newDealerTotal };
+      }
+    };
+
     if (entity !== "dealer") {
       await addCard(
         newPlayersHands[hand],
@@ -139,24 +158,18 @@ export default function App() {
         origin,
         deck,
         setPlayersHandElements,
-        hand
+        hand,
+        halfwayCallback
       );
     } else {
-      await addCard(dealersHand, dealersHandElements, entity, origin, deck, setDealersHandElements);
+      await addCard(dealersHand, dealersHandElements, entity, origin, deck, setDealersHandElements, undefined, halfwayCallback);
     }
 
-    // Calculate the new totals and update state immediately after rendering the card
-    const { newTotals, newDealerTotal } = await calculateAndReturnTotals(
-      newPlayersHands,
-      playerTotals,
-      dealersHand
-    );
-    setPlayerTotal(newTotals);
-    setDealerTotal(newDealerTotal);
-    setPlayerHand(newPlayersHands);
-
     if (entity !== "dealer" && origin === "user") {
-      if (newTotals[hand] > 21) {
+      // Wait for totals to update before checking for bust
+      await delay(400); // Give time for halfwayCallback to run
+      // Use latestTotals instead of playerTotals
+      if (latestTotals[hand] > 21) {
         await delay(500);
         await endHand();
       }
@@ -164,7 +177,7 @@ export default function App() {
     // Animation delay only for pacing, not for state update
     await delay(600);
     if (entity !== "dealer") {
-      return newTotals[hand];
+      return latestTotals[hand];
     }
   };
 
@@ -374,6 +387,8 @@ export default function App() {
         endHand={endHand}
         playerTotals={playerTotals}
         currentHand={currentHand}
+        splitCount={splitCount}
+        advanceHand={advanceHand}
         dealersHandElements={dealersHandElements}
         audioRef={audioRef}
       />

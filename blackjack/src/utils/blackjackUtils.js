@@ -17,6 +17,10 @@ export const calculateTotal = async (cards) => {
 
 // Determine if the dealer should hit based on game rules
 export function shouldDealerHit(total, hand, soft17Checked) {
+  // If dealer has exactly 2 cards and total is 21, that's a blackjack: stand
+  if (hand.length === 2 && total === 21) {
+    return false;
+  }
   if (soft17Checked) {
     return total < 17 || (total === 17 && isSoft17(hand));
   }

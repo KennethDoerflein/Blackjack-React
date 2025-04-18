@@ -15,6 +15,8 @@ export default function SettingsModal({
   endHand,
   playerTotals,
   currentHand,
+  splitCount,
+  advanceHand,
   dealersHandElements,
   audioRef,
 }) {
@@ -29,7 +31,11 @@ export default function SettingsModal({
     if (dealersHandElements.length >= 2 && dealersHandElements[1].props.src.includes("back.png")) {
       if (autoStandChecked && playerTotals[currentHand] === 21) {
         setTimeout(() => {
-          endHand();
+          if (currentHand === splitCount) {
+            endHand();
+          } else if (typeof advanceHand === "function") {
+            advanceHand(currentHand + 1);
+          }
         }, 500);
       }
     }

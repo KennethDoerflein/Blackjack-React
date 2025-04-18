@@ -3,7 +3,7 @@ import { delay } from "./utils";
 // Animation timing constants
 const FLIP_ANIMATION_DURATION = 700; // ms for flip (match CSS)
 
-export const addCard = async (cards, div, entity, origin, deck, setHandElements, currentHand) => {
+export const addCard = async (cards, div, entity, origin, deck, setHandElements, currentHand, halfwayCallback) => {
   const card = deck.getCard();
   cards.push(card);
 
@@ -27,7 +27,7 @@ export const addCard = async (cards, div, entity, origin, deck, setHandElements,
   await delay(400 + delayTime); // match new slide duration
 
   if (shouldFlipCard(entity, cards)) {
-    await flipCard(reactImgElement, card, setHandElements, entity, currentHand);
+    await flipCard(reactImgElement, card, setHandElements, entity, currentHand, halfwayCallback);
   }
 };
 
@@ -47,7 +47,7 @@ const updateHandElements = (setHandElements, entity, currentHand, reactImgElemen
   });
 };
 
-export const flipCard = async (reactImgElement, card, setHandElements, entity, currentHand) => {
+export const flipCard = async (reactImgElement, card, setHandElements, entity, currentHand, halfwayCallback) => {
   const finalImgPath = `./assets/cards-1.3/${card.image}`;
   const newSrc = await preloadAndGetImage(finalImgPath);
   const flippedReactImgElement = createReactImageElement(
@@ -57,6 +57,13 @@ export const flipCard = async (reactImgElement, card, setHandElements, entity, c
     "imgFlip"
   );
   updateFlippedHandElements(setHandElements, entity, currentHand, flippedReactImgElement);
+
+  // Call halfwayCallback at 350ms (halfway through 700ms flip)
+  if (halfwayCallback) {
+    setTimeout(() => {
+      halfwayCallback();
+    }, 350);
+  }
 
   // Let the CSS animation handle the flip, no extra delay needed
   await delay(FLIP_ANIMATION_DURATION); // Match this to your CSS animation duration
