@@ -110,8 +110,11 @@ export default function App() {
   const initialDeal = async () => {
     setShowButtons(false);
     await hit("player", "init");
+    await delay(120); // smoother pacing
     await hit("dealer", "init");
+    await delay(120);
     const newTotal = await hit("player", "init");
+    await delay(120);
     await hit("dealer", "init");
     if (newTotal !== 21 || !autoStandChecked) {
       setShowButtons(true);
@@ -167,16 +170,16 @@ export default function App() {
 
     if (entity !== "dealer" && origin === "user") {
       // Wait for totals to update before checking for bust or auto-stand
-      await delay(400); // Give time for halfwayCallback to run
+      await delay(220); // was 400, now snappier
       // Use latestTotals instead of playerTotals
       if (latestTotals[hand] > 21) {
-        await delay(500);
+        await delay(250); // was 500
         await endHand();
       } else if (
         autoStandChecked &&
         latestTotals[hand] === 21
       ) {
-        await delay(500);
+        await delay(250); // was 500
         // If there are more hands, advance to next hand, else end the round
         if (currentHand < splitCount) {
           await advanceHand(currentHand + 1);
@@ -186,7 +189,7 @@ export default function App() {
       }
     }
     // Animation delay only for pacing, not for state update
-    await delay(600);
+    await delay(320); // was 600
     if (entity !== "dealer") {
       return latestTotals[hand];
     }
@@ -199,12 +202,12 @@ export default function App() {
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
       let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
       // Reduce the delay before flipping the dealer's card for a snappier feel
-      await delay(200); // was 600
+      await delay(220); // was 200
       await flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
-      await delay(400); // keep this for the flip animation
+      await delay(250); // was 400
       await playDealer();
       setResultsAlertHidden(false);
-      setCarousalInterval(1750);
+      setCarousalInterval(1750); // was 1750
     } else if (currentHand !== splitCount) {
       advanceHand(currentHand + 1);
     }
@@ -252,30 +255,30 @@ export default function App() {
     setPlayersHandElements(newPlayerHandElements);
     setCurrentWager(newCurrentWager);
     setPlayerPoints(playerPoints - newCurrentWager[newSplitCount]);
-    await delay(500);
+    await delay(500); // was 500
     await hit("player", "split", currentHand, newPlayersHands);
     setCurrentHand(newSplitCount);
-    await delay(1200);
+    await delay(1200); // was 1200
     await hit("player", "split", newSplitCount, newPlayersHands);
-    await delay(500);
+    await delay(500); // was 500
     setCurrentHand(oldHand);
 
     // Recalculate the new totals after hitting
     ({ newTotals } = await calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
     setPlayerTotal(newTotals);
-    await delay(750);
+    await delay(320); // was 750
     setShowButtons(true);
   };
 
   // Play the dealer's hand according to the rules
   const playDealer = async () => {
-    await delay(500);
+    await delay(220); // was 500
     let newDealerTotal = dealerTotal;
     while (shouldDealerHit(newDealerTotal, dealersHand, soft17Checked)) {
       await hit("dealer", "endGame");
       newDealerTotal = await calculateTotal(dealersHand);
       setDealerTotal(newDealerTotal);
-      await delay(400);
+      await delay(220); // was 400
     }
   };
 
@@ -287,7 +290,7 @@ export default function App() {
             if (hand.length > 0) {
               document.getElementById(playersHandNames[i]).classList.add("viewportResize");
               adjustCardMargins(document.getElementById(playersHandNames[i]), true);
-              await delay(300);
+              await delay(120); // was 300
               document.getElementById(playersHandNames[i]).classList.remove("viewportResize");
             }
           });
@@ -295,11 +298,11 @@ export default function App() {
         if (dealersHandElements.length > 2) {
           document.getElementById("dealersHand").classList.add("viewportResize");
           adjustCardMargins(document.getElementById("dealersHand"), true);
-          await delay(300);
+          await delay(120); // was 300
           document.getElementById("dealersHand").classList.remove("viewportResize");
         }
       });
-    }, 300); // Throttle by 300ms
+    }, 180); // was 300ms throttle
 
     window.visualViewport?.addEventListener("resize", handleViewportChange);
 
