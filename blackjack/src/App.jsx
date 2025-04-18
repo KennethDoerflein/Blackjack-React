@@ -57,6 +57,8 @@ export default function App() {
   const [carouselKey, setCarouselKey] = useState(0);
   const [newGameBtnHidden, setNewGameBtnHidden] = useState(false);
 
+  const [isBusy, setIsBusy] = useState(false);
+
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -65,7 +67,8 @@ export default function App() {
 
   // Start a new game by shuffling the deck and resetting the UI
   const newGame = async () => {
-    if (playerPoints > 0) {
+    if (playerPoints > 0 && !isBusy) {
+      setIsBusy(true);
       setCurrentHand(0);
       setCarousalInterval(null);
       setCarouselKey((prevKey) => prevKey + 1);
@@ -103,11 +106,14 @@ export default function App() {
 
       // Hide the results alert if it's showing
       if (!resultsAlertHidden) setResultsAlertHidden(true);
+      setIsBusy(false);
     }
   };
 
   // Deal initial cards to player and dealer
   const initialDeal = async () => {
+    if (isBusy) return;
+    setIsBusy(true);
     setShowButtons(false);
     await hit("player", "init");
     await delay(120);
@@ -119,9 +125,11 @@ export default function App() {
     // Recalculate and set dealer's total after initial deal
     setDealerTotal(calculateTotal(dealersHand));
     setShowButtons(true);
+    setIsBusy(false);
   };
 
   const updateWager = (value) => {
+    if (isBusy) return;
     const newWager = [...currentWager];
     newWager[currentHand] = parseInt(value, 10);
     setCurrentWager(newWager);
@@ -134,6 +142,8 @@ export default function App() {
     hand = currentHand,
     newPlayersHands = [...playersHands]
   ) => {
+    if (isBusy && origin === "user") return;
+    if (origin === "user") setIsBusy(true);
     let halfwayTotalsUpdated = false;
     let latestTotals = playerTotals;
     // Define a callback to update totals halfway through the flip
@@ -195,6 +205,7 @@ export default function App() {
     }
     // Animation delay only for pacing, not for state update
     await delay(320); // was 600
+    if (entity !== "dealer" && origin === "user") setIsBusy(false);
     if (entity !== "dealer") {
       return latestTotals[hand];
     }
@@ -202,6 +213,7 @@ export default function App() {
 
   // End the current hand and proceed to the next hand or end the game
   const endHand = async () => {
+    setIsBusy(true);
     if (currentHand === splitCount) {
       setShowButtons(false);
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
@@ -213,22 +225,28 @@ export default function App() {
       await playDealer();
       setResultsAlertHidden(false);
       setCarousalInterval(1750); // was 1750
+      setIsBusy(false);
     } else if (currentHand !== splitCount) {
-      advanceHand(currentHand + 1);
+      await advanceHand(currentHand + 1);
+      setIsBusy(false);
     }
   };
 
   // Advance to the next player hand if splits occurred
   async function advanceHand(newHand) {
+    setIsBusy(true);
     if (currentHand < splitCount && splitCount > 0) {
       setCurrentHand(newHand);
       await delay(350);
       setShowButtons(true);
     }
+    setIsBusy(false);
   }
 
   // Split the player's hand into two separate hands
   const splitHand = async () => {
+    if (isBusy) return;
+    setIsBusy(true);
     setShowButtons(false);
     const oldHand = currentHand;
     const newSplitCount = splitCount + 1;
@@ -272,10 +290,12 @@ export default function App() {
     setPlayerTotal(newTotals);
     await delay(320); // was 750
     setShowButtons(true);
+    setIsBusy(false);
   };
 
   // Play the dealer's hand according to the rules
   const playDealer = async () => {
+    setIsBusy(true);
     await delay(220); // was 500
     let newDealerTotal = dealerTotal;
     while (shouldDealerHit(newDealerTotal, dealersHand, soft17Checked)) {
@@ -284,6 +304,7 @@ export default function App() {
       setDealerTotal(newDealerTotal);
       await delay(220); // was 400
     }
+    setIsBusy(false);
   };
 
   useEffect(() => {
@@ -347,6 +368,7 @@ export default function App() {
             playersHands={playersHands}
             showInfo={showInfo}
             loading={loading}
+            isBusy={isBusy}
           />
           <WinnerSection
             playerPoints={playerPoints}
@@ -381,6 +403,7 @@ export default function App() {
             newGameBtnHidden={newGameBtnHidden}
             setNewGameBtnHidden={setNewGameBtnHidden}
             setShowButtons={setShowButtons}
+            isBusy={isBusy}
           />
         </Container>
         <Container className="text-center mt-3" id="disclaimer">

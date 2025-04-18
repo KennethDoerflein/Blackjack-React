@@ -21,6 +21,7 @@ export default function GameControls({
   newGameBtnHidden,
   setNewGameBtnHidden,
   setShowButtons,
+  isBusy,
 }) {
   const doubleDown = useCallback(async () => {
     if (typeof setShowButtons === "function") setShowButtons(false);
@@ -38,13 +39,24 @@ export default function GameControls({
       newWagers[currentHand] *= 2;
       updateWager(newWagers);
       setPlayerPoints(pointsLeft);
-      const newTotal = await hit("player", "doubleDown");
+      //const newTotal = await hit("player", "doubleDown");
       await endHand();
       if (typeof setShowButtons === "function" && currentHand < splitCount) {
         setShowButtons(true);
       }
     }
-  }, [setShowButtons, playersHands, currentHand, playerTotals, currentWager, playerPoints, updateWager, setPlayerPoints, hit, endHand, splitCount]);
+  }, [
+    setShowButtons,
+    playersHands,
+    currentHand,
+    playerTotals,
+    currentWager,
+    playerPoints,
+    updateWager,
+    setPlayerPoints,
+    endHand,
+    splitCount,
+  ]);
 
   const resetPoints = useCallback(() => {
     if (playerPoints === 0) {
@@ -88,14 +100,14 @@ export default function GameControls({
       currentWager,
       playerPoints
     );
-  const canNewGame = !resultsAlertHidden && (playersHands[0].length > 0 && playerPoints > 0);
+  const canNewGame = !resultsAlertHidden && playersHands[0].length > 0 && playerPoints > 0;
   const canResetPoints = !resultsAlertHidden && playerPoints === 0;
 
   return (
     <Container className="d-flex justify-content-center w-100 mt-2" id="gameActions">
       <ButtonGroup>
         <Button
-          onClick={handleHit}
+          onClick={isBusy ? undefined : handleHit}
           hidden={!canAct}
           id="hitBtn"
           variant="warning"
@@ -104,7 +116,7 @@ export default function GameControls({
           Hit
         </Button>
         <Button
-          onClick={handleSplit}
+          onClick={isBusy ? undefined : handleSplit}
           hidden={!canSplit}
           id="splitBtn"
           variant="primary"
@@ -113,7 +125,7 @@ export default function GameControls({
           Split
         </Button>
         <Button
-          onClick={handleDoubleDown}
+          onClick={isBusy ? undefined : handleDoubleDown}
           hidden={!canDouble}
           id="doubleDownBtn"
           variant="light"
@@ -124,7 +136,7 @@ export default function GameControls({
           Down
         </Button>
         <Button
-          onClick={handleStand}
+          onClick={isBusy ? undefined : handleStand}
           hidden={!canAct}
           id="standBtn"
           variant="danger"
@@ -133,7 +145,7 @@ export default function GameControls({
           Stand
         </Button>
         <Button
-          onClick={handleNewGame}
+          onClick={isBusy ? undefined : handleNewGame}
           hidden={!canNewGame}
           id="newGameBtn"
           variant="success"
@@ -142,7 +154,7 @@ export default function GameControls({
           New Game
         </Button>
         <Button
-          onClick={handleResetPoints}
+          onClick={isBusy ? undefined : handleResetPoints}
           hidden={!canResetPoints}
           id="resetPointsBtn"
           variant="info"
