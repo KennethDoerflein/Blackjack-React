@@ -24,7 +24,7 @@ export const addCard = async (cards, div, entity, origin, deck, setHandElements,
     updateHandElements(setHandElements, entity, currentHand, reactImgElement);
   });
 
-  await delay(500 + delayTime); // match slide animation duration before flip
+  await delay(400 + delayTime);
 
   if (shouldFlipCard(entity, cards)) {
     await flipCard(reactImgElement, card, setHandElements, entity, currentHand, halfwayCallback);
