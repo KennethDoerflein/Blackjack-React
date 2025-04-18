@@ -39,7 +39,7 @@ export default function GameControls({
       newWagers[currentHand] *= 2;
       updateWager(newWagers);
       setPlayerPoints(pointsLeft);
-      //const newTotal = await hit("player", "doubleDown");
+      await hit("player", "doubleDown"); // FIX: actually deal the double down card
       await endHand();
       if (typeof setShowButtons === "function" && currentHand < splitCount) {
         setShowButtons(true);
@@ -54,6 +54,7 @@ export default function GameControls({
     playerPoints,
     updateWager,
     setPlayerPoints,
+    hit,
     endHand,
     splitCount,
   ]);
