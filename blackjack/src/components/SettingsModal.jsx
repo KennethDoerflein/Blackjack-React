@@ -8,15 +8,8 @@ export default function SettingsModal({
   handleClose,
   soft17Checked,
   setSoft17Checked,
-  autoStandChecked,
-  setAutoStandChecked,
   splitTypeChecked,
   setSplitTypeChecked,
-  endHand,
-  playerTotals,
-  currentHand,
-  splitCount,
-  advanceHand,
   dealersHandElements,
   audioRef,
 }) {
@@ -25,22 +18,6 @@ export default function SettingsModal({
       audioRef.current.paused ? audioRef.current.play() : audioRef.current.pause();
     }
   };
-
-  // Use useEffect to watch for changes in currentHand with a delay
-  useEffect(() => {
-    if (dealersHandElements.length >= 2 && dealersHandElements[1].props.src.includes("back.png")) {
-      if (autoStandChecked && playerTotals[currentHand] === 21) {
-        setTimeout(() => {
-          if (currentHand === splitCount) {
-            endHand();
-          } else if (typeof advanceHand === "function") {
-            advanceHand(currentHand + 1);
-          }
-        }, 500);
-      }
-    }
-    // eslint-disable-next-line
-  }, [currentHand, playerTotals, autoStandChecked]);
 
   return (
     <Modal show={show} onHide={handleClose} centered>
@@ -55,17 +32,10 @@ export default function SettingsModal({
           <Form.Check type="switch" id="musicSwitch" label="Music" onClick={toggleMusic} />
           <Form.Check
             type="switch"
-            id="standSwitch"
-            label="Automatically Stand When You Get 21"
-            checked={autoStandChecked}
-            onChange={() => setAutoStandChecked(!autoStandChecked)}
-          />
-          <Form.Check
-            type="switch"
             id="soft17Switch"
             label="Dealer Hits on Soft 17"
             disabled={
-              (dealersHandElements.length > 0 || playerTotals[0] > 0) && currentWager[0] > 0
+              (dealersHandElements.length > 0 || currentWager[0] > 0)
             }
             checked={soft17Checked}
             onChange={() => setSoft17Checked(!soft17Checked)}
@@ -75,7 +45,7 @@ export default function SettingsModal({
             id="splitSwitch"
             label="Split Based on Rank"
             disabled={
-              (dealersHandElements.length > 0 || playerTotals[0] > 0) && currentWager[0] > 0
+              (dealersHandElements.length > 0 || currentWager[0] > 0)
             }
             checked={splitTypeChecked}
             onChange={() => setSplitTypeChecked(!splitTypeChecked)}

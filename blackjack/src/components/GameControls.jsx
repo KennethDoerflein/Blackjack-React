@@ -16,15 +16,13 @@ export default function GameControls({
   playerTotals,
   splitCount,
   splitTypeChecked,
-  autoStandChecked,
   resultsAlertHidden,
   showButtons,
   newGameBtnHidden,
   setNewGameBtnHidden,
   setShowButtons,
 }) {
-  async function doubleDown() {
-    // Hide all action buttons immediately
+  const doubleDown = useCallback(async () => {
     if (typeof setShowButtons === "function") setShowButtons(false);
     if (
       isDoubleDownAllowed(
@@ -41,32 +39,29 @@ export default function GameControls({
       updateWager(newWagers);
       setPlayerPoints(pointsLeft);
       const newTotal = await hit("player", "doubleDown");
-      if (!autoStandChecked || newTotal !== 21) {
-        await endHand();
-      }
-      // Show buttons for next split hand if there is one
+      await endHand();
       if (typeof setShowButtons === "function" && currentHand < splitCount) {
         setShowButtons(true);
       }
     }
-  }
+  }, [setShowButtons, playersHands, currentHand, playerTotals, currentWager, playerPoints, updateWager, setPlayerPoints, hit, endHand, splitCount]);
 
-  function resetPoints() {
+  const resetPoints = useCallback(() => {
     if (playerPoints === 0) {
       setPlayerPoints(100);
     }
-  }
+  }, [playerPoints, setPlayerPoints]);
 
   // Memoize handlers to avoid unnecessary re-renders
   const handleHit = useCallback(() => hit(), [hit]);
   const handleSplit = useCallback(() => splitHand(), [splitHand]);
-  const handleDoubleDown = useCallback(() => doubleDown(), [doubleDown]);
+  const handleDoubleDown = doubleDown;
   const handleStand = useCallback(() => endHand(), [endHand]);
   const handleNewGame = useCallback(() => {
     newGame();
     setNewGameBtnHidden(false);
   }, [newGame, setNewGameBtnHidden]);
-  const handleResetPoints = useCallback(() => resetPoints(), [resetPoints]);
+  const handleResetPoints = resetPoints;
 
   // Helper: Compute button visibility based on game state
   const canAct =

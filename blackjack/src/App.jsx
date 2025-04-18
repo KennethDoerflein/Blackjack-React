@@ -113,28 +113,10 @@ export default function App() {
     await delay(120);
     await hit("dealer", "init");
     await delay(120);
-    const newTotal = await hit("player", "init");
+    await hit("player", "init");
     await delay(120);
     await hit("dealer", "init");
-
-    // Fix: handle auto stand for all hands after initial deal
-    if (autoStandChecked) {
-      let all21 = true;
-      for (let i = 0; i <= splitCount; i++) {
-        if (playerTotals[i] === 21) {
-          if (i < splitCount) {
-            await advanceHand(i + 1);
-          } else {
-            await endHand();
-          }
-        } else {
-          all21 = false;
-        }
-      }
-      if (!all21) setShowButtons(true);
-    } else {
-      setShowButtons(true);
-    }
+    setShowButtons(true);
   };
 
   const updateWager = (value) => {
@@ -200,15 +182,6 @@ export default function App() {
       if (latestTotals[hand] > 21) {
         await delay(250); // was 500
         await endHand();
-      } else if (autoStandChecked && latestTotals[hand] === 21) {
-        await delay(250);
-        // If there are more hands, advance to next hand, else end the round
-        if (hand < splitCount) {
-          await delay(250);
-          await advanceHand(hand + 1);
-        } else {
-          await endHand();
-        }
       }
     }
     // Animation delay only for pacing, not for state update
@@ -240,18 +213,8 @@ export default function App() {
   async function advanceHand(newHand) {
     if (currentHand < splitCount && splitCount > 0) {
       setCurrentHand(newHand);
-      // If auto stand is enabled and the next hand is 21, auto-advance again
-      if (autoStandChecked && playerTotals[newHand] === 21) {
-        await delay(250);
-        if (newHand < splitCount) {
-          await advanceHand(newHand + 1);
-        } else {
-          await endHand();
-        }
-      } else {
-        await delay(350);
-        setShowButtons(true);
-      }
+      await delay(350);
+      setShowButtons(true);
     }
   }
 
