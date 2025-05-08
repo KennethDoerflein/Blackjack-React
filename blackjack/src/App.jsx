@@ -65,6 +65,16 @@ export default function App() {
     document.documentElement.setAttribute("data-bs-theme", "dark");
   }, []);
 
+  // Check if we should auto-stand based on hand total
+  const checkAutoStand = async (total, hand) => {
+    if (autoStandChecked && total === 21 && playersHands[hand].length >= 2) {
+      await delay(250);
+      await endHand();
+      return true;
+    }
+    return false;
+  };
+
   // Start a new game by shuffling the deck and resetting the UI
   const newGame = async () => {
     if (playerPoints > 0 && !isBusy) {
@@ -121,11 +131,14 @@ export default function App() {
     await delay(120);
     await hit("player", "init");
     await delay(120);
-    await hit("dealer", "init");
-    // Recalculate and set dealer's total after initial deal
+    await hit("dealer", "init"); // Recalculate and set dealer's total after initial deal
     setDealerTotal(calculateTotal(dealersHand));
-    setShowButtons(true);
-    setIsBusy(false);
+    const total = calculateTotal(playersHands[currentHand]);
+    const shouldAutoStand = await checkAutoStand(total, currentHand);
+    if (!shouldAutoStand) {
+      setShowButtons(true);
+      setIsBusy(false);
+    }
   };
 
   const updateWager = (value) => {
@@ -194,13 +207,8 @@ export default function App() {
       if (latestTotals[hand] > 21) {
         await delay(250); // was 500
         await endHand();
-      } else if (
-        autoStandChecked &&
-        latestTotals[hand] === 21 &&
-        playersHands[hand].length >= 2 // only auto-stand if at least 2 cards (not after bust)
-      ) {
-        await delay(250);
-        await endHand();
+      } else {
+        await checkAutoStand(latestTotals[hand], hand);
       }
     }
     // Animation delay only for pacing, not for state update
