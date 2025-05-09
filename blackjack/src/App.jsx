@@ -438,6 +438,23 @@ export default function App() {
             </p>
           </div>
         )}
+        {devMode && (
+          <pre className="debug-panel bg-dark text-light p-2 rounded">
+            {JSON.stringify(
+              {
+                playerPoints,
+                currentWager,
+                playerTotals,
+                dealerTotal,
+                playersHands,
+                dealersHand,
+                isBusy,
+              },
+              null,
+              2
+            )}
+          </pre>
+        )}
       </Container>
 
       <SettingsModal
