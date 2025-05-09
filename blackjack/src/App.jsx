@@ -235,8 +235,9 @@ export default function App() {
       setCarousalInterval(1750); // was 1750
       setIsBusy(false);
     } else if (currentHand !== splitCount) {
-      await advanceHand(currentHand + 1);
-      await checkAutoStand(playerTotals[currentHand + 1], currentHand + 1);
+      let newHand = currentHand + 1;
+      await advanceHand(newHand);
+      await checkAutoStand(playerTotals[newHand], newHand);
       setIsBusy(false);
     }
   };
