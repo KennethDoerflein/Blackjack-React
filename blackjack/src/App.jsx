@@ -28,7 +28,7 @@ import "./styles.css";
 export default function App() {
   const devMode = window.location.hostname === "localhost";
 
-  const [showInfo, setShowInfo] = useState(true);
+  const [showInfo, setShowInfo] = useState(!devMode);
   const [showSettings, setShowSettings] = useState(false);
   const handleShowInfo = () => setShowInfo(true);
   const handleCloseInfo = () => setShowInfo(false);
