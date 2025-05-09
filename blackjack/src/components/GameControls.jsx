@@ -22,6 +22,7 @@ export default function GameControls({
   setNewGameBtnHidden,
   setShowButtons,
   isBusy,
+  devMode,
 }) {
   const doubleDown = useCallback(async () => {
     if (typeof setShowButtons === "function") setShowButtons(false);
@@ -147,7 +148,7 @@ export default function GameControls({
         </Button>
         <Button
           onClick={isBusy ? undefined : handleNewGame}
-          hidden={!canNewGame}
+          hidden={!canNewGame && !devMode}
           id="newGameBtn"
           variant="success"
           size="sm"

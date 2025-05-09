@@ -26,6 +26,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
 
 export default function App() {
+  const devMode = window.location.hostname === "localhost";
+
   const [showInfo, setShowInfo] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const handleShowInfo = () => setShowInfo(true);
@@ -63,6 +65,11 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-bs-theme", "dark");
+    if (devMode) {
+      console.log("Dev mode enabled");
+      setPlayerPoints(100000000000);
+      setAutoStandChecked(true);
+    }
   }, []);
 
   // Check if we should auto-stand based on hand total
@@ -414,6 +421,7 @@ export default function App() {
             setNewGameBtnHidden={setNewGameBtnHidden}
             setShowButtons={setShowButtons}
             isBusy={isBusy}
+            devMode={devMode}
           />
         </Container>
         <Container className="text-center mt-3" id="disclaimer">
@@ -423,6 +431,13 @@ export default function App() {
             <strong>entertainment purposes only</strong>.
           </p>
         </Container>
+        {devMode && (
+          <div className="text-center text-warning">
+            <p>
+              <strong>Developer Mode Enabled</strong>
+            </p>
+          </div>
+        )}
       </Container>
 
       <SettingsModal
