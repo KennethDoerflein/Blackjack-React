@@ -67,10 +67,21 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute("data-bs-theme", "dark");
     if (devMode) {
-      console.log("Dev mode enabled");
       setAutoStandChecked(true);
     }
   }, [devMode]);
+
+  // Check if we should auto-stand based on hand total
+  const checkAutoStand = async (total) => {
+    if (!autoStandChecked || total !== 21) return false;
+
+    // prevent double-triggers if already busy
+    if (isBusy) return false;
+
+    await delay(250);
+    await endHand();
+    return true;
+  };
 
   // Start a new game by shuffling the deck and resetting the UI
   const newGame = async () => {
@@ -126,10 +137,17 @@ export default function App() {
     await delay(120);
     await hit("dealer", "init");
     await delay(120);
-    await hit("player", "init");
+    const newTotal = await hit("player", "init");
     await delay(120);
-    await hit("dealer", "init"); // Recalculate and set dealer's total after initial deal
+    await hit("dealer", "init");
     setDealerTotal(calculateTotal(dealersHand));
+    //console.log("newTotal", newTotal);
+    const shouldAutoStand = await checkAutoStand(newTotal);
+    //console.log("shouldAutoStand", shouldAutoStand);
+    if (!shouldAutoStand) {
+      setShowButtons(true);
+      setIsBusy(false);
+    }
   };
 
   const updateWager = (value) => {
