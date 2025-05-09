@@ -305,7 +305,8 @@ export default function App() {
     // Recalculate the new totals after hitting
     ({ newTotals } = calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
     setPlayerTotal(newTotals);
-    await delay(320); // was 750
+    await delay(950); // was 750
+    await checkAutoStand(newTotals[oldHand], oldHand);
     setShowButtons(true);
     setIsBusy(false);
   };
