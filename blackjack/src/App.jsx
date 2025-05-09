@@ -27,6 +27,7 @@ import "./styles.css";
 
 export default function App() {
   const devMode = window.location.hostname === "localhost";
+  const [debugView, setDebugView] = useState("game"); // "game", "ui", "settings", "hands", "system"
 
   const [showInfo, setShowInfo] = useState(!devMode);
   const [showSettings, setShowSettings] = useState(false);
@@ -46,7 +47,7 @@ export default function App() {
   const [playersHandElements, setPlayersHandElements] = useState([[]]);
   const [dealersHand, setDealersHand] = useState([]);
   const [dealersHandElements, setDealersHandElements] = useState([]);
-  const [playerPoints, setPlayerPoints] = useState(100);
+  const [playerPoints, setPlayerPoints] = useState(devMode ? 10000000000000000 : 100);
   const [dealerTotal, setDealerTotal] = useState(0);
   const [playerTotals, setPlayerTotal] = useState([0]);
   const [currentWager, setCurrentWager] = useState([0]);
@@ -67,7 +68,6 @@ export default function App() {
     document.documentElement.setAttribute("data-bs-theme", "dark");
     if (devMode) {
       console.log("Dev mode enabled");
-      setPlayerPoints(100000000000);
       setAutoStandChecked(true);
     }
   }, [devMode]);
@@ -420,17 +420,65 @@ export default function App() {
           </div>
         )}
         {devMode && (
+          <div className="debug-controls mb-2">
+            <label htmlFor="debug-select" className="me-2 text-light">
+              Debug View:
+            </label>
+            <select
+              id="debug-select"
+              value={debugView}
+              onChange={(e) => setDebugView(e.target.value)}
+              className="form-select form-select-sm w-auto d-inline-block">
+              <option value="game">Game</option>
+              <option value="hands">Hands</option>
+              <option value="settings">Settings</option>
+              <option value="ui">UI State</option>
+              <option value="system">System</option>
+            </select>
+          </div>
+        )}
+
+        {devMode && (
           <pre className="debug-panel bg-dark text-light p-2 rounded">
             {JSON.stringify(
-              {
-                playerPoints,
-                currentWager,
-                playerTotals,
-                dealerTotal,
-                playersHands,
-                dealersHand,
-                isBusy,
-              },
+              debugView === "game"
+                ? {
+                    playerPoints,
+                    currentWager,
+                    playerTotals,
+                    dealerTotal,
+                    currentHand,
+                    splitCount,
+                  }
+                : debugView === "hands"
+                ? {
+                    playersHands,
+                    playersHandElements,
+                    dealersHand,
+                    dealersHandElements,
+                    playersHandNames,
+                  }
+                : debugView === "settings"
+                ? {
+                    soft17Checked,
+                    splitTypeChecked,
+                    autoStandChecked,
+                  }
+                : debugView === "ui"
+                ? {
+                    showInfo,
+                    showSettings,
+                    showButtons,
+                    resultsAlertHidden,
+                    newGameBtnHidden,
+                    carousalInterval,
+                    carouselKey,
+                  }
+                : {
+                    isBusy,
+                    // deck,
+                    // audioRef: audioRef?.current ? "ready" : "null",
+                  },
               null,
               2
             )}
