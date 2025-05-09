@@ -48,14 +48,6 @@ export default function SettingsModal({
             checked={splitTypeChecked}
             onChange={() => setSplitTypeChecked(!splitTypeChecked)}
           />
-          <Form.Check
-            type="switch"
-            id="autoStandSwitch"
-            label="Auto Stand on 21 (Player)"
-            disabled={dealersHandElements.length > 0 || currentWager[0] > 0}
-            checked={autoStandChecked}
-            onChange={() => setAutoStandChecked(!autoStandChecked)}
-          />
         </Form>
       </Modal.Body>
       <Modal.Footer>
