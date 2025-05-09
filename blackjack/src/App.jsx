@@ -163,7 +163,7 @@ export default function App() {
     const halfwayCallback = async () => {
       if (!halfwayTotalsUpdated) {
         halfwayTotalsUpdated = true;
-        const { newTotals, newDealerTotal } = await calculateAndReturnTotals(
+        const { newTotals, newDealerTotal } = calculateAndReturnTotals(
           newPlayersHands,
           playerTotals,
           dealersHand
@@ -236,6 +236,7 @@ export default function App() {
       setIsBusy(false);
     } else if (currentHand !== splitCount) {
       await advanceHand(currentHand + 1);
+      await checkAutoStand(playerTotals[currentHand + 1], currentHand + 1);
       setIsBusy(false);
     }
   };
@@ -294,7 +295,7 @@ export default function App() {
     setCurrentHand(oldHand);
 
     // Recalculate the new totals after hitting
-    ({ newTotals } = await calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
+    ({ newTotals } = calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
     setPlayerTotal(newTotals);
     await delay(320); // was 750
     setShowButtons(true);
@@ -308,7 +309,7 @@ export default function App() {
     let newDealerTotal = dealerTotal;
     while (shouldDealerHit(newDealerTotal, dealersHand, soft17Checked)) {
       await hit("dealer", "endGame");
-      newDealerTotal = await calculateTotal(dealersHand);
+      newDealerTotal = calculateTotal(dealersHand);
       setDealerTotal(newDealerTotal);
       await delay(220); // was 400
     }
