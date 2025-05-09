@@ -70,7 +70,7 @@ export default function App() {
       setPlayerPoints(100000000000);
       setAutoStandChecked(true);
     }
-  }, []);
+  }, [devMode]);
 
   // Check if we should auto-stand based on hand total
   const checkAutoStand = async (total, hand) => {
