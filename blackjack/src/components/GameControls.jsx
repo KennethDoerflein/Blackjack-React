@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Button, ButtonGroup, Container } from "react-bootstrap";
 import { isSplitAllowed, isDoubleDownAllowed } from "../utils/blackjackUtils";
 
@@ -16,11 +16,16 @@ export default function GameControls({
   playerTotals,
   splitCount,
   splitTypeChecked,
-  autoStandChecked,
   resultsAlertHidden,
   showButtons,
+  newGameBtnHidden,
+  setNewGameBtnHidden,
+  setShowButtons,
+  isBusy,
+  devMode,
 }) {
-  async function doubleDown() {
+  const doubleDown = useCallback(async () => {
+    if (typeof setShowButtons === "function") setShowButtons(false);
     if (
       isDoubleDownAllowed(
         playersHands,
@@ -35,30 +40,77 @@ export default function GameControls({
       newWagers[currentHand] *= 2;
       updateWager(newWagers);
       setPlayerPoints(pointsLeft);
-      const newTotal = await hit("player", "doubleDown");
-      if (!autoStandChecked || newTotal !== 21) {
-        endHand();
+      await hit("player", "doubleDown"); // FIX: actually deal the double down card
+      await endHand();
+      if (typeof setShowButtons === "function" && currentHand < splitCount) {
+        setShowButtons(true);
       }
     }
-  }
+  }, [
+    setShowButtons,
+    playersHands,
+    currentHand,
+    playerTotals,
+    currentWager,
+    playerPoints,
+    updateWager,
+    setPlayerPoints,
+    hit,
+    endHand,
+    splitCount,
+  ]);
 
-  function resetPoints() {
+  const resetPoints = useCallback(() => {
     if (playerPoints === 0) {
       setPlayerPoints(100);
     }
-  }
+  }, [playerPoints, setPlayerPoints]);
+
+  // Memoize handlers to avoid unnecessary re-renders
+  const handleHit = useCallback(() => hit(), [hit]);
+  const handleSplit = useCallback(() => splitHand(), [splitHand]);
+  const handleDoubleDown = doubleDown;
+  const handleStand = useCallback(() => endHand(), [endHand]);
+  const handleNewGame = useCallback(() => {
+    newGame();
+    setNewGameBtnHidden(false);
+  }, [newGame, setNewGameBtnHidden]);
+  const handleResetPoints = resetPoints;
+
+  // Helper: Compute button visibility based on game state
+  const canAct =
+    resultsAlertHidden &&
+    showButtons &&
+    playersHands[currentHand].length >= 2 &&
+    playerTotals[currentHand] <= 21;
+  const canSplit =
+    canAct &&
+    isSplitAllowed(
+      playersHands,
+      currentHand,
+      splitCount,
+      currentWager,
+      playerPoints,
+      splitTypeChecked
+    );
+  const canDouble =
+    canAct &&
+    isDoubleDownAllowed(
+      playersHands,
+      currentHand,
+      playerTotals[currentHand],
+      currentWager,
+      playerPoints
+    );
+  const canNewGame = !resultsAlertHidden && playersHands[0].length > 0 && playerPoints > 0;
+  const canResetPoints = !resultsAlertHidden && playerPoints === 0;
 
   return (
     <Container className="d-flex justify-content-center w-100 mt-2" id="gameActions">
       <ButtonGroup>
         <Button
-          onClick={() => hit()}
-          hidden={
-            playerTotals[currentHand] > 21 ||
-            playersHands[currentHand].length < 2 ||
-            !resultsAlertHidden ||
-            !showButtons
-          }
+          onClick={isBusy ? undefined : handleHit}
+          hidden={!canAct}
           id="hitBtn"
           variant="warning"
           size="sm"
@@ -66,20 +118,8 @@ export default function GameControls({
           Hit
         </Button>
         <Button
-          onClick={() => splitHand()}
-          hidden={
-            !isSplitAllowed(
-              playersHands,
-              currentHand,
-              splitCount,
-              currentWager,
-              playerPoints,
-              splitTypeChecked
-            ) ||
-            playersHands[currentHand].length < 2 ||
-            !resultsAlertHidden ||
-            !showButtons
-          }
+          onClick={isBusy ? undefined : handleSplit}
+          hidden={!canSplit}
           id="splitBtn"
           variant="primary"
           size="sm"
@@ -87,18 +127,8 @@ export default function GameControls({
           Split
         </Button>
         <Button
-          onClick={() => doubleDown()}
-          hidden={
-            !isDoubleDownAllowed(
-              playersHands,
-              currentHand,
-              playerTotals[currentHand],
-              currentWager,
-              playerPoints
-            ) ||
-            !resultsAlertHidden ||
-            !showButtons
-          }
+          onClick={isBusy ? undefined : handleDoubleDown}
+          hidden={!canDouble}
           id="doubleDownBtn"
           variant="light"
           size="sm"
@@ -108,13 +138,8 @@ export default function GameControls({
           Down
         </Button>
         <Button
-          onClick={() => endHand()}
-          hidden={
-            playerTotals[currentHand] > 21 ||
-            playersHands[currentHand].length < 2 ||
-            !resultsAlertHidden ||
-            !showButtons
-          }
+          onClick={isBusy ? undefined : handleStand}
+          hidden={!canAct}
           id="standBtn"
           variant="danger"
           size="sm"
@@ -122,10 +147,8 @@ export default function GameControls({
           Stand
         </Button>
         <Button
-          onClick={() => newGame()}
-          hidden={
-            playersHands[0].length === 0 || playerPoints === 0 || resultsAlertHidden || !showButtons
-          }
+          onClick={isBusy ? undefined : handleNewGame}
+          hidden={!canNewGame && !devMode}
           id="newGameBtn"
           variant="success"
           size="sm"
@@ -133,8 +156,8 @@ export default function GameControls({
           New Game
         </Button>
         <Button
-          onClick={() => resetPoints()}
-          hidden={playerPoints !== 0 || resultsAlertHidden || !showButtons}
+          onClick={isBusy ? undefined : handleResetPoints}
+          hidden={!canResetPoints}
           id="resetPointsBtn"
           variant="info"
           size="sm"
