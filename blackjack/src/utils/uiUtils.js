@@ -3,7 +3,16 @@ import { delay } from "./utils";
 // Animation timing constants
 const FLIP_ANIMATION_DURATION = 700; // ms for flip (match CSS)
 
-export const addCard = async (cards, div, entity, origin, deck, setHandElements, currentHand, halfwayCallback) => {
+export const addCard = async (
+  cards,
+  div,
+  entity,
+  origin,
+  deck,
+  setHandElements,
+  currentHand,
+  halfwayCallback
+) => {
   const card = deck.getCard();
   cards.push(card);
 
@@ -47,7 +56,14 @@ const updateHandElements = (setHandElements, entity, currentHand, reactImgElemen
   });
 };
 
-export const flipCard = async (reactImgElement, card, setHandElements, entity, currentHand, halfwayCallback) => {
+export const flipCard = async (
+  reactImgElement,
+  card,
+  setHandElements,
+  entity,
+  currentHand,
+  halfwayCallback
+) => {
   const finalImgPath = `./assets/cards-1.3/${card.image}`;
   const newSrc = await preloadAndGetImage(finalImgPath);
   const flippedReactImgElement = createReactImageElement(

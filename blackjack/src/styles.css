@@ -17,10 +17,9 @@
   min-width: 22vh;
   background-color: rgb(9, 59, 9);
   overflow: hidden;
-  align-items: start; 
+  align-items: start;
   justify-content: center;
 }
-
 
 #dealersHand img,
 #playersHands > div img {

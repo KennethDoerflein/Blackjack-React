@@ -34,48 +34,54 @@ export default function WagerControls({
     preloadImages(chipNames).then(() => setImagesLoaded(true));
   }, []);
 
-  const addChipValue = useCallback((e) => {
-    if (isBusy) return;
-    animateElement(e.target, "chipFlip", 700);
-    if (wagerDisplayRef.current) {
-      animateElement(wagerDisplayRef.current, "highlight", 500);
-    }
+  const addChipValue = useCallback(
+    (e) => {
+      if (isBusy) return;
+      animateElement(e.target, "chipFlip", 700);
+      if (wagerDisplayRef.current) {
+        animateElement(wagerDisplayRef.current, "highlight", 500);
+      }
 
-    const chipValue = parseInt(e.target.getAttribute("data-value"), 10);
-    const newWager = currentWager[currentHand] + chipValue;
-    if (newWager <= playerPoints && Number.isInteger(newWager)) {
-      updateWager(newWager);
-    } else if (newWager > playerPoints) {
-      updateWager(playerPoints);
-    }
-  }, [currentWager, currentHand, playerPoints, updateWager, isBusy]);
+      const chipValue = parseInt(e.target.getAttribute("data-value"), 10);
+      const newWager = currentWager[currentHand] + chipValue;
+      if (newWager <= playerPoints && Number.isInteger(newWager)) {
+        updateWager(newWager);
+      } else if (newWager > playerPoints) {
+        updateWager(playerPoints);
+      }
+    },
+    [currentWager, currentHand, playerPoints, updateWager, isBusy]
+  );
 
   const clearWager = useCallback(() => {
     if (isBusy) return;
     updateWager(0);
   }, [updateWager, isBusy]);
 
-  const placeWager = useCallback(async (e) => {
-    if (isBusy) return;
-    let id = e.target.id;
-    let isAllIn = id === "allInBtn";
-    let isWagerValid =
-      !isNaN(currentWager[currentHand]) &&
-      currentWager[currentHand] > 0 &&
-      currentWager[currentHand] <= playerPoints;
-    let updatedPoints = 0;
-    if (isWagerValid || isAllIn) {
-      if (isAllIn) {
-        updateWager(playerPoints);
+  const placeWager = useCallback(
+    async (e) => {
+      if (isBusy) return;
+      let id = e.target.id;
+      let isAllIn = id === "allInBtn";
+      let isWagerValid =
+        !isNaN(currentWager[currentHand]) &&
+        currentWager[currentHand] > 0 &&
+        currentWager[currentHand] <= playerPoints;
+      let updatedPoints = 0;
+      if (isWagerValid || isAllIn) {
+        if (isAllIn) {
+          updateWager(playerPoints);
+        } else {
+          updatedPoints = playerPoints - currentWager[currentHand];
+        }
+        setPlayerPoints(updatedPoints);
+        await initialDeal(updatedPoints);
       } else {
-        updatedPoints = playerPoints - currentWager[currentHand];
+        alert("The wager must be a number and greater than 0.");
       }
-      setPlayerPoints(updatedPoints);
-      await initialDeal(updatedPoints);
-    } else {
-      alert("The wager must be a number and greater than 0.");
-    }
-  }, [currentWager, currentHand, playerPoints, setPlayerPoints, updateWager, initialDeal, isBusy]);
+    },
+    [currentWager, currentHand, playerPoints, setPlayerPoints, updateWager, initialDeal, isBusy]
+  );
 
   if (!imagesLoaded || loading) {
     return (
@@ -129,8 +135,7 @@ export default function WagerControls({
           id="wagerRst"
           variant="danger"
           size="sm"
-          className="align-middle ms-2 my-3"
-        >
+          className="align-middle ms-2 my-3">
           Reset Wager
         </Button>
         <Button
@@ -138,8 +143,7 @@ export default function WagerControls({
           id="allInBtn"
           variant="warning"
           size="sm"
-          className="align-middle ms-2 my-3"
-        >
+          className="align-middle ms-2 my-3">
           Max Wager
         </Button>
         <Button
@@ -147,8 +151,7 @@ export default function WagerControls({
           id="wagerBtn"
           variant="primary"
           size="sm"
-          className="align-middle ms-2 my-3"
-        >
+          className="align-middle ms-2 my-3">
           Place Wager
         </Button>
       </div>
