@@ -20,12 +20,12 @@ export default function GameControls({
   showButtons,
   newGameBtnHidden,
   setNewGameBtnHidden,
-  setShowButtons,
   isBusy,
   devMode,
+  setIsBusy,
 }) {
   const doubleDown = useCallback(async () => {
-    if (typeof setShowButtons === "function") setShowButtons(false);
+    setIsBusy(true);
     if (
       isDoubleDownAllowed(
         playersHands,
@@ -42,12 +42,10 @@ export default function GameControls({
       setPlayerPoints(pointsLeft);
       await hit("player", "doubleDown"); // FIX: actually deal the double down card
       await endHand();
-      if (typeof setShowButtons === "function" && currentHand < splitCount) {
-        setShowButtons(true);
-      }
+      setIsBusy(false);
     }
   }, [
-    setShowButtons,
+    setIsBusy,
     playersHands,
     currentHand,
     playerTotals,
@@ -57,7 +55,6 @@ export default function GameControls({
     setPlayerPoints,
     hit,
     endHand,
-    splitCount,
   ]);
 
   const resetPoints = useCallback(() => {

@@ -71,18 +71,6 @@ export default function App() {
     }
   }, [devMode]);
 
-  // Check if we should auto-stand based on hand total
-  const checkAutoStand = async (total) => {
-    if (!autoStandChecked || total !== 21) return false;
-
-    // prevent double-triggers if already busy
-    if (isBusy) return false;
-
-    await delay(250);
-    await endHand();
-    return true;
-  };
-
   // Start a new game by shuffling the deck and resetting the UI
   const newGame = async () => {
     if (playerPoints > 0 && !isBusy) {
@@ -132,22 +120,15 @@ export default function App() {
   const initialDeal = async () => {
     if (isBusy) return;
     setIsBusy(true);
-    setShowButtons(false);
     await hit("player", "init");
     await delay(120);
     await hit("dealer", "init");
     await delay(120);
-    const newTotal = await hit("player", "init");
+    await hit("player", "init");
     await delay(120);
     await hit("dealer", "init");
-    setDealerTotal(calculateTotal(dealersHand));
-    //console.log("newTotal", newTotal);
-    const shouldAutoStand = await checkAutoStand(newTotal);
-    //console.log("shouldAutoStand", shouldAutoStand);
-    if (!shouldAutoStand) {
-      setShowButtons(true);
-      setIsBusy(false);
-    }
+    //setDealerTotal(calculateTotal(dealersHand));
+    setIsBusy(false);
   };
 
   const updateWager = (value) => {
@@ -224,13 +205,22 @@ export default function App() {
     if (entity !== "dealer") {
       return latestTotals[hand];
     }
+
+    const { newTotals, newDealerTotal } = calculateAndReturnTotals(
+      newPlayersHands,
+      playerTotals,
+      dealersHand
+    );
+    setPlayerTotal(newTotals);
+    setDealerTotal(newDealerTotal);
+    setPlayerHand(newPlayersHands);
   };
 
   // End the current hand and proceed to the next hand or end the game
   const endHand = async () => {
     setIsBusy(true);
+    console.log("endHand");
     if (currentHand === splitCount) {
-      setShowButtons(false);
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
       let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
       // Reduce the delay before flipping the dealer's card for a snappier feel
@@ -254,7 +244,6 @@ export default function App() {
     if (currentHand < splitCount && splitCount > 0) {
       setCurrentHand(newHand);
       await delay(350);
-      setShowButtons(true);
     }
     setIsBusy(false);
   }
@@ -263,7 +252,6 @@ export default function App() {
   const splitHand = async () => {
     if (isBusy) return;
     setIsBusy(true);
-    setShowButtons(false);
     const oldHand = currentHand;
     const newSplitCount = splitCount + 1;
     const newPlayerHandNames = [...playersHandNames, `${"playersHand" + newSplitCount}`];
@@ -282,11 +270,7 @@ export default function App() {
 
     const newPlayerTotals = [...playerTotals, 0];
     // Calculate the new totals before updating the state
-    let { newTotals } = await calculateAndReturnTotals(
-      newPlayersHands,
-      newPlayerTotals,
-      dealersHand
-    );
+    let { newTotals } = calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand);
     setPlayerTotal(newTotals);
 
     setPlayerHand(newPlayersHands);
@@ -305,8 +289,11 @@ export default function App() {
     ({ newTotals } = calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
     setPlayerTotal(newTotals);
     await delay(950); // was 750
-    setShowButtons(true);
-    setIsBusy(false);
+    if (newTotals[oldHand] === 21 && autoStandChecked) {
+      await endHand();
+    } else {
+      setIsBusy(false);
+    }
   };
 
   // Play the dealer's hand according to the rules
@@ -352,6 +339,28 @@ export default function App() {
     };
     // eslint-disable-next-line
   }, [playersHandElements, dealersHandElements]);
+
+  useEffect(() => {
+    async function fetchData() {
+      document.documentElement.setAttribute("data-bs-theme", "dark");
+      if (
+        !isBusy &&
+        autoStandChecked &&
+        playerTotals[currentHand] === 21 &&
+        carousalInterval === null
+      ) {
+        setShowButtons(false);
+        await delay(750);
+        await endHand(); // dealers card flips before the final player hand ends
+      } else if (!isBusy) {
+        setShowButtons(true);
+      } else if (isBusy) {
+        setShowButtons(false);
+      }
+    }
+    fetchData();
+    // eslint-disable-next-line
+  }, [currentHand, splitCount, isBusy, autoStandChecked, playerTotals, carousalInterval]);
 
   return (
     <>
@@ -418,9 +427,9 @@ export default function App() {
             showButtons={showButtons}
             newGameBtnHidden={newGameBtnHidden}
             setNewGameBtnHidden={setNewGameBtnHidden}
-            setShowButtons={setShowButtons}
             isBusy={isBusy}
             devMode={devMode}
+            setIsBusy={setIsBusy}
           />
         </Container>
         <Container className="text-center mt-3" id="disclaimer">
