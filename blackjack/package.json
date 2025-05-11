@@ -14,8 +14,9 @@
     "web-vitals": "^4.2.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "git-info": "node src/gitInfo.js",
+    "start": "npm run git-info && react-scripts start",
+    "build": "npm run git-info && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

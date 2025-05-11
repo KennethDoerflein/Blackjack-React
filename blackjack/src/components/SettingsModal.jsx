@@ -1,6 +1,7 @@
 import React from "react";
 import appInfo from "../../package.json";
 import { Modal, Button, Form, Container } from "react-bootstrap";
+import gitInfo from "../generatedGitInfo.json";
 
 export default function SettingsModal({
   currentWager,
@@ -63,7 +64,10 @@ export default function SettingsModal({
           Close
         </Button>
       </Modal.Footer>
-      <Container className="text-center pb-2">App Version: {appInfo.version}</Container>
+      <Container className="text-center pb-2">
+        App Version: {appInfo.version} <p className="mb-0">Branch: {gitInfo.branch || "N/A"}</p>
+        <p>Commit: {gitInfo.commitHash || "N/A"}</p>
+      </Container>
     </Modal>
   );
 }
