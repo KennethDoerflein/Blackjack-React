@@ -13,6 +13,10 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v4
 
+      - name: Set homepage in package.json
+        run: |
+          jq '.homepage = "https://kennethdoerflein.github.io/Blackjack-React/"' package.json > temp.json && mv temp.json package.json
+
       - name: Install dependencies and build
         run: |
           npm install
