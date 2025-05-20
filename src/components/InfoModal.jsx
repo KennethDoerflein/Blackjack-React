@@ -12,7 +12,7 @@ export default function InfoModal({ show, handleClose, newGame, currentWager }) 
           <Container className="text-center" style={{ fontSize: "0.7rem" }}>
             App Version: {appInfo.version}
             <p className="mb-0">Branch: {gitInfo.branch || "N/A"}</p>
-            <p>Commit: {gitInfo.commitHash || "N/A"}</p>
+            <p className="mb-0">Commit: {gitInfo.commitHash || "N/A"}</p>
           </Container>
         </Modal.Title>
       </Modal.Header>
