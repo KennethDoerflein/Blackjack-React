@@ -1,6 +1,6 @@
 import { Button, Container, Form, Modal } from "react-bootstrap";
-import appInfo from "../../package.json";
-import gitInfo from "../generatedGitInfo.json";
+import appInfo from "../../../package.json";
+import gitInfo from "../../generatedGitInfo.json";
 
 export default function SettingsModal({
   currentWager,
