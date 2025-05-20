@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-bs-theme="dark" suppressHydrationWarning>
-      <link rel="icon" href="/assets/cards-1.3/red_joker.png" />
+      <link rel="icon" href="assets/cards-1.3/red_joker.png" />
       <body>{children}</body>
     </html>
   );
