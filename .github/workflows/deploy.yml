@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Change this to your default branch
+      - main
 
 jobs:
   build-and-deploy:
@@ -13,17 +13,32 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v4
 
-      - name: Set homepage in package.json
+      - name: Overwrite next.config.ts for GitHub Pages
         run: |
-          jq '.homepage = "https://kennethdoerflein.github.io/Blackjack-React/"' package.json > temp.json && mv temp.json package.json
+          cat > next.config.ts <<EOF
+          import type { NextConfig } from "next";
+
+          const nextConfig: NextConfig = {
+            output: "export",
+            trailingSlash: true,
+            basePath: "/Blackjack-React",
+            assetPrefix: "/Blackjack-React/",
+          };
+
+          export default nextConfig;
+          EOF
 
       - name: Install dependencies and build
         run: |
           npm install
           npm run build
 
+      - name: Disable Jekyll
+        run: |
+          touch out/.nojekyll
+
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          branch: gh-pages  # The branch to deploy to
-          folder: build  # The folder to deploy
+          branch: gh-pages # The branch to deploy to
+          folder: out/ # The folder to deploy

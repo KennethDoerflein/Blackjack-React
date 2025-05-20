@@ -1,5 +1,5 @@
 import { Button, Container, Modal } from "react-bootstrap";
-import appInfo from "../../package.json";
+import appInfo from "../../../package.json";
 import gitInfo from "../generatedGitInfo.json";
 
 export default function InfoModal({ show, handleClose, newGame, currentWager }) {

@@ -1,3 +1,4 @@
+"use client";
 import _ from "lodash";
 import { useEffect, useRef, useState } from "react";
 import { Container } from "react-bootstrap";
@@ -26,10 +27,18 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
 
 export default function App() {
-  const devMode = window.location.hostname === "localhost";
+  const [devMode, setDevMode] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+
+  useEffect(() => {
+    const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
+    setDevMode(isDev);
+    setShowInfo(!isDev);
+    setPlayerPoints(isDev ? 1000000000000 : 100);
+  }, []);
+
   const [debugView, setDebugView] = useState("game"); // "game", "ui", "settings", "hands", "system"
 
-  const [showInfo, setShowInfo] = useState(!devMode);
   const [showSettings, setShowSettings] = useState(false);
   const handleShowInfo = () => setShowInfo(true);
   const handleCloseInfo = () => setShowInfo(false);
@@ -47,7 +56,7 @@ export default function App() {
   const [playersHandElements, setPlayersHandElements] = useState([[]]);
   const [dealersHand, setDealersHand] = useState([]);
   const [dealersHandElements, setDealersHandElements] = useState([]);
-  const [playerPoints, setPlayerPoints] = useState(devMode ? 10000000000000000 : 100);
+  const [playerPoints, setPlayerPoints] = useState(100);
   const [dealerTotal, setDealerTotal] = useState(0);
   const [playerTotals, setPlayerTotal] = useState([0]);
   const [currentWager, setCurrentWager] = useState([0]);

@@ -1,7 +1,7 @@
 // src/gitInfo.js
-const fs = require("fs");
-const path = require("path");
-const { execSync } = require("child_process");
+import { writeFileSync } from "fs";
+import { join } from "path";
+import { execSync } from "child_process";
 
 function getGitInfo() {
   const exec = (cmd) => {
@@ -19,5 +19,5 @@ function getGitInfo() {
 }
 
 const gitInfo = getGitInfo();
-const outputPath = path.join(__dirname, "generatedGitInfo.json");
-fs.writeFileSync(outputPath, JSON.stringify(gitInfo, null, 2));
+const outputPath = join(__dirname, "generatedGitInfo.json");
+writeFileSync(outputPath, JSON.stringify(gitInfo, null, 2));
