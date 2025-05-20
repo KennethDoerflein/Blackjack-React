@@ -18,6 +18,7 @@ export default function GameControls({
   splitTypeChecked,
   resultsAlertHidden,
   showButtons,
+  disableButtons,
   newGameBtnHidden,
   setNewGameBtnHidden,
   isBusy,
@@ -108,6 +109,7 @@ export default function GameControls({
         <Button
           onClick={isBusy ? undefined : handleHit}
           hidden={!canAct}
+          disabled={disableButtons}
           id="hitBtn"
           variant="warning"
           size="sm"
@@ -117,6 +119,7 @@ export default function GameControls({
         <Button
           onClick={isBusy ? undefined : handleSplit}
           hidden={!canSplit}
+          disabled={disableButtons}
           id="splitBtn"
           variant="primary"
           size="sm"
@@ -126,6 +129,7 @@ export default function GameControls({
         <Button
           onClick={isBusy ? undefined : handleDoubleDown}
           hidden={!canDouble}
+          disabled={disableButtons}
           id="doubleDownBtn"
           variant="light"
           size="sm"
@@ -137,6 +141,7 @@ export default function GameControls({
         <Button
           onClick={isBusy ? undefined : handleStand}
           hidden={!canAct}
+          disabled={disableButtons}
           id="standBtn"
           variant="danger"
           size="sm"

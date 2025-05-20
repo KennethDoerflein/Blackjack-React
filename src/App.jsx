@@ -56,6 +56,7 @@ export default function App() {
   const [playersHandNames, setPlayersHandNames] = useState(["playersHand0"]);
 
   const [showButtons, setShowButtons] = useState(true);
+  const [disableButtons, setDisableButtons] = useState(false);
   const [carousalInterval, setCarousalInterval] = useState(null);
   const [carouselKey, setCarouselKey] = useState(0);
   const [newGameBtnHidden, setNewGameBtnHidden] = useState(false);
@@ -145,7 +146,7 @@ export default function App() {
     hand = currentHand,
     newPlayersHands = [...playersHands]
   ) => {
-    if (isBusy && origin === "user") return;
+    if ((disableButtons || isBusy) && origin === "user") return;
     if (origin === "user") setIsBusy(true);
     let halfwayTotalsUpdated = false;
     let latestTotals = playerTotals;
@@ -192,7 +193,7 @@ export default function App() {
 
     if (entity !== "dealer" && origin === "user") {
       // Wait for totals to update before checking for bust or auto-stand
-      await delay(220); // was 400, now snappier
+
       // Use latestTotals instead of playerTotals
       if (latestTotals[hand] > 21) {
         await delay(250); // was 500
@@ -200,7 +201,7 @@ export default function App() {
       }
     }
     // Animation delay only for pacing, not for state update
-    await delay(320); // was 600
+    //await delay(320); // was 600
     if (entity !== "dealer" && origin === "user") setIsBusy(false);
     if (entity !== "dealer") {
       return latestTotals[hand];
@@ -342,7 +343,7 @@ export default function App() {
 
   useEffect(() => {
     async function fetchData() {
-      document.documentElement.setAttribute("data-bs-theme", "dark");
+      const isSplitting = splitCount > 0 && playersHands.some((hand) => hand.length < 2);
       if (
         !isBusy &&
         autoStandChecked &&
@@ -354,8 +355,13 @@ export default function App() {
         await endHand(); // dealers card flips before the final player hand ends
       } else if (!isBusy) {
         setShowButtons(true);
+        setDisableButtons(false);
       } else if (isBusy) {
-        setShowButtons(false);
+        if (playerTotals[currentHand] > 21 || dealersHandElements.length < 2 || isSplitting) {
+          setShowButtons(false);
+        } else {
+          setDisableButtons(true);
+        }
       }
     }
     fetchData();
@@ -425,6 +431,7 @@ export default function App() {
             autoStandChecked={autoStandChecked}
             resultsAlertHidden={resultsAlertHidden}
             showButtons={showButtons}
+            disableButtons={disableButtons}
             newGameBtnHidden={newGameBtnHidden}
             setNewGameBtnHidden={setNewGameBtnHidden}
             isBusy={isBusy}

@@ -53,7 +53,7 @@ export default function SettingsModal({
         {/* <Form.Check
           type="switch"
           id="autoStandSwitch"
-          label="Auto Stand on 21 (Beta)"
+          label="Auto Stand on 21 (Experimental)"
           disabled={dealersHandElements.length > 0 || currentWager[0] > 0}
           checked={autoStandChecked}
           onChange={() => setAutoStandChecked(!autoStandChecked)}
