@@ -1,3 +1,4 @@
+"use client";
 import _ from "lodash";
 import { useEffect, useRef, useState } from "react";
 import { Container } from "react-bootstrap";
@@ -26,10 +27,17 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
 
 export default function App() {
-  const devMode = window.location.hostname === "localhost";
+  const [devMode, setDevMode] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+
+  useEffect(() => {
+    const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
+    setDevMode(isDev);
+    setShowInfo(!isDev);
+  }, []);
+
   const [debugView, setDebugView] = useState("game"); // "game", "ui", "settings", "hands", "system"
 
-  const [showInfo, setShowInfo] = useState(!devMode);
   const [showSettings, setShowSettings] = useState(false);
   const handleShowInfo = () => setShowInfo(true);
   const handleCloseInfo = () => setShowInfo(false);
