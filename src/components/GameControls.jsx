@@ -1,6 +1,6 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { Button, ButtonGroup, Container } from "react-bootstrap";
-import { isSplitAllowed, isDoubleDownAllowed } from "../utils/blackjackUtils";
+import { isDoubleDownAllowed, isSplitAllowed } from "../utils/blackjackUtils";
 
 export default function GameControls({
   hit,

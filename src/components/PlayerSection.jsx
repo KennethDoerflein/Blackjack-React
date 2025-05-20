@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Container, Carousel } from "react-bootstrap";
+import { Carousel, Container } from "react-bootstrap";
 import { adjustCardMargins } from "../utils/uiUtils.js";
 
 export default React.memo(function PlayerSection({

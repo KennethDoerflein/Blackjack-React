@@ -1,26 +1,26 @@
-import React, { useState, useEffect, useRef } from "react";
 import _ from "lodash";
+import { useEffect, useRef, useState } from "react";
 import { Container } from "react-bootstrap";
+import CardDeck from "./CardDeck.js";
 import DealerSection from "./components/DealerSection.jsx";
+import GameControls from "./components/GameControls.jsx";
+import InfoModal from "./components/InfoModal.jsx";
 import PlayerSection from "./components/PlayerSection.jsx";
 import PointSection from "./components/PointSection.jsx";
-import WagerControls from "./components/WagerControls.jsx";
-import GameControls from "./components/GameControls.jsx";
 import SettingsModal from "./components/SettingsModal.jsx";
-import InfoModal from "./components/InfoModal.jsx";
 import TopButtons from "./components/TopButtons.jsx";
+import WagerControls from "./components/WagerControls.jsx";
 import WinnerSection from "./components/WinnerSection.jsx";
-import CardDeck from "./CardDeck.js";
 
 import { delay } from "./utils/utils.js";
 
 import {
+  calculateAndReturnTotals,
   calculateTotal,
   shouldDealerHit,
-  calculateAndReturnTotals,
 } from "./utils/blackjackUtils.js";
 
-import { addCard, flipCard, adjustCardMargins } from "./utils/uiUtils.js";
+import { addCard, adjustCardMargins, flipCard } from "./utils/uiUtils.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";

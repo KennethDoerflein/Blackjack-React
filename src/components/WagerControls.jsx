@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import { Button, Container, Image as BSImage, Spinner } from "react-bootstrap";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Image as BSImage, Button, Container, Spinner } from "react-bootstrap";
 import { animateElement } from "../utils/uiUtils.js";
 
 const chipNames = ["1Chip", "5Chip", "10Chip", "20Chip", "50Chip"];

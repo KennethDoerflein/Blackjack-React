@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Container } from "react-bootstrap";
 
 export default function WinnerSection({

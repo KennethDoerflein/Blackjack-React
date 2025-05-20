@@ -1,6 +1,5 @@
-import React from "react";
+import { Button, Container, Form, Modal } from "react-bootstrap";
 import appInfo from "../../package.json";
-import { Modal, Button, Form, Container } from "react-bootstrap";
 import gitInfo from "../generatedGitInfo.json";
 
 export default function SettingsModal({

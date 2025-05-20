@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 import { Button } from "react-bootstrap";
 
 const TopButtons = forwardRef(function TopButtons({ showInfoModal, showSettingsModal }, audioRef) {
