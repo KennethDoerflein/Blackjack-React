@@ -50,14 +50,14 @@ export default function SettingsModal({
             onChange={() => setSplitTypeChecked(!splitTypeChecked)}
           />
         </Form>
-        <Form.Check
+        {/* <Form.Check
           type="switch"
           id="autoStandSwitch"
           label="Auto Stand on 21 (Beta)"
           disabled={dealersHandElements.length > 0 || currentWager[0] > 0}
           checked={autoStandChecked}
           onChange={() => setAutoStandChecked(!autoStandChecked)}
-        />
+        /> */}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose} className="mx-auto">
