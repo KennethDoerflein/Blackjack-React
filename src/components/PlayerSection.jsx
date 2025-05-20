@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
-import { Container, Carousel } from "react-bootstrap";
+import React, { useEffect, useRef } from "react";
+import { Carousel, Container } from "react-bootstrap";
 import { adjustCardMargins } from "../utils/uiUtils.js";
 
-export default function PlayerSection({
+export default React.memo(function PlayerSection({
   playersHandElements,
   playerTotals,
   splitCount,
@@ -11,6 +11,7 @@ export default function PlayerSection({
   carousalInterval,
   setCurrentHand,
 }) {
+  const handRefs = useRef([]);
 
   const handleSelect = (selectedIndex) => {
     if (carousalInterval !== null) {
@@ -22,8 +23,8 @@ export default function PlayerSection({
     const adjustMargins = () => {
       if (playersHandElements[0].length > 2) {
         playersHandElements.forEach((hand, i) => {
-          if (hand.length > 0) {
-            adjustCardMargins(document.getElementById(playersHandNames[i]));
+          if (hand.length > 0 && handRefs.current[i]) {
+            adjustCardMargins(handRefs.current[i]);
           }
         });
       }
@@ -49,7 +50,11 @@ export default function PlayerSection({
               </h6>
             </Container>
             <span id="playersHands">
-              <Container fluid key={playersHandNames[i]} id={playersHandNames[i]}>
+              <Container
+                fluid
+                key={playersHandNames[i]}
+                id={playersHandNames[i]}
+                ref={(el) => (handRefs.current[i] = el)}>
                 {hand}
               </Container>
             </span>
@@ -58,4 +63,4 @@ export default function PlayerSection({
       </Carousel>
     </>
   );
-}
+});

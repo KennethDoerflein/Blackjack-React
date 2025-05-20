@@ -1,6 +1,6 @@
-import React from "react";
+import { Button, Container, Modal } from "react-bootstrap";
 import appInfo from "../../package.json";
-import { Modal, Button, Container } from "react-bootstrap";
+import gitInfo from "../generatedGitInfo.json";
 
 export default function InfoModal({ show, handleClose, newGame, currentWager }) {
   return (
@@ -10,6 +10,8 @@ export default function InfoModal({ show, handleClose, newGame, currentWager }) 
           <Container className="text-center">Game Info</Container>
           <Container className="text-center" style={{ fontSize: "0.7rem" }}>
             App Version: {appInfo.version}
+            <p className="mb-0">Branch: {gitInfo.branch || "N/A"}</p>
+            <p className="mb-0">Commit: {gitInfo.commitHash || "N/A"}</p>
           </Container>
         </Modal.Title>
       </Modal.Header>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Container } from "react-bootstrap";
 
-export default function PointSection({ playerPoints, currentWager }) {
+export default React.memo(function PointSection({ playerPoints, currentWager }) {
   return (
     <Container className="mt-2 d-flex justify-content-center">
       <Container
@@ -16,4 +16,4 @@ export default function PointSection({ playerPoints, currentWager }) {
       </Container>
     </Container>
   );
-}
+});

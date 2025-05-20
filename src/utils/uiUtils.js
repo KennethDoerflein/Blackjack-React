@@ -1,6 +1,18 @@
 import { delay } from "./utils";
 
-export const addCard = async (cards, div, entity, origin, deck, setHandElements, currentHand) => {
+// Animation timing constants
+const FLIP_ANIMATION_DURATION = 700; // ms for flip (match CSS)
+
+export const addCard = async (
+  cards,
+  div,
+  entity,
+  origin,
+  deck,
+  setHandElements,
+  currentHand,
+  halfwayCallback
+) => {
   const card = deck.getCard();
   cards.push(card);
 
@@ -9,8 +21,9 @@ export const addCard = async (cards, div, entity, origin, deck, setHandElements,
   const delayTime = isFirstCard ? 100 : 0;
 
   const imgElement = await createCardImage("./assets/cards-1.3/back.png");
+  // Use a unique, stable key for each card (e.g., card.rank + card.suit + cards.length)
   let reactImgElement = createReactImageElement(
-    cards.length,
+    `${card.rank}_${card.suit}_${cards.length}`,
     imgElement.src,
     card.image,
     "imgSlide"
@@ -20,10 +33,10 @@ export const addCard = async (cards, div, entity, origin, deck, setHandElements,
     updateHandElements(setHandElements, entity, currentHand, reactImgElement);
   });
 
-  await delay(300 + delayTime);
+  await delay(400 + delayTime);
 
   if (shouldFlipCard(entity, cards)) {
-    await flipCard(reactImgElement, card, setHandElements, entity, currentHand);
+    await flipCard(reactImgElement, card, setHandElements, entity, currentHand, halfwayCallback);
   }
 };
 
@@ -43,7 +56,14 @@ const updateHandElements = (setHandElements, entity, currentHand, reactImgElemen
   });
 };
 
-export const flipCard = async (reactImgElement, card, setHandElements, entity, currentHand) => {
+export const flipCard = async (
+  reactImgElement,
+  card,
+  setHandElements,
+  entity,
+  currentHand,
+  halfwayCallback
+) => {
   const finalImgPath = `./assets/cards-1.3/${card.image}`;
   const newSrc = await preloadAndGetImage(finalImgPath);
   const flippedReactImgElement = createReactImageElement(
@@ -52,22 +72,25 @@ export const flipCard = async (reactImgElement, card, setHandElements, entity, c
     card.image,
     "imgFlip"
   );
+  updateFlippedHandElements(setHandElements, entity, currentHand, flippedReactImgElement);
 
-  requestAnimationFrame(() => {
-    updateFlippedHandElements(setHandElements, entity, currentHand, flippedReactImgElement);
-  });
+  // Call halfwayCallback at 350ms (halfway through 700ms flip)
+  if (halfwayCallback) {
+    setTimeout(() => {
+      halfwayCallback();
+    }, 350);
+  }
 
+  // Let the CSS animation handle the flip, no extra delay needed
+  await delay(FLIP_ANIMATION_DURATION); // Match this to your CSS animation duration
+  // Remove the flip class after animation
   const normalReactImgElement = createReactImageElement(
     reactImgElement.key,
     newSrc,
     card.image,
     ""
   );
-  await delay(500);
-
-  requestAnimationFrame(() => {
-    updateFlippedHandElements(setHandElements, entity, currentHand, normalReactImgElement);
-  });
+  updateFlippedHandElements(setHandElements, entity, currentHand, normalReactImgElement);
 };
 
 const updateFlippedHandElements = (
@@ -93,14 +116,15 @@ const updateFlippedHandElements = (
 // Animate the card with a given class and delay
 export function animateElement(element, animationClass, delayTime) {
   return new Promise((resolve) => {
-    requestAnimationFrame(() => {
-      element.classList.add(animationClass);
-    });
-    requestAnimationFrame(async () => {
-      await delay(delayTime);
+    // Remove any lingering animation class before starting
+    element.classList.remove(animationClass);
+    // Force reflow to restart animation if needed
+    void element.offsetWidth;
+    element.classList.add(animationClass);
+    setTimeout(() => {
       element.classList.remove(animationClass);
       resolve();
-    });
+    }, delayTime);
   });
 }
 

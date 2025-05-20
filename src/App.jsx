@@ -1,32 +1,35 @@
-import React, { useState, useEffect } from "react";
 import _ from "lodash";
+import { useEffect, useRef, useState } from "react";
 import { Container } from "react-bootstrap";
+import CardDeck from "./CardDeck.js";
 import DealerSection from "./components/DealerSection.jsx";
+import GameControls from "./components/GameControls.jsx";
+import InfoModal from "./components/InfoModal.jsx";
 import PlayerSection from "./components/PlayerSection.jsx";
 import PointSection from "./components/PointSection.jsx";
-import WagerControls from "./components/WagerControls.jsx";
-import GameControls from "./components/GameControls.jsx";
 import SettingsModal from "./components/SettingsModal.jsx";
-import InfoModal from "./components/InfoModal.jsx";
 import TopButtons from "./components/TopButtons.jsx";
+import WagerControls from "./components/WagerControls.jsx";
 import WinnerSection from "./components/WinnerSection.jsx";
-import CardDeck from "./CardDeck.js";
 
-import { enableGameButtons, delay, disableGameButtons, hideGameButtons } from "./utils/utils.js";
+import { delay } from "./utils/utils.js";
 
 import {
+  calculateAndReturnTotals,
   calculateTotal,
   shouldDealerHit,
-  calculateAndReturnTotals,
 } from "./utils/blackjackUtils.js";
 
-import { addCard, flipCard, adjustCardMargins } from "./utils/uiUtils.js";
+import { addCard, adjustCardMargins, flipCard } from "./utils/uiUtils.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
 
 export default function App() {
-  const [showInfo, setShowInfo] = useState(true);
+  const devMode = window.location.hostname === "localhost";
+  const [debugView, setDebugView] = useState("game"); // "game", "ui", "settings", "hands", "system"
+
+  const [showInfo, setShowInfo] = useState(!devMode);
   const [showSettings, setShowSettings] = useState(false);
   const handleShowInfo = () => setShowInfo(true);
   const handleCloseInfo = () => setShowInfo(false);
@@ -35,17 +38,16 @@ export default function App() {
   const [resultsAlertHidden, setResultsAlertHidden] = useState(true);
 
   const [soft17Checked, setSoft17Checked] = useState(true);
-  const [autoStandChecked, setAutoStandChecked] = useState(false);
   const [splitTypeChecked, setSplitTypeChecked] = useState(false);
+  const [autoStandChecked, setAutoStandChecked] = useState(false);
 
-  document.documentElement.setAttribute("data-bs-theme", "dark");
   const [deck, setCardDeck] = useState(null);
   const [loading, setLoading] = useState(true);
   const [playersHands, setPlayerHand] = useState([[]]);
   const [playersHandElements, setPlayersHandElements] = useState([[]]);
   const [dealersHand, setDealersHand] = useState([]);
   const [dealersHandElements, setDealersHandElements] = useState([]);
-  const [playerPoints, setPlayerPoints] = useState(100);
+  const [playerPoints, setPlayerPoints] = useState(devMode ? 10000000000000000 : 100);
   const [dealerTotal, setDealerTotal] = useState(0);
   const [playerTotals, setPlayerTotal] = useState([0]);
   const [currentWager, setCurrentWager] = useState([0]);
@@ -54,16 +56,30 @@ export default function App() {
   const [playersHandNames, setPlayersHandNames] = useState(["playersHand0"]);
 
   const [showButtons, setShowButtons] = useState(true);
+  const [disableButtons, setDisableButtons] = useState(false);
   const [carousalInterval, setCarousalInterval] = useState(null);
   const [carouselKey, setCarouselKey] = useState(0);
+  const [newGameBtnHidden, setNewGameBtnHidden] = useState(false);
+
+  const [isBusy, setIsBusy] = useState(false);
+
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-bs-theme", "dark");
+    if (devMode) {
+      setAutoStandChecked(true);
+    }
+  }, [devMode]);
 
   // Start a new game by shuffling the deck and resetting the UI
   const newGame = async () => {
-    if (playerPoints > 0) {
+    if (playerPoints > 0 && !isBusy) {
+      setIsBusy(true);
       setCurrentHand(0);
       setCarousalInterval(null);
       setCarouselKey((prevKey) => prevKey + 1);
-      document.getElementById("newGameBtn").hidden = true;
+      setNewGameBtnHidden(true); // Hide new game button via state
 
       if (!deck) {
         // Create a new deck and wait for images to preload
@@ -97,24 +113,27 @@ export default function App() {
 
       // Hide the results alert if it's showing
       if (!resultsAlertHidden) setResultsAlertHidden(true);
+      setIsBusy(false);
     }
   };
 
   // Deal initial cards to player and dealer
   const initialDeal = async () => {
-    setShowButtons(false);
+    if (isBusy) return;
+    setIsBusy(true);
     await hit("player", "init");
+    await delay(120);
     await hit("dealer", "init");
-    const newTotal = await hit("player", "init");
+    await delay(120);
+    await hit("player", "init");
+    await delay(120);
     await hit("dealer", "init");
-    if (newTotal !== 21 || !autoStandChecked) {
-      // document.getElementById("playersHand0").classList.add("activeHand");
-      setShowButtons(true);
-      enableGameButtons();
-    }
+    //setDealerTotal(calculateTotal(dealersHand));
+    setIsBusy(false);
   };
 
   const updateWager = (value) => {
+    if (isBusy) return;
     const newWager = [...currentWager];
     newWager[currentHand] = parseInt(value, 10);
     setCurrentWager(newWager);
@@ -127,7 +146,26 @@ export default function App() {
     hand = currentHand,
     newPlayersHands = [...playersHands]
   ) => {
-    disableGameButtons();
+    if ((disableButtons || isBusy) && origin === "user") return;
+    if (origin === "user") setIsBusy(true);
+    let halfwayTotalsUpdated = false;
+    let latestTotals = playerTotals;
+    // Define a callback to update totals halfway through the flip
+    const halfwayCallback = async () => {
+      if (!halfwayTotalsUpdated) {
+        halfwayTotalsUpdated = true;
+        const { newTotals, newDealerTotal } = calculateAndReturnTotals(
+          newPlayersHands,
+          playerTotals,
+          dealersHand
+        );
+        setPlayerTotal(newTotals);
+        setDealerTotal(newDealerTotal);
+        setPlayerHand(newPlayersHands);
+        latestTotals = newTotals;
+        return { newTotals, newDealerTotal };
+      }
+    };
 
     if (entity !== "dealer") {
       await addCard(
@@ -137,73 +175,84 @@ export default function App() {
         origin,
         deck,
         setPlayersHandElements,
-        hand
+        hand,
+        halfwayCallback
       );
     } else {
-      await addCard(dealersHand, dealersHandElements, entity, origin, deck, setDealersHandElements);
+      await addCard(
+        dealersHand,
+        dealersHandElements,
+        entity,
+        origin,
+        deck,
+        setDealersHandElements,
+        undefined,
+        halfwayCallback
+      );
     }
 
-    // Calculate the new totals before updating the state
-    const { newTotals, newDealerTotal } = await calculateAndReturnTotals(
+    if (entity !== "dealer" && origin === "user") {
+      // Wait for totals to update before checking for bust or auto-stand
+
+      // Use latestTotals instead of playerTotals
+      if (latestTotals[hand] > 21) {
+        await delay(250); // was 500
+        await endHand();
+      }
+    }
+    // Animation delay only for pacing, not for state update
+    //await delay(320); // was 600
+    if (entity !== "dealer" && origin === "user") setIsBusy(false);
+    if (entity !== "dealer") {
+      return latestTotals[hand];
+    }
+
+    const { newTotals, newDealerTotal } = calculateAndReturnTotals(
       newPlayersHands,
       playerTotals,
       dealersHand
     );
-
     setPlayerTotal(newTotals);
     setDealerTotal(newDealerTotal);
     setPlayerHand(newPlayersHands);
-    if (entity !== "dealer" && origin === "user") {
-      if (newTotals[hand] > 21) {
-        await delay(500);
-        await endHand();
-      }
-      enableGameButtons();
-    }
-    await delay(600);
-    if (entity !== "dealer") {
-      return newTotals[hand];
-    }
   };
 
   // End the current hand and proceed to the next hand or end the game
   const endHand = async () => {
+    setIsBusy(true);
+    console.log("endHand");
     if (currentHand === splitCount) {
-      hideGameButtons();
-      // document.getElementById(playersHandNames[currentHand]).classList.remove("activeHand");
-      // document.getElementById("dealersHand").classList.add("activeHand");
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
       let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
-      await delay(600);
-      flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
-      await delay(400);
+      // Reduce the delay before flipping the dealer's card for a snappier feel
+      await delay(220); // was 200
+      await flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
+      await delay(250); // was 400
       await playDealer();
-      // document.getElementById("dealersHand").classList.remove("activeHand");
       setResultsAlertHidden(false);
-      setCarousalInterval(1750);
+      setCarousalInterval(1750); // was 1750
+      setIsBusy(false);
     } else if (currentHand !== splitCount) {
-      advanceHand(currentHand + 1);
+      let newHand = currentHand + 1;
+      await advanceHand(newHand);
+      setIsBusy(false);
     }
   };
 
   // Advance to the next player hand if splits occurred
   async function advanceHand(newHand) {
+    setIsBusy(true);
     if (currentHand < splitCount && splitCount > 0) {
-      // document.getElementById(playersHandNames[newHand]).classList.add("activeHand");
-      // document.getElementById(playersHandNames[currentHand]).classList.remove("activeHand");
-      disableGameButtons();
       setCurrentHand(newHand);
-      if (playerTotals[newHand] !== 21 || !autoStandChecked) {
-        await delay(750);
-        enableGameButtons();
-      }
+      await delay(350);
     }
+    setIsBusy(false);
   }
 
   // Split the player's hand into two separate hands
   const splitHand = async () => {
-    disableGameButtons();
-    setShowButtons(false);
+    if (isBusy) return;
+    setIsBusy(true);
     const oldHand = currentHand;
     const newSplitCount = splitCount + 1;
     const newPlayerHandNames = [...playersHandNames, `${"playersHand" + newSplitCount}`];
@@ -222,44 +271,44 @@ export default function App() {
 
     const newPlayerTotals = [...playerTotals, 0];
     // Calculate the new totals before updating the state
-    let { newTotals } = await calculateAndReturnTotals(
-      newPlayersHands,
-      newPlayerTotals,
-      dealersHand
-    );
+    let { newTotals } = calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand);
     setPlayerTotal(newTotals);
 
     setPlayerHand(newPlayersHands);
     setPlayersHandElements(newPlayerHandElements);
     setCurrentWager(newCurrentWager);
     setPlayerPoints(playerPoints - newCurrentWager[newSplitCount]);
-    await delay(500);
+    await delay(500); // was 500
     await hit("player", "split", currentHand, newPlayersHands);
     setCurrentHand(newSplitCount);
-    await delay(1200);
+    await delay(1200); // was 1200
     await hit("player", "split", newSplitCount, newPlayersHands);
-    await delay(500);
+    await delay(500); // was 500
     setCurrentHand(oldHand);
 
     // Recalculate the new totals after hitting
-    ({ newTotals } = await calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
+    ({ newTotals } = calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
     setPlayerTotal(newTotals);
-    await delay(750);
-    setShowButtons(true);
-    enableGameButtons();
-    // document.getElementById("playersHand" + oldHand).classList.add("activeHand");
+    await delay(950); // was 750
+    if (newTotals[oldHand] === 21 && autoStandChecked) {
+      await endHand();
+    } else {
+      setIsBusy(false);
+    }
   };
 
   // Play the dealer's hand according to the rules
   const playDealer = async () => {
-    await delay(500);
+    setIsBusy(true);
+    await delay(220); // was 500
     let newDealerTotal = dealerTotal;
     while (shouldDealerHit(newDealerTotal, dealersHand, soft17Checked)) {
       await hit("dealer", "endGame");
-      newDealerTotal = await calculateTotal(dealersHand);
+      newDealerTotal = calculateTotal(dealersHand);
       setDealerTotal(newDealerTotal);
-      await delay(400);
+      await delay(220); // was 400
     }
+    setIsBusy(false);
   };
 
   useEffect(() => {
@@ -270,7 +319,7 @@ export default function App() {
             if (hand.length > 0) {
               document.getElementById(playersHandNames[i]).classList.add("viewportResize");
               adjustCardMargins(document.getElementById(playersHandNames[i]), true);
-              await delay(300);
+              await delay(120); // was 300
               document.getElementById(playersHandNames[i]).classList.remove("viewportResize");
             }
           });
@@ -278,11 +327,11 @@ export default function App() {
         if (dealersHandElements.length > 2) {
           document.getElementById("dealersHand").classList.add("viewportResize");
           adjustCardMargins(document.getElementById("dealersHand"), true);
-          await delay(300);
+          await delay(120); // was 300
           document.getElementById("dealersHand").classList.remove("viewportResize");
         }
       });
-    }, 300); // Throttle by 300ms
+    }, 180); // was 300ms throttle
 
     window.visualViewport?.addEventListener("resize", handleViewportChange);
 
@@ -292,9 +341,40 @@ export default function App() {
     // eslint-disable-next-line
   }, [playersHandElements, dealersHandElements]);
 
+  useEffect(() => {
+    async function fetchData() {
+      const isSplitting = splitCount > 0 && playersHands.some((hand) => hand.length < 2);
+      if (
+        !isBusy &&
+        autoStandChecked &&
+        playerTotals[currentHand] === 21 &&
+        carousalInterval === null
+      ) {
+        setShowButtons(false);
+        await delay(750);
+        await endHand(); // dealers card flips before the final player hand ends
+      } else if (!isBusy) {
+        setShowButtons(true);
+        setDisableButtons(false);
+      } else if (isBusy) {
+        if (playerTotals[currentHand] > 21 || dealersHandElements.length < 2 || isSplitting) {
+          setShowButtons(false);
+        } else {
+          setDisableButtons(true);
+        }
+      }
+    }
+    fetchData();
+    // eslint-disable-next-line
+  }, [currentHand, splitCount, isBusy, autoStandChecked, playerTotals, carousalInterval]);
+
   return (
     <>
-      <TopButtons showInfoModal={handleShowInfo} showSettingsModal={handleShowSettings} />
+      <TopButtons
+        showInfoModal={handleShowInfo}
+        showSettingsModal={handleShowSettings}
+        ref={audioRef}
+      />
       <Container fluid className="my-2" id="main">
         <DealerSection dealersHandElements={dealersHandElements} dealerTotal={dealerTotal} />
         <PlayerSection
@@ -319,6 +399,7 @@ export default function App() {
             playersHands={playersHands}
             showInfo={showInfo}
             loading={loading}
+            isBusy={isBusy}
           />
           <WinnerSection
             playerPoints={playerPoints}
@@ -350,6 +431,12 @@ export default function App() {
             autoStandChecked={autoStandChecked}
             resultsAlertHidden={resultsAlertHidden}
             showButtons={showButtons}
+            disableButtons={disableButtons}
+            newGameBtnHidden={newGameBtnHidden}
+            setNewGameBtnHidden={setNewGameBtnHidden}
+            isBusy={isBusy}
+            devMode={devMode}
+            setIsBusy={setIsBusy}
           />
         </Container>
         <Container className="text-center mt-3" id="disclaimer">
@@ -359,6 +446,78 @@ export default function App() {
             <strong>entertainment purposes only</strong>.
           </p>
         </Container>
+        {devMode && (
+          <div className="text-center text-warning">
+            <p>
+              <strong>Developer Mode Enabled</strong>
+            </p>
+          </div>
+        )}
+        {devMode && (
+          <div className="debug-controls mb-2">
+            <label htmlFor="debug-select" className="me-2 text-light">
+              Debug View:
+            </label>
+            <select
+              id="debug-select"
+              value={debugView}
+              onChange={(e) => setDebugView(e.target.value)}
+              className="form-select form-select-sm w-auto d-inline-block">
+              <option value="game">Game</option>
+              <option value="hands">Hands</option>
+              <option value="settings">Settings</option>
+              <option value="ui">UI State</option>
+              <option value="system">System</option>
+            </select>
+          </div>
+        )}
+
+        {devMode && (
+          <pre className="debug-panel bg-dark text-light p-2 rounded">
+            {JSON.stringify(
+              debugView === "game"
+                ? {
+                    playerPoints,
+                    currentWager,
+                    playerTotals,
+                    dealerTotal,
+                    currentHand,
+                    splitCount,
+                  }
+                : debugView === "hands"
+                ? {
+                    playersHands,
+                    playersHandElements,
+                    dealersHand,
+                    dealersHandElements,
+                    playersHandNames,
+                  }
+                : debugView === "settings"
+                ? {
+                    soft17Checked,
+                    splitTypeChecked,
+                    autoStandChecked,
+                  }
+                : debugView === "ui"
+                ? {
+                    showInfo,
+                    showSettings,
+                    showButtons,
+                    resultsAlertHidden,
+                    newGameBtnHidden,
+                    carousalInterval,
+                    carouselKey,
+                  }
+                : {
+                    isBusy,
+                    // deck,
+                    // audioRef: audioRef?.current ? "ready" : "null",
+                  },
+              null,
+              2
+            )}
+          </pre>
+        )}
       </Container>
 
       <SettingsModal
@@ -374,7 +533,10 @@ export default function App() {
         endHand={endHand}
         playerTotals={playerTotals}
         currentHand={currentHand}
+        splitCount={splitCount}
+        advanceHand={advanceHand}
         dealersHandElements={dealersHandElements}
+        audioRef={audioRef}
       />
       <InfoModal
         newGame={newGame}
