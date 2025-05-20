@@ -34,6 +34,7 @@ export default function App() {
     const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
     setDevMode(isDev);
     setShowInfo(!isDev);
+    setPlayerPoints(isDev ? 1000000000000 : 100);
   }, []);
 
   const [debugView, setDebugView] = useState("game"); // "game", "ui", "settings", "hands", "system"
@@ -55,7 +56,7 @@ export default function App() {
   const [playersHandElements, setPlayersHandElements] = useState([[]]);
   const [dealersHand, setDealersHand] = useState([]);
   const [dealersHandElements, setDealersHandElements] = useState([]);
-  const [playerPoints, setPlayerPoints] = useState(devMode ? 10000000000000000 : 100);
+  const [playerPoints, setPlayerPoints] = useState(100);
   const [dealerTotal, setDealerTotal] = useState(0);
   const [playerTotals, setPlayerTotal] = useState([0]);
   const [currentWager, setCurrentWager] = useState([0]);
