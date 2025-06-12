@@ -42,8 +42,12 @@ class CardDeck {
   }
 
   preloadImages() {
-    let images = this.cards.map((card) => `./assets/cards-1.3/${card.image}`);
-    let promises = images.map((src) => {
+    // Use a Set to get unique image paths, preventing duplicate loads for multiple decks.
+    const uniqueImagePaths = [
+      ...new Set(this.cards.map((card) => `./assets/cards-1.3/${card.image}`)),
+    ];
+
+    const promises = uniqueImagePaths.map((src) => {
       return new Promise((resolve) => {
         const img = new Image();
         img.src = src;
@@ -60,12 +64,12 @@ class CardDeck {
     return min + (randomArray[0] % range);
   }
 
-  casinoShuffle() {
-    return this.durstenfeldShuffle()
-      .then(() => this.overhandShuffle())
-      .then(() => this.riffleShuffle())
-      .then(() => this.stripShuffle())
-      .then(() => this.cutDeck());
+  async casinoShuffle() {
+    await this.durstenfeldShuffle();
+    await this.overhandShuffle();
+    await this.riffleShuffle();
+    await this.stripShuffle();
+    return await this.cutDeck();
   }
 
   durstenfeldShuffle() {
