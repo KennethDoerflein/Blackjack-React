@@ -1,3 +1,4 @@
+import { motion, useAnimationControls } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Image as BSImage, Button, Container, Spinner } from "react-bootstrap";
 import { animateElement } from "../utils/uiUtils.js";
@@ -29,6 +30,7 @@ export default function WagerControls({
 }) {
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const wagerDisplayRef = useRef(null);
+  const chipControls = [1, 5, 10, 20, 50].map(() => useAnimationControls());
 
   useEffect(() => {
     preloadImages(chipNames).then(() => setImagesLoaded(true));
@@ -37,11 +39,16 @@ export default function WagerControls({
   const addChipValue = useCallback(
     (e) => {
       if (isBusy) return;
-      animateElement(e.target, "chipFlip", 700);
-      if (wagerDisplayRef.current) {
-        animateElement(wagerDisplayRef.current, "highlight", 500);
+      const idx = [1, 5, 10, 20, 50].indexOf(parseInt(e.target.getAttribute("data-value"), 10));
+      if (idx !== -1) {
+        chipControls[idx].start({ rotateX: [180, 0], rotateY: [360, 0], transition: { duration: 0.7, ease: "linear" } });
       }
-
+      // Highlight the wager box for the current hand
+      const wagerBox = document.getElementById(`wagerDisplay-${currentHand}`);
+      if (wagerBox) {
+        wagerBox.classList.add("highlight");
+        setTimeout(() => wagerBox.classList.remove("highlight"), 500);
+      }
       const chipValue = parseInt(e.target.getAttribute("data-value"), 10);
       const newWager = currentWager[currentHand] + chipValue;
       if (newWager <= playerPoints && Number.isInteger(newWager)) {
@@ -50,7 +57,7 @@ export default function WagerControls({
         updateWager(playerPoints);
       }
     },
-    [currentWager, currentHand, playerPoints, updateWager, isBusy]
+    [currentWager, currentHand, playerPoints, updateWager, isBusy, chipControls]
   );
 
   const clearWager = useCallback(() => {
@@ -94,41 +101,25 @@ export default function WagerControls({
 
   return (
     <Container hidden={playersHands[0].length !== 0 || showInfo} id="wagerDiv" className="mt-2">
-      <BSImage
-        onClick={isBusy ? undefined : addChipValue}
-        className="chip"
-        src="./assets/1Chip.jpg"
-        data-value="1"
-        alt="1 point chip"
-      />
-      <BSImage
-        onClick={isBusy ? undefined : addChipValue}
-        className="chip"
-        src="./assets/5Chip.jpg"
-        data-value="5"
-        alt="5 point chip"
-      />
-      <BSImage
-        onClick={isBusy ? undefined : addChipValue}
-        className="chip"
-        src="./assets/10Chip.jpg"
-        data-value="10"
-        alt="10 point chip"
-      />
-      <BSImage
-        onClick={isBusy ? undefined : addChipValue}
-        className="chip"
-        src="./assets/20Chip.jpg"
-        data-value="20"
-        alt="20 point chip"
-      />
-      <BSImage
-        onClick={isBusy ? undefined : addChipValue}
-        className="chip"
-        src="./assets/50Chip.jpg"
-        data-value="50"
-        alt="50 point chip"
-      />
+      {[1, 5, 10, 20, 50].map((val, idx) => (
+        <motion.div
+          key={val}
+          animate={chipControls[idx]}
+          initial={{ rotateX: 0, rotateY: 0 }}
+          whileTap={{ scale: 1.2, rotate: 12 }}
+          whileHover={{ scale: 1.08 }}
+          style={{ display: "inline-block", margin: "0 4px", perspective: 600 }}
+        >
+          <BSImage
+            onClick={isBusy ? undefined : addChipValue}
+            className="chip"
+            src={`./assets/${val}Chip.jpg`}
+            data-value={val}
+            alt={`${val} point chip`}
+            style={{ backfaceVisibility: "visible" }}
+          />
+        </motion.div>
+      ))}
       <div>
         <Button
           onClick={isBusy ? undefined : clearWager}

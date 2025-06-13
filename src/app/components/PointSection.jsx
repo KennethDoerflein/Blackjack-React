@@ -1,7 +1,7 @@
 import React from "react";
 import { Container } from "react-bootstrap";
 
-export default React.memo(function PointSection({ playerPoints, currentWager }) {
+export default React.memo(function PointSection({ playerPoints, currentWager, currentHand }) {
   return (
     <Container className="mt-2 d-flex justify-content-center">
       <Container
@@ -10,8 +10,8 @@ export default React.memo(function PointSection({ playerPoints, currentWager }) 
         Points*: {playerPoints}
       </Container>
       <Container
-        className="text-center ms-3 mb-2 px-2 border rounded d-flex align-items-center justify-content-center"
-        id="wagerDisplay">
+        className="text-center ms-3 mb-2 px-2 border rounded d-flex align-items-center justify-content-center wagerDisplay"
+        id={`wagerDisplay-${currentHand}`}>
         Current Hand's Wager: {currentWager !== undefined ? currentWager : 0}
       </Container>
     </Container>

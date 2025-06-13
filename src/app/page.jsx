@@ -396,7 +396,11 @@ export default function App() {
           setCurrentHand={setCurrentHand}
           key={carouselKey}
         />
-        <PointSection playerPoints={playerPoints} currentWager={currentWager[currentHand]} />
+        <PointSection
+          playerPoints={playerPoints}
+          currentWager={currentWager[currentHand]}
+          currentHand={currentHand}
+        />
         <Container className="text-center" id="bottomDiv">
           <WagerControls
             playerPoints={playerPoints}

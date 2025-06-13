@@ -66,7 +66,7 @@
 }
 
 #pointsDisplay,
-#wagerDisplay {
+.wagerDisplay {
   max-height: 4vh !important;
   height: 4vh !important;
   width: 20vh;
@@ -140,20 +140,6 @@
 .imgSlide {
   animation: slideIn 0.5s ease-out;
   will-change: transform;
-}
-
-@keyframes flipFull {
-  from {
-    transform: rotateX(180deg) rotateY(360deg);
-  }
-  to {
-    transform: rotateX(0deg) rotateY(0deg);
-  }
-}
-
-.chipFlip {
-  animation: flipFull 0.7s linear;
-  transform-style: preserve-3d;
 }
 
 @keyframes highlight {
