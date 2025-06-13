@@ -17,7 +17,7 @@
   min-width: 22vh;
   background-color: rgb(9, 59, 9);
   overflow: hidden;
-  align-items: start;
+  align-items: flex-start;
   justify-content: center;
 }
 
