@@ -15,8 +15,19 @@ function getGitInfo() {
     }
   };
 
+  let branch = exec("git rev-parse --abbrev-ref HEAD");
+  if (branch === "HEAD") {
+    // Try to get branch name from GitHub Actions environment variables
+    branch =
+      process.env.GITHUB_HEAD_REF ||
+      (process.env.GITHUB_REF
+        ? process.env.GITHUB_REF.replace(/^refs\/(heads|pull)\//, "")
+        : null) ||
+      "HEAD";
+  }
+
   return {
-    branch: exec("git rev-parse --abbrev-ref HEAD"),
+    branch,
     commitHash: exec("git rev-parse --short HEAD"),
   };
 }
