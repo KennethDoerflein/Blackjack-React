@@ -229,7 +229,6 @@ export default function App() {
   // End the current hand and proceed to the next hand or end the game
   const endHand = async () => {
     setIsBusy(true);
-    console.log("endHand");
     if (currentHand === splitCount) {
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
       let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
