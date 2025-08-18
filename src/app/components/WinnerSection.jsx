@@ -1,94 +1,116 @@
 import { useEffect, useState } from "react";
-import { Alert, Container } from "react-bootstrap";
+import { Alert, Container, Row, Col } from "react-bootstrap";
 
 export default function WinnerSection({
-  playersHands,
-  playerTotals,
-  playerPoints,
-  dealerTotal,
-  currentWager,
-  setPlayerPoints,
-  splitCount,
-  setCurrentWager,
-  resultsAlertHidden,
-  currentHand,
+  playersHands = [],
+  playerTotals = [],
+  playerPoints = 0,
+  dealerTotal = 0,
+  currentWager = [],
+  setPlayerPoints = () => {},
+  splitCount = 0,
+  setCurrentWager = () => {},
+  resultsAlertHidden = true,
+  currentHand = 0,
 }) {
   const [outcomes, setOutcomes] = useState([]);
 
   useEffect(() => {
-    if (!resultsAlertHidden) {
-      let newPlayerPoints = playerPoints;
-      let newOutcomes = [];
+    if (resultsAlertHidden) return;
 
-      for (let handIndex = 0; handIndex < playersHands.length; handIndex++) {
-        // Defensive: skip invalid hands or wagers
-        if (!Array.isArray(playersHands[handIndex]) || playersHands[handIndex].length === 0)
-          continue;
-        if (
-          !Array.isArray(currentWager) ||
-          typeof currentWager[handIndex] !== "number" ||
-          currentWager[handIndex] < 0
-        )
-          continue;
+    // Defensive copies / fallbacks
+    const hands = Array.isArray(playersHands) ? playersHands : [];
+    const totals = Array.isArray(playerTotals) ? playerTotals : [];
+    const wagers = Array.isArray(currentWager) ? currentWager : [];
 
-        let outcome = "";
-        let wagerMultiplier = 1;
-        const playerTotal = playerTotals[handIndex];
-        const wager = Math.max(0, currentWager[handIndex]);
+    let newPlayerPoints = typeof playerPoints === "number" ? playerPoints : 0;
+    const newOutcomes = [];
 
-        if (playerTotal > 21) {
+    for (let handIndex = 0; handIndex < hands.length; handIndex++) {
+      const hand = hands[handIndex];
+
+      // Skip invalid hand structures
+      if (!Array.isArray(hand) || hand.length === 0) continue;
+
+      const playerTotal = typeof totals[handIndex] === "number" ? totals[handIndex] : null;
+      const rawWager = typeof wagers[handIndex] === "number" ? wagers[handIndex] : 0;
+      const wager = Math.max(0, rawWager);
+
+      if (playerTotal === null) continue; // nothing to compare
+
+      // Compute a discrete case key so we can switch on it
+      let caseKey = "UNKNOWN";
+      if (playerTotal > 21) caseKey = "PLAYER_BUST";
+      else if (dealerTotal > 21) caseKey = "DEALER_BUST";
+      else if (playerTotal === 21 && hand.length === 2) caseKey = "BLACKJACK";
+      else if (playerTotal > dealerTotal) caseKey = "PLAYER_WIN";
+      else if (playerTotal < dealerTotal) caseKey = "DEALER_WIN";
+      else if (playerTotal === dealerTotal) caseKey = "PUSH";
+
+      let outcome = "Result Unknown";
+      let wagerMultiplier = 1;
+
+      switch (caseKey) {
+        case "PLAYER_BUST":
           outcome = "Player Busted, Dealer Wins";
           wagerMultiplier = 0;
-        } else if (dealerTotal > 21 || playerTotal > dealerTotal) {
-          if (playerTotal === 21 && playersHands[handIndex].length === 2) {
-            outcome = "Blackjack, Player Wins";
-            wagerMultiplier = 2.2;
-          } else {
-            outcome = dealerTotal > 21 ? "Dealer Busted, Player Wins" : "Player Wins";
-            wagerMultiplier = 2;
-          }
-        } else if (dealerTotal > playerTotal) {
+          break;
+        case "DEALER_BUST":
+          outcome = "Dealer Busted, Player Wins";
+          wagerMultiplier = 2;
+          break;
+        case "BLACKJACK":
+          outcome = "Blackjack, Player Wins";
+          // preserve previous behavior (unusual multiplier kept intentionally)
+          wagerMultiplier = 2.2;
+          break;
+        case "PLAYER_WIN":
+          outcome = "Player Wins";
+          wagerMultiplier = 2;
+          break;
+        case "DEALER_WIN":
           outcome = "Dealer Wins";
           wagerMultiplier = 0;
-        } else {
+          break;
+        case "PUSH":
           outcome = "Push (Tie)";
           wagerMultiplier = 1;
-        }
-
-        // Calculate points won/lost, never allow negative points
-        const pointsChange = Math.max(0, Math.ceil(wager * wagerMultiplier));
-        newPlayerPoints += pointsChange;
-        newOutcomes.push(splitCount > 0 ? `Hand ${handIndex + 1}: ${outcome}` : outcome);
+          break;
+        default:
+          outcome = "Result Unknown";
+          wagerMultiplier = 0;
       }
 
-      // Prevent player points from dropping below zero
-      newPlayerPoints = Math.max(0, newPlayerPoints);
+      const pointsChange = Math.max(0, Math.ceil(wager * wagerMultiplier));
+      newPlayerPoints += pointsChange;
 
-      // Update the player's points and outcomes in state
-      setPlayerPoints(newPlayerPoints);
-
-      // If the player runs out of points, add the final message
-      // if (newPlayerPoints === 0) {
-      //   newOutcomes.push("You are out of points, thank you for playing!");
-      // }
-
-      setOutcomes(newOutcomes); // Update outcomes state so that it triggers re-render
-      setCurrentWager([0]); // Reset the current wager
+      newOutcomes.push(splitCount > 0 ? `Hand ${handIndex + 1}: ${outcome}` : outcome);
     }
-    // eslint-disable-next-line
+
+    // Enforce non-negative points
+    newPlayerPoints = Math.max(0, newPlayerPoints);
+
+    // Only call setters if they're functions
+    if (typeof setPlayerPoints === "function") setPlayerPoints(newPlayerPoints);
+    setOutcomes(newOutcomes);
+    if (typeof setCurrentWager === "function") setCurrentWager([0]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resultsAlertHidden]);
 
+  const message = Array.isArray(outcomes) && outcomes[currentHand] ? outcomes[currentHand] : "";
+
   return (
-    <Container fluid>
+    <Container className="d-flex justify-content-center">
       <Alert
         hidden={resultsAlertHidden}
         id="resultsAlert"
         variant="info"
-        className="alert-dismissible fade show mx-auto px-1 py-2 mt-3"
+        className="alert-dismissible fade show px-1 py-2"
         role="alert">
         <Container id="message" className="text-center">
           <h6 key={currentHand} className="my-1">
-            {outcomes[currentHand]}
+            {message}
           </h6>
         </Container>
       </Alert>
