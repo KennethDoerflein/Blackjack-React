@@ -13,15 +13,22 @@ import TopButtons from "./components/TopButtons.jsx";
 import WagerControls from "./components/WagerControls.jsx";
 import WinnerSection from "./components/WinnerSection.jsx";
 
+import { addCard, adjustCardMargins, flipCard } from "./utils/uiUtils.js";
 import { delay } from "./utils/utils.js";
+import {
+  CARD_FLIP_TIME,
+  CARD_PULSE_TIME,
+  CARD_SLIDE_TIME,
+  BLACKJACK_PAUSE_TIME,
+  UI_TRANSITION_DELAY,
+  DEALER_DECISION_PAUSE,
+} from "./utils/constants.js";
 
 import {
   calculateAndReturnTotals,
   calculateTotal,
   shouldDealerHit,
 } from "./utils/blackjackUtils.js";
-
-import { addCard, adjustCardMargins, flipCard } from "./utils/uiUtils.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
@@ -126,18 +133,17 @@ export default function App() {
     }
   };
 
-  // Deal initial cards to player and dealer
+  // Deal initial cards
   const initialDeal = async () => {
     if (isBusy) return;
     setIsBusy(true);
     await hit("player", "init");
-    await delay(120);
+    await delay(CARD_SLIDE_TIME);
     await hit("dealer", "init");
-    await delay(120);
+    await delay(CARD_SLIDE_TIME);
     await hit("player", "init");
-    await delay(120);
+    await delay(CARD_SLIDE_TIME);
     await hit("dealer", "init");
-    //setDealerTotal(calculateTotal(dealersHand));
     setIsBusy(false);
   };
 
@@ -157,9 +163,9 @@ export default function App() {
   ) => {
     if ((disableButtons || isBusy) && origin === "user") return;
     if (origin === "user") setIsBusy(true);
+
     let halfwayTotalsUpdated = false;
     let latestTotals = playerTotals;
-    // Define a callback to update totals halfway through the flip
     const halfwayCallback = async () => {
       if (!halfwayTotalsUpdated) {
         halfwayTotalsUpdated = true;
@@ -176,43 +182,29 @@ export default function App() {
       }
     };
 
-    if (entity !== "dealer") {
-      await addCard(
-        newPlayersHands[hand],
-        playersHandElements[hand],
-        entity,
-        origin,
-        deck,
-        setPlayersHandElements,
-        hand,
-        halfwayCallback
-      );
-    } else {
-      await addCard(
-        dealersHand,
-        dealersHandElements,
-        entity,
-        origin,
-        deck,
-        setDealersHandElements,
-        undefined,
-        halfwayCallback
-      );
-    }
+    const isPlayer = entity !== "dealer";
+    const targetHand = isPlayer ? newPlayersHands[hand] : dealersHand;
+    const targetHandElements = isPlayer ? playersHandElements[hand] : dealersHandElements;
+    const setTargetHandElements = isPlayer ? setPlayersHandElements : setDealersHandElements;
+    const handIndex = isPlayer ? hand : undefined;
 
-    if (entity !== "dealer" && origin === "user") {
-      // Wait for totals to update before checking for bust or auto-stand
+    await addCard(
+      targetHand,
+      targetHandElements,
+      entity,
+      origin,
+      deck,
+      setTargetHandElements,
+      handIndex,
+      halfwayCallback
+    );
 
-      // Use latestTotals instead of playerTotals
+    if (isPlayer && origin === "user") {
       if (latestTotals[hand] > 21) {
-        await delay(250); // was 500
+        await delay(CARD_PULSE_TIME);
         await endHand();
       }
-    }
-    // Animation delay only for pacing, not for state update
-    //await delay(320); // was 600
-    if (entity !== "dealer" && origin === "user") setIsBusy(false);
-    if (entity !== "dealer") {
+      setIsBusy(false);
       return latestTotals[hand];
     }
 
@@ -226,38 +218,35 @@ export default function App() {
     setPlayerHand(newPlayersHands);
   };
 
-  // End the current hand and proceed to the next hand or end the game
+  // End hand
   const endHand = async () => {
     setIsBusy(true);
     if (currentHand === splitCount) {
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
       let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
-      // Reduce the delay before flipping the dealer's card for a snappier feel
-      await delay(220); // was 200
+      await delay(CARD_FLIP_TIME);
       await flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
-      await delay(250); // was 400
+      // Removed a redundant CARD_SLIDE_TIME delay here
       await playDealer();
       setResultsAlertHidden(false);
-      setCarousalInterval(1750); // was 1750
+      setCarousalInterval(1750);
       setIsBusy(false);
-    } else if (currentHand !== splitCount) {
+    } else {
       let newHand = currentHand + 1;
       await advanceHand(newHand);
       setIsBusy(false);
     }
   };
 
-  // Advance to the next player hand if splits occurred
   async function advanceHand(newHand) {
     setIsBusy(true);
     if (currentHand < splitCount && splitCount > 0) {
       setCurrentHand(newHand);
-      await delay(350);
+      await delay(CARD_SLIDE_TIME);
     }
     setIsBusy(false);
   }
 
-  // Split the player's hand into two separate hands
   const splitHand = async () => {
     if (isBusy) return;
     setIsBusy(true);
@@ -278,7 +267,6 @@ export default function App() {
     });
 
     const newPlayerTotals = [...playerTotals, 0];
-    // Calculate the new totals before updating the state
     let { newTotals } = calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand);
     setPlayerTotal(newTotals);
 
@@ -286,18 +274,28 @@ export default function App() {
     setPlayersHandElements(newPlayerHandElements);
     setCurrentWager(newCurrentWager);
     setPlayerPoints(playerPoints - newCurrentWager[newSplitCount]);
-    await delay(500); // was 500
-    await hit("player", "split", currentHand, newPlayersHands);
-    setCurrentHand(newSplitCount);
-    await delay(1200); // was 1200
-    await hit("player", "split", newSplitCount, newPlayersHands);
-    await delay(500); // was 500
-    setCurrentHand(oldHand);
 
-    // Recalculate the new totals after hitting
+    // --- Refactored Animation Sequence for Consistency ---
+    // Wait for the card to visually move to the new hand's position.
+    await delay(CARD_SLIDE_TIME);
+
+    // Deal the second card to the first hand and wait for it to land.
+    await hit("player", "split", currentHand, newPlayersHands);
+    await delay(CARD_SLIDE_TIME);
+
+    // Switch focus to the second hand, deal a card, and wait for it to land.
+    setCurrentHand(newSplitCount);
+    await delay(UI_TRANSITION_DELAY); // Allow UI to update before next animation.
+    await hit("player", "split", newSplitCount, newPlayersHands);
+    await delay(CARD_SLIDE_TIME);
+
+    // Switch focus back to the original hand to continue play.
+    setCurrentHand(oldHand);
+    // --- End of Refactored Sequence ---
+
     ({ newTotals } = calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
     setPlayerTotal(newTotals);
-    await delay(950); // was 750
+    await delay(CARD_PULSE_TIME);
     if (newTotals[oldHand] === 21 && autoStandChecked) {
       await endHand();
     } else {
@@ -305,16 +303,16 @@ export default function App() {
     }
   };
 
-  // Play the dealer's hand according to the rules
   const playDealer = async () => {
     setIsBusy(true);
-    await delay(220); // was 500
+    // Replaced long slide delay with a shorter, more intentional "decision" pause.
+    await delay(DEALER_DECISION_PAUSE);
     let newDealerTotal = dealerTotal;
     while (shouldDealerHit(newDealerTotal, dealersHand, soft17Checked)) {
       await hit("dealer", "endGame");
       newDealerTotal = calculateTotal(dealersHand);
       setDealerTotal(newDealerTotal);
-      await delay(220); // was 400
+      await delay(CARD_SLIDE_TIME);
     }
     setIsBusy(false);
   };
@@ -327,7 +325,7 @@ export default function App() {
             if (hand.length > 0) {
               document.getElementById(playersHandNames[i]).classList.add("viewportResize");
               adjustCardMargins(document.getElementById(playersHandNames[i]), true);
-              await delay(120); // was 300
+              await delay(CARD_SLIDE_TIME);
               document.getElementById(playersHandNames[i]).classList.remove("viewportResize");
             }
           });
@@ -335,46 +333,85 @@ export default function App() {
         if (dealersHandElements.length > 2) {
           document.getElementById("dealersHand").classList.add("viewportResize");
           adjustCardMargins(document.getElementById("dealersHand"), true);
-          await delay(120); // was 300
+          await delay(CARD_SLIDE_TIME);
           document.getElementById("dealersHand").classList.remove("viewportResize");
         }
       });
-    }, 180); // was 300ms throttle
+    }, CARD_SLIDE_TIME);
 
     window.visualViewport?.addEventListener("resize", handleViewportChange);
-
     return () => {
       window.visualViewport?.removeEventListener("resize", handleViewportChange);
     };
-    // eslint-disable-next-line
-  }, [playersHandElements, dealersHandElements]);
+  }, [playersHandElements, dealersHandElements, playersHandNames]);
 
   useEffect(() => {
-    async function fetchData() {
+    const handleButtonVisibility = async () => {
       const isSplitting = splitCount > 0 && playersHands.some((hand) => hand.length < 2);
-      if (
+      const shouldAutoStand =
         !isBusy &&
         autoStandChecked &&
         playerTotals[currentHand] === 21 &&
-        carousalInterval === null
-      ) {
+        carousalInterval === null;
+
+      if (shouldAutoStand) {
         setShowButtons(false);
-        await delay(750);
-        await endHand(); // dealers card flips before the final player hand ends
-      } else if (!isBusy) {
+        await delay(BLACKJACK_PAUSE_TIME); // Used constant for consistent timing
+        await endHand();
+        return;
+      }
+
+      if (isBusy) {
+        const shouldHideButtons =
+          playerTotals[currentHand] > 21 || dealersHandElements.length < 2 || isSplitting;
+        setShowButtons(!shouldHideButtons);
+        setDisableButtons(true);
+      } else {
         setShowButtons(true);
         setDisableButtons(false);
-      } else if (isBusy) {
-        if (playerTotals[currentHand] > 21 || dealersHandElements.length < 2 || isSplitting) {
-          setShowButtons(false);
-        } else {
-          setDisableButtons(true);
-        }
       }
-    }
-    fetchData();
+    };
+
+    handleButtonVisibility();
     // eslint-disable-next-line
   }, [currentHand, splitCount, isBusy, autoStandChecked, playerTotals, carousalInterval]);
+
+  const debugDataMap = {
+    game: {
+      playerPoints,
+      currentWager,
+      playerTotals,
+      dealerTotal,
+      currentHand,
+      splitCount,
+    },
+    hands: {
+      playersHands,
+      playersHandElements,
+      dealersHand,
+      dealersHandElements,
+      playersHandNames,
+    },
+    settings: {
+      soft17Checked,
+      splitTypeChecked,
+      autoStandChecked,
+    },
+    ui: {
+      showInfo,
+      showSettings,
+      showButtons,
+      resultsAlertHidden,
+      newGameBtnHidden,
+      carousalInterval,
+      carouselKey,
+    },
+    system: {
+      isBusy,
+      // deck,
+      // audioRef: audioRef?.current ? "ready" : "null",
+    },
+  };
 
   return (
     <>
@@ -385,6 +422,18 @@ export default function App() {
           ref={audioRef}
         />
         <DealerSection dealersHandElements={dealersHandElements} dealerTotal={dealerTotal} />
+        <WinnerSection
+          playerPoints={playerPoints}
+          setPlayerPoints={setPlayerPoints}
+          currentWager={currentWager}
+          playersHands={playersHands}
+          splitCount={splitCount}
+          playerTotals={playerTotals}
+          dealerTotal={dealerTotal}
+          setCurrentWager={setCurrentWager}
+          resultsAlertHidden={resultsAlertHidden}
+          currentHand={currentHand}
+        />
         <PlayerSection
           playersHandElements={playersHandElements}
           playerTotals={playerTotals}
@@ -412,18 +461,6 @@ export default function App() {
             showInfo={showInfo}
             loading={loading}
             isBusy={isBusy}
-          />
-          <WinnerSection
-            playerPoints={playerPoints}
-            setPlayerPoints={setPlayerPoints}
-            currentWager={currentWager}
-            playersHands={playersHands}
-            splitCount={splitCount}
-            playerTotals={playerTotals}
-            dealerTotal={dealerTotal}
-            setCurrentWager={setCurrentWager}
-            resultsAlertHidden={resultsAlertHidden}
-            currentHand={currentHand}
           />
           <GameControls
             hit={hit}
@@ -486,48 +523,7 @@ export default function App() {
 
         {devMode && (
           <pre className="debug-panel bg-dark text-light p-2 rounded">
-            {JSON.stringify(
-              debugView === "game"
-                ? {
-                    playerPoints,
-                    currentWager,
-                    playerTotals,
-                    dealerTotal,
-                    currentHand,
-                    splitCount,
-                  }
-                : debugView === "hands"
-                ? {
-                    playersHands,
-                    playersHandElements,
-                    dealersHand,
-                    dealersHandElements,
-                    playersHandNames,
-                  }
-                : debugView === "settings"
-                ? {
-                    soft17Checked,
-                    splitTypeChecked,
-                    autoStandChecked,
-                  }
-                : debugView === "ui"
-                ? {
-                    showInfo,
-                    showSettings,
-                    showButtons,
-                    resultsAlertHidden,
-                    newGameBtnHidden,
-                    carousalInterval,
-                    carouselKey,
-                  }
-                : {
-                    isBusy,
-                    // deck,
-                    // audioRef: audioRef?.current ? "ready" : "null",
-                  },
-              null,
-              2
-            )}
+            {JSON.stringify(debugDataMap[debugView] || {}, null, 2)}
           </pre>
         )}
       </Container>
