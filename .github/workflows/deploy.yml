@@ -3,9 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main
-      - dev # Added 'dev' branch to trigger on push
-  workflow_dispatch: # This allows for a manual run from the GitHub UI
+      - main # Changed to only trigger on 'main' branch push
+  workflow_dispatch: # This allows for a manual run from the GitHub UI on any branch
 
 jobs:
   build-and-deploy:
