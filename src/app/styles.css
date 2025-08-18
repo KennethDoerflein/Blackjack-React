@@ -249,6 +249,7 @@ body,
 
 /* Main panel */
 #main {
+  min-height: 90vh;
   margin: 0 !important;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
   border-radius: var(--radius);
