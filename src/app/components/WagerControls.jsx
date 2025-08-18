@@ -41,7 +41,11 @@ export default function WagerControls({
       if (isBusy) return;
       const idx = [1, 5, 10, 20, 50].indexOf(parseInt(e.target.getAttribute("data-value"), 10));
       if (idx !== -1) {
-        chipControls[idx].start({ rotateX: [180, 0], rotateY: [360, 0], transition: { duration: 0.7, ease: "linear" } });
+        chipControls[idx].start({
+          rotateX: [180, 0],
+          rotateY: [360, 0],
+          transition: { duration: 0.7, ease: "linear" },
+        });
       }
       // Highlight the wager box for the current hand
       const wagerBox = document.getElementById(`wagerDisplay-${currentHand}`);
@@ -108,8 +112,7 @@ export default function WagerControls({
           initial={{ rotateX: 0, rotateY: 0 }}
           whileTap={{ scale: 1.2, rotate: 12 }}
           whileHover={{ scale: 1.08 }}
-          style={{ display: "inline-block", margin: "0 4px", perspective: 600 }}
-        >
+          style={{ display: "inline-block", margin: "0 4px", perspective: 600 }}>
           <BSImage
             onClick={isBusy ? undefined : addChipValue}
             className="chip"

@@ -18,35 +18,51 @@ export default function WinnerSection({
   useEffect(() => {
     if (!resultsAlertHidden) {
       let newPlayerPoints = playerPoints;
-      let newOutcomes = []; // Create a local array to store the outcomes for this effect
+      let newOutcomes = [];
 
       for (let handIndex = 0; handIndex < playersHands.length; handIndex++) {
-        if (playersHands[handIndex].length === 0) continue;
+        // Defensive: skip invalid hands or wagers
+        if (!Array.isArray(playersHands[handIndex]) || playersHands[handIndex].length === 0)
+          continue;
+        if (
+          !Array.isArray(currentWager) ||
+          typeof currentWager[handIndex] !== "number" ||
+          currentWager[handIndex] < 0
+        )
+          continue;
 
         let outcome = "";
         let wagerMultiplier = 1;
+        const playerTotal = playerTotals[handIndex];
+        const wager = Math.max(0, currentWager[handIndex]);
 
-        if (playerTotals[handIndex] > 21) {
+        if (playerTotal > 21) {
           outcome = "Player Busted, Dealer Wins";
           wagerMultiplier = 0;
-        } else if (dealerTotal > 21 || playerTotals[handIndex] > dealerTotal) {
-          if (playerTotals[handIndex] === 21 && playersHands[handIndex].length === 2) {
+        } else if (dealerTotal > 21 || playerTotal > dealerTotal) {
+          if (playerTotal === 21 && playersHands[handIndex].length === 2) {
             outcome = "Blackjack, Player Wins";
+            wagerMultiplier = 2.2;
           } else {
             outcome = dealerTotal > 21 ? "Dealer Busted, Player Wins" : "Player Wins";
+            wagerMultiplier = 2;
           }
-          wagerMultiplier =
-            playerTotals[handIndex] === 21 && playersHands[handIndex].length === 2 ? 2.2 : 2;
-        } else if (dealerTotal > playerTotals[handIndex]) {
+        } else if (dealerTotal > playerTotal) {
           outcome = "Dealer Wins";
           wagerMultiplier = 0;
         } else {
           outcome = "Push (Tie)";
+          wagerMultiplier = 1;
         }
 
-        newPlayerPoints += Math.ceil((currentWager[handIndex] * wagerMultiplier).toFixed(2));
+        // Calculate points won/lost, never allow negative points
+        const pointsChange = Math.max(0, Math.ceil(wager * wagerMultiplier));
+        newPlayerPoints += pointsChange;
         newOutcomes.push(splitCount > 0 ? `Hand ${handIndex + 1}: ${outcome}` : outcome);
       }
+
+      // Prevent player points from dropping below zero
+      newPlayerPoints = Math.max(0, newPlayerPoints);
 
       // Update the player's points and outcomes in state
       setPlayerPoints(newPlayerPoints);

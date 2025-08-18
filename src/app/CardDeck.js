@@ -94,11 +94,8 @@ class CardDeck {
         const chunkSize = this.getRandomInt(1, Math.min(10, this.cards.length));
         const chunk = this.cards.splice(0, chunkSize);
 
-        if (this.getRandomInt(1, 101) <= 50) {
-          tempDeck = tempDeck.concat(chunk);
-        } else {
-          tempDeck = chunk.concat(tempDeck);
-        }
+        tempDeck =
+          this.getRandomInt(1, 101) <= 50 ? tempDeck.concat(chunk) : chunk.concat(tempDeck);
         iterations++;
       }
 
@@ -115,11 +112,7 @@ class CardDeck {
 
       let shuffledDeck = [];
       while (leftHalf.length > 0 && rightHalf.length > 0) {
-        if (this.getRandomInt(1, 101) <= 50) {
-          shuffledDeck.push(leftHalf.shift());
-        } else {
-          shuffledDeck.push(rightHalf.shift());
-        }
+        shuffledDeck.push(this.getRandomInt(1, 101) <= 50 ? leftHalf.shift() : rightHalf.shift());
       }
 
       this.cards = shuffledDeck.concat(leftHalf).concat(rightHalf);

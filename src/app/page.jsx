@@ -378,12 +378,12 @@ export default function App() {
 
   return (
     <>
-      <TopButtons
-        showInfoModal={handleShowInfo}
-        showSettingsModal={handleShowSettings}
-        ref={audioRef}
-      />
       <Container fluid className="my-2" id="main">
+        <TopButtons
+          showInfoModal={handleShowInfo}
+          showSettingsModal={handleShowSettings}
+          ref={audioRef}
+        />
         <DealerSection dealersHandElements={dealersHandElements} dealerTotal={dealerTotal} />
         <PlayerSection
           playersHandElements={playersHandElements}

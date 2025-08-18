@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Carousel, Container } from "react-bootstrap";
+import RollingValue from "./RollingValue.jsx";
 import { adjustCardMargins } from "../utils/uiUtils.js";
 
 export default React.memo(function PlayerSection({
@@ -12,6 +13,7 @@ export default React.memo(function PlayerSection({
   setCurrentHand,
 }) {
   const handRefs = useRef([]);
+  const totalRefs = useRef([]);
 
   const handleSelect = (selectedIndex) => {
     if (carousalInterval !== null) {
@@ -32,6 +34,17 @@ export default React.memo(function PlayerSection({
     requestAnimationFrame(adjustMargins);
   }, [playersHandElements, playersHandNames]);
 
+  useEffect(() => {
+    // pulse the total for the current hand when it changes
+    if (totalRefs.current[currentHand]) {
+      const el = totalRefs.current[currentHand];
+      el.classList.add("handPulse");
+      const t = setTimeout(() => el.classList.remove("handPulse"), 420);
+      return () => clearTimeout(t);
+    }
+    // eslint-disable-next-line
+  }, [playerTotals[currentHand]]);
+
   return (
     <>
       <Carousel
@@ -45,9 +58,15 @@ export default React.memo(function PlayerSection({
         {playersHandElements.map((hand, i) => (
           <Carousel.Item key={i}>
             <Container className="text-center my-3">
-              <h6 id="playerHeader">
-                Player's Hand{` ${splitCount > 0 ? i + 1 : ""}`} (Total: {playerTotals[i]})
-              </h6>
+              <div className="handHeader">
+                <h6 id="playerHeader" style={{ margin: 0 }}>
+                  Player's Hand{` ${splitCount > 0 ? i + 1 : ""}`}
+                </h6>
+                <div ref={(r) => (totalRefs.current[i] = r)} className="handTotal">
+                  Total: &nbsp;
+                  <RollingValue className="" value={playerTotals[i]} />
+                </div>
+              </div>
             </Container>
             <span id="playersHands">
               <Container
