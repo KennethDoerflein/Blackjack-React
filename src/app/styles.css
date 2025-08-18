@@ -1,89 +1,364 @@
+/* Full optimized CSS file with improved animations and responsiveness.
+   Sizes (heights/widths) preserved per request. */
+
 * {
   touch-action: manipulation;
 }
 
+:root {
+  --bg: #081013;
+  --panel: rgba(255, 255, 255, 0.06);
+  --panel-2: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-2: rgba(255, 255, 255, 0.08);
+  --accent: #8be9fd;
+  --accent-2: #7ae7b9;
+  --muted: rgba(255, 255, 255, 0.6);
+  --warning: #ffd966;
+  --radius: 14px;
+  --card-radius: 7px;
+  --soft-shadow: 0 8px 30px rgba(2, 6, 23, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  --glass-shadow: 0 6px 28px rgba(10, 15, 30, 0.6);
+  --s-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* animation timings */
+  --card-slide-time: 300ms;
+  --card-flip-time: 400ms;
+  --card-pulse-time: 500ms;
+}
+
+/* Base */
+html,
+body,
+#root {
+  height: 100%;
+  background: linear-gradient(180deg, #041018 0%, #09121a 50%, var(--bg) 100%);
+  color: #eef6f7;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Hands / containers */
 #dealersHand,
 #playersHands > div {
   display: flex;
-  border: 1px solid #ccc;
   padding: 11px;
   margin-bottom: 15px;
-  border-radius: 5px;
+  border-radius: var(--radius);
+  height: 18vh !important; /* preserved size */
   max-height: 18vh !important;
   min-height: 18vh !important;
-  height: 18vh !important;
   max-width: 85vw !important;
-  width: fit-content;
   min-width: 22vh;
-  background-color: rgb(9, 59, 9);
+  width: fit-content;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
+  border: 1px solid var(--glass-border-2);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  box-shadow: var(--glass-shadow);
   overflow: hidden;
   align-items: flex-start;
   justify-content: center;
+  transform-origin: center;
+  will-change: transform, opacity;
 }
 
+#dealersHand {
+  align-items: center;
+}
+
+.handHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  font-weight: 700;
+  color: #e9fbff;
+  line-height: 1;
+}
+
+/* Totals with smooth pop */
+.handTotal {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  color: var(--warning);
+  padding: 0.25rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 1;
+  transform: scale(1);
+  will-change: transform, opacity;
+  transition: opacity var(--anim-medium) var(--s-ease), transform var(--anim-medium) var(--s-ease);
+}
+
+/* ensure hidden state only affects opacity/transform, not layout */
+.handTotal[hidden] {
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+}
+
+/* top-right controls */
+#settings,
+#info {
+  position: fixed;
+  top: 20px;
+  padding: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--glass-border-2);
+  border-radius: var(--radius);
+  color: var(--muted);
+  box-shadow: var(--soft-shadow);
+  z-index: 120;
+  transition: background var(--anim-fast) var(--s-ease), color var(--anim-fast) var(--s-ease),
+    box-shadow var(--anim-fast) var(--s-ease);
+}
+#settings {
+  right: 20px;
+}
+#info {
+  right: 70px;
+}
+
+#settings:hover,
+#info:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(2, 6, 23, 0.7);
+}
+
+/* Modal backdrop / dialog with consistent easing */
+.modal-backdrop {
+  opacity: 0;
+  backdrop-filter: blur(6px) saturate(110%);
+  -webkit-backdrop-filter: blur(6px) saturate(110%);
+  transition: opacity 120ms var(--s-ease);
+  will-change: opacity;
+}
+.modal-backdrop.show {
+  opacity: 0.45;
+}
+
+.modal.fade .modal-dialog {
+  transform: translateY(-6px) scale(0.995);
+  opacity: 0;
+  transition: transform var(--anim-fast) var(--s-ease), opacity var(--anim-fast) var(--s-ease);
+}
+.modal.show .modal-dialog {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.modal-content {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--glass-border-2);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  border-radius: 12px;
+  color: #eef6f7;
+  transition: box-shadow var(--anim-fast) var(--s-ease), transform var(--anim-fast) var(--s-ease),
+    opacity var(--anim-fast) var(--s-ease);
+}
+.modal-header,
+.modal-footer {
+  background: transparent !important;
+  border-bottom: none;
+}
+.modal .btn-close {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+}
+
+/* Card images */
 #dealersHand img,
 #playersHands > div img {
   max-height: 100% !important;
   margin-right: 11px;
-  margin-left: 0px;
   transform-style: preserve-3d;
+  border-radius: var(--card-radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), inset 0 0 0 12px #fff;
+  transition: transform 220ms var(--s-ease), box-shadow 220ms var(--s-ease), border-color 160ms ease;
+  background-clip: padding-box;
+  background-color: #fff;
+  will-change: transform, box-shadow;
+}
+
+#dealersHand img[alt="Hidden Card"],
+#dealersHand img[src*="back.png"] {
+  transform: none;
+  align-self: center;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 #dealersHand img:last-child,
 #playersHands > div img:last-child {
-  margin-right: 0px;
-  margin-left: 0px;
+  margin-right: 0;
 }
 
+/* action buttons sizes preserved */
 #hitBtn {
-  padding: 4px 21.5px 4px 21.5px;
+  padding: 4px 21.5px;
 }
-
 #splitBtn {
-  padding: 4px 16.5px 4px 16.5px;
+  padding: 4px 16.5px;
 }
-
 #standBtn {
-  padding: 4px 13px 4px 13px;
+  padding: 4px 13px;
 }
-
 #doubleDownBtn {
   line-height: 0.9;
 }
 
+/* Buttons visual polish */
 #gameActions button {
-  border-radius: 10px;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--glass-border-2);
+  box-shadow: var(--soft-shadow);
+  color: #eef6f7;
+  opacity: 1;
+  transform: scale(1);
+  transition: background var(--anim-fast) var(--s-ease), box-shadow var(--anim-fast) var(--s-ease),
+    opacity var(--anim-medium) var(--s-ease), transform var(--anim-medium) var(--s-ease);
+}
+#gameActions button[disabled] {
+  opacity: 0.55;
+  pointer-events: none;
+  cursor: not-allowed;
+  filter: grayscale(12%);
+}
+#gameActions button:not([disabled]):hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  box-shadow: 0 8px 32px rgba(2, 6, 23, 0.7);
 }
 
+/* Message */
 #message h6 {
   color: rgb(204, 58, 58);
   font-weight: bolder;
 }
 
+/* Main panel */
 #main {
-  max-height: 70vh !important;
-  height: 70vh !important;
+  margin: 0 !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
+  border-radius: var(--radius);
+  border: 1px solid var(--glass-border-2);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  box-shadow: var(--glass-shadow);
 }
 
+/* Points / Wager display
+   - preserve heights and widths exactly as requested
+   - make internal text responsive with clamp and flexbox
+*/
+/* Display containers: points + wager */
 #pointsDisplay,
 .wagerDisplay {
-  max-height: 4vh !important;
-  height: 4vh !important;
-  width: 20vh;
-  font-size: 1.2vh;
-  font-weight: bold;
+  /* Sizing (preserved) */
+  height: 4vh !important; /* preserved */
+  max-height: 4vh !important; /* preserved */
+  width: 20vh; /* preserved */
+  min-width: 12vh; /* preserved */
+  max-width: 100%; /* prevent overflow on very small screens */
+
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  /* Visual */
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius);
+  box-shadow: var(--soft-shadow);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+
+  /* Typography */
+  line-height: 1.1;
 }
 
+/* Labels */
+.pointsLabel,
+.wagerLabel {
+  flex: 0 0 auto;
+  margin-right: 0.4rem;
+  color: var(--muted);
+  white-space: nowrap;
+  font-size: clamp(0.55rem, 0.9vw, 0.65rem); /* fluid fallback */
+}
+
+/* Values */
+.pointsValue,
+.wagerValue {
+  flex: 1 1 auto;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  color: var(--warning);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums; /* better digit alignment */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-size: clamp(0.7rem, 1.1vw, 0.95rem); /* fluid fallback */
+}
+
+/* Prefer container-relative scaling when supported (more responsive) */
+@supports (container-type: inline-size) {
+  #pointsDisplay,
+  .wagerDisplay {
+    container-type: inline-size; /* enables cqi-based sizing below */
+  }
+
+  .pointsLabel,
+  .wagerLabel {
+    font-size: clamp(0.55rem, 1.6cqi, 0.65rem);
+  }
+
+  .pointsValue,
+  .wagerValue {
+    font-size: clamp(0.7rem, 2.2cqi, 0.95rem);
+  }
+}
+
+/* High-contrast mode tweaks */
+@media (forced-colors: active) {
+  #pointsDisplay,
+  .wagerDisplay {
+    border-color: CanvasText;
+  }
+}
+
+/* wager controls and images */
 #wagerDiv img {
   box-sizing: border-box;
-  border: 0.4vh solid #ccc;
-  border-radius: 3.25vh;
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
   max-height: 6.5vh;
-  margin: 0.5vh;
+  box-shadow: var(--soft-shadow);
+  transition: transform 200ms var(--s-ease), box-shadow 200ms var(--s-ease);
 }
-
 #wagerDiv img:hover {
   cursor: pointer;
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.8);
 }
 
 #wagerDiv #wagerBtn,
@@ -91,27 +366,77 @@
 #allInBtn {
   max-width: 120px;
   font-size: 12px;
-  border-radius: 10px;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--glass-border-2);
+  box-shadow: var(--soft-shadow);
+  color: #eef6f7;
+  transition: background var(--anim-fast) var(--s-ease), box-shadow var(--anim-fast) var(--s-ease);
 }
-
+#wagerDiv #wagerBtn:hover,
+#wagerRst:hover,
+#allInBtn:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  box-shadow: 0 8px 32px rgba(2, 6, 23, 0.7);
+}
 #wagerDiv #allInBtn {
-  padding: 4px 11px 4px 11px;
+  padding: 4px 11px;
 }
 
+/* Wager container animation
+   - position relative and z-index to avoid stacking conflicts with resultsAlert
+   - use transform & max-height for smooth GPU friendly transitions
+*/
+#wagerDiv {
+  position: relative; /* enables z-index stacking */
+  z-index: 110; /* sits below resultsAlert by default */
+  max-height: 420px;
+  opacity: 1;
+  transform: translateY(0);
+  overflow: hidden;
+  will-change: transform, opacity, max-height;
+  transition: opacity var(--anim-medium) var(--s-ease), transform var(--anim-medium) var(--s-ease),
+    max-height var(--anim-medium) var(--s-ease);
+}
+
+/* ensure hidden state keeps layout stable for other elements */
+#wagerDiv[hidden] {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.995);
+  pointer-events: none;
+  max-height: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Game actions container */
+#gameActions {
+  will-change: transform, opacity;
+  transition: opacity 280ms var(--s-ease), transform 280ms var(--s-ease);
+}
+#gameActions[hidden] {
+  opacity: 0;
+  transform: translateY(6px) scale(0.995);
+  pointer-events: none;
+}
+
+/* disclaimer / misc */
 #disclaimer p {
   font-size: 0.5rem;
 }
-
 #disclaimer {
   width: fit-content;
   height: fit-content;
 }
 
+/* active hand styling */
 .activeHand {
-  border: 5px solid yellow;
-  box-shadow: 0 0 15px yellow;
+  outline: 3px solid rgba(255, 230, 120, 0.15);
+  box-shadow: 0 6px 24px rgba(255, 200, 60, 0.06);
+  border: 1px solid rgba(255, 230, 120, 0.3);
 }
 
+/* Keyframes - optimized for smoothness and GPU */
 @keyframes slideIn {
   from {
     transform: translate3d(-100%, 0, 0);
@@ -123,23 +448,14 @@
 
 @keyframes flip {
   0% {
-    transform: scale(1) rotateY(90deg);
+    transform: rotateY(90deg) translateZ(0.1px);
+  }
+  60% {
+    transform: rotateY(-12deg) translateZ(0.1px);
   }
   100% {
-    transform: scale(1) rotateY(0deg);
+    transform: rotateY(0deg) translateZ(0.1px);
   }
-}
-
-.imgFlip {
-  animation: flip 0.6s ease forwards;
-  transform-style: preserve-3d;
-  -webkit-backface-visibility: visible; /* For Safari */
-  backface-visibility: visible;
-}
-
-.imgSlide {
-  animation: slideIn 0.5s ease-out;
-  will-change: transform;
 }
 
 @keyframes highlight {
@@ -151,18 +467,126 @@
   }
 }
 
+@keyframes pulseUp {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.98;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes valuePop {
+  0% {
+    transform: translateY(0);
+    color: #ffd966;
+  }
+  40% {
+    transform: translateY(-6%);
+    color: #fff;
+  }
+  100% {
+    transform: translateY(0);
+    color: #ffd966;
+  }
+}
+
+/* Apply animations with performant settings */
+.imgFlip {
+  animation: flip var(--card-flip-time) var(--s-ease) forwards;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+.imgSlide {
+  animation: slideIn var(--card-slide-time) var(--s-ease);
+  will-change: transform;
+}
 .highlight {
   animation: highlight 0.5s linear;
 }
-
 .viewportResize img {
   transition: margin-left 0.3s ease-in-out;
 }
-
-#resultsAlert {
-  max-width: fit-content;
+.handPulse {
+  animation: pulseUp var(--card-pulse-time) var(--s-ease);
+}
+.valuePulse {
+  animation: valuePop var(--card-pulse-time) var(--s-ease);
 }
 
+/* Rolling text container */
+.rollingContainer {
+  display: inline-block;
+  overflow: hidden;
+  height: 1em;
+}
+.rollingInner {
+  display: inline-block;
+  transform: translateY(0);
+}
+.rollingItem {
+  display: block;
+  line-height: 1em;
+}
+
+/* Results alert
+   - independent stacking and transition to avoid conflicts with #wagerDiv
+   - uses translateY and scale on its own layer
+*/
+#resultsAlert {
+  z-index: 130; /* above wagerDiv to avoid overlap conflicts */
+  max-width: fit-content;
+  max-height: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+  will-change: transform, opacity, max-height;
+  transition: opacity var(--anim-medium) var(--s-ease), transform var(--anim-medium) var(--s-ease),
+    max-height var(--anim-medium) var(--s-ease), padding var(--anim-medium) var(--s-ease);
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  margin-bottom: -20px;
+}
+
+/* hidden state */
+#resultsAlert[hidden] {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  pointer-events: none;
+  max-height: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin: 0 !important;
+  height: 0 !important;
+}
+
+/* Carousel / bottom div */
 .carousel {
   max-width: fit-content;
+}
+#bottomDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Accessibility: respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --anim-fast: 1ms;
+    --anim-medium: 1ms;
+    --anim-slow: 1ms;
+  }
+  * {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
