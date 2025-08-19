@@ -260,17 +260,18 @@ body,
 }
 
 /* Points / Wager display
-   - preserve heights and widths exactly as requested
-   - make internal text responsive with clamp and flexbox
+  - preserves heights and widths exactly as requested
+  - makes internal text responsive with clamp and flexbox
 */
+
 /* Display containers: points + wager */
 #pointsDisplay,
 .wagerDisplay {
   /* Sizing (preserved) */
-  height: 4vh !important; /* preserved */
-  max-height: 4vh !important; /* preserved */
-  width: 20vh; /* preserved */
-  min-width: 12vh; /* preserved */
+  height: 4vh; /* preserved */
+  max-height: 4vh; /* preserved */
+  width: 12vh; /* preserved */
+  min-width: 8vh; /* preserved */
   max-width: 100%; /* prevent overflow on very small screens */
 
   /* Layout */
@@ -283,16 +284,16 @@ body,
   overflow: hidden;
 
   /* Visual */
+  /* Added a background color for backdrop-filter to work in Safari */
   background: rgba(255, 255, 255, 0.04);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius);
   box-shadow: var(--soft-shadow);
+
+  /* The `-webkit-` prefix is kept for older Safari versions */
   backdrop-filter: blur(8px) saturate(120%);
   -webkit-backdrop-filter: blur(8px) saturate(120%);
-
-  /* Typography */
-  line-height: 1.1;
 }
 
 /* Labels */
@@ -302,7 +303,8 @@ body,
   margin-right: 0.4rem;
   color: var(--muted);
   white-space: nowrap;
-  font-size: clamp(0.55rem, 0.9vw, 0.65rem); /* fluid fallback */
+  /* Fluid fallback using clamp */
+  font-size: clamp(0.55rem, 0.9vw, 0.65rem);
 }
 
 /* Values */
@@ -318,7 +320,8 @@ body,
   font-weight: 900;
   font-variant-numeric: tabular-nums; /* better digit alignment */
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  font-size: clamp(0.7rem, 1.1vw, 0.95rem); /* fluid fallback */
+  /* Fluid fallback using clamp */
+  font-size: clamp(0.7rem, 1.1vw, 0.95rem);
 }
 
 /* Prefer container-relative scaling when supported (more responsive) */

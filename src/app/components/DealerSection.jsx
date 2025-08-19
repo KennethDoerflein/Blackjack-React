@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { Container } from "react-bootstrap";
 import RollingValue from "./RollingValue.jsx";
 import { adjustCardMargins } from "../utils/uiUtils.js";
+import { CARD_FLIP_TIME } from "../utils/constants.js";
 
 export default React.memo(function DealerSection({ dealersHandElements, dealerTotal }) {
   const dealerHandRef = useRef(null);
@@ -38,7 +39,11 @@ export default React.memo(function DealerSection({ dealersHandElements, dealerTo
           {!secondCardIsHidden && secondCard ? (
             <div ref={dealerTotalRef} className="handTotal">
               Total: &nbsp;
-              <RollingValue value={dealerTotal} />
+              <RollingValue
+                ref={dealerTotalRef}
+                duration={CARD_FLIP_TIME / 2}
+                value={dealerTotal}
+              />
             </div>
           ) : null}
         </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { Carousel, Container } from "react-bootstrap";
 import RollingValue from "./RollingValue.jsx";
 import { adjustCardMargins } from "../utils/uiUtils.js";
+import { CARD_FLIP_TIME } from "../utils/constants.js";
 
 export default React.memo(function PlayerSection({
   playersHandElements,
@@ -64,7 +65,11 @@ export default React.memo(function PlayerSection({
                 </h6>
                 <div ref={(r) => (totalRefs.current[i] = r)} className="handTotal">
                   Total: &nbsp;
-                  <RollingValue className="" value={playerTotals[i]} />
+                  <RollingValue
+                    ref={{ totalRefs, duration: CARD_FLIP_TIME / 2 }}
+                    className=""
+                    value={playerTotals[i]}
+                  />
                 </div>
               </div>
             </Container>
