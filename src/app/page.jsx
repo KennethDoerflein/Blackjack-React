@@ -41,7 +41,7 @@ export default function App() {
     const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
     setDevMode(isDev);
     setShowInfo(!isDev);
-    setPlayerPoints(isDev ? 1000000000000 : 100);
+    setPlayerPoints(isDev ? 100000 : 100);
   }, []);
 
   const [debugView, setDebugView] = useState("game"); // "game", "ui", "settings", "hands", "system"
@@ -138,11 +138,11 @@ export default function App() {
     if (isBusy) return;
     setIsBusy(true);
     await hit("player", "init");
-    await delay(CARD_SLIDE_TIME);
+    await delay(UI_TRANSITION_DELAY);
     await hit("dealer", "init");
-    await delay(CARD_SLIDE_TIME);
+    await delay(UI_TRANSITION_DELAY);
     await hit("player", "init");
-    await delay(CARD_SLIDE_TIME);
+    await delay(UI_TRANSITION_DELAY);
     await hit("dealer", "init");
     setIsBusy(false);
   };
@@ -229,7 +229,7 @@ export default function App() {
       // Removed a redundant CARD_SLIDE_TIME delay here
       await playDealer();
       setResultsAlertHidden(false);
-      setCarousalInterval(1750);
+      setCarousalInterval(BLACKJACK_PAUSE_TIME);
       setIsBusy(false);
     } else {
       let newHand = currentHand + 1;
@@ -275,27 +275,25 @@ export default function App() {
     setCurrentWager(newCurrentWager);
     setPlayerPoints(playerPoints - newCurrentWager[newSplitCount]);
 
-    // --- Refactored Animation Sequence for Consistency ---
     // Wait for the card to visually move to the new hand's position.
-    await delay(CARD_SLIDE_TIME);
+    const CARD_SPLIT_DELAY = CARD_SLIDE_TIME + CARD_FLIP_TIME;
+    await delay(CARD_SLIDE_TIME * 1.25);
 
     // Deal the second card to the first hand and wait for it to land.
     await hit("player", "split", currentHand, newPlayersHands);
-    await delay(CARD_SLIDE_TIME);
 
     // Switch focus to the second hand, deal a card, and wait for it to land.
     setCurrentHand(newSplitCount);
-    await delay(UI_TRANSITION_DELAY); // Allow UI to update before next animation.
+    await delay(CARD_SPLIT_DELAY); // Allow UI to update before next animation.
     await hit("player", "split", newSplitCount, newPlayersHands);
-    await delay(CARD_SLIDE_TIME);
+    await delay(CARD_SPLIT_DELAY);
 
     // Switch focus back to the original hand to continue play.
     setCurrentHand(oldHand);
-    // --- End of Refactored Sequence ---
 
     ({ newTotals } = calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
     setPlayerTotal(newTotals);
-    await delay(CARD_PULSE_TIME);
+    await delay(CARD_SPLIT_DELAY);
     if (newTotals[oldHand] === 21 && autoStandChecked) {
       await endHand();
     } else {
@@ -305,7 +303,6 @@ export default function App() {
 
   const playDealer = async () => {
     setIsBusy(true);
-    // Replaced long slide delay with a shorter, more intentional "decision" pause.
     await delay(DEALER_DECISION_PAUSE);
     let newDealerTotal = dealerTotal;
     while (shouldDealerHit(newDealerTotal, dealersHand, soft17Checked)) {

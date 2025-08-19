@@ -22,8 +22,8 @@
   --anim-fast: 150ms;
   --anim-medium: 300ms;
   --anim-slow: 500ms;
-  --card-slide-time: 300ms;
-  --card-flip-time: 400ms;
+  --card-slide-time: 500ms;
+  --card-flip-time: 450ms;
   --card-pulse-time: 500ms;
 }
 

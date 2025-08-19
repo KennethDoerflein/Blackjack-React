@@ -82,15 +82,16 @@ export default function GameControls({
     playersHands[currentHand].length >= 2 &&
     playerTotals[currentHand] <= 21;
   const canSplit =
-    canAct &&
-    isSplitAllowed(
-      playersHands,
-      currentHand,
-      splitCount,
-      currentWager,
-      playerPoints,
-      splitTypeChecked
-    );
+    devMode ||
+    (canAct &&
+      isSplitAllowed(
+        playersHands,
+        currentHand,
+        splitCount,
+        currentWager,
+        playerPoints,
+        splitTypeChecked
+      ));
   const canDouble =
     canAct &&
     isDoubleDownAllowed(
