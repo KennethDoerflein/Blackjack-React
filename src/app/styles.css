@@ -270,8 +270,8 @@ body,
   /* Sizing (preserved) */
   height: 4vh; /* preserved */
   max-height: 4vh; /* preserved */
-  width: 12vh; /* preserved */
-  min-width: 8vh; /* preserved */
+  width: 14vh; /* preserved */
+  min-width: 10vh; /* preserved */
   max-width: 100%; /* prevent overflow on very small screens */
 
   /* Layout */
