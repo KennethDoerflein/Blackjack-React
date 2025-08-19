@@ -226,7 +226,6 @@ export default function App() {
       let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
       await delay(CARD_FLIP_TIME);
       await flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
-      // Removed a redundant CARD_SLIDE_TIME delay here
       await playDealer();
       setResultsAlertHidden(false);
       setCarousalInterval(BLACKJACK_PAUSE_TIME);
