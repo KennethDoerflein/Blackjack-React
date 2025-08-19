@@ -230,7 +230,7 @@ export default function App() {
       setResultsAlertHidden(false);
       setCarousalInterval(BLACKJACK_PAUSE_TIME);
       setIsBusy(false);
-    } else {
+    } else if (currentHand !== splitCount) {
       let newHand = currentHand + 1;
       await advanceHand(newHand);
       setIsBusy(false);
@@ -484,13 +484,13 @@ export default function App() {
             devMode={devMode}
             setIsBusy={setIsBusy}
           />
-        </Container>
-        <Container className="text-center mt-3" id="disclaimer">
-          <p className="small text-muted my-0 px-5">
-            <strong>* Disclaimer:</strong> Points in this game have{" "}
-            <strong>no monetary value</strong> and are for{" "}
-            <strong>entertainment purposes only</strong>.
-          </p>
+          <Container className="text-center mt-3" id="disclaimer">
+            <p className="small text-muted my-0 px-5">
+              <strong>* Disclaimer:</strong> Points in this game have{" "}
+              <strong>no monetary value</strong> and are for{" "}
+              <strong>entertainment purposes only</strong>.
+            </p>
+          </Container>
         </Container>
         {devMode && (
           <div className="text-center text-warning">
