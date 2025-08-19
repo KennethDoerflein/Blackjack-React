@@ -2,16 +2,16 @@ import { useEffect, useState } from "react";
 import { Alert, Container, Row, Col } from "react-bootstrap";
 
 export default function WinnerSection({
-  playersHands = [],
-  playerTotals = [],
-  playerPoints = 0,
-  dealerTotal = 0,
-  currentWager = [],
-  setPlayerPoints = () => {},
-  splitCount = 0,
-  setCurrentWager = () => {},
-  resultsAlertHidden = true,
-  currentHand = 0,
+  playersHands,
+  playerTotals,
+  playerPoints,
+  dealerTotal,
+  currentWager,
+  setPlayerPoints,
+  splitCount,
+  setCurrentWager,
+  resultsAlertHidden,
+  currentHand,
 }) {
   const [outcomes, setOutcomes] = useState([]);
 
