@@ -448,6 +448,7 @@ export default function App() {
           playerPoints={playerPoints}
           currentWager={currentWager[currentHand]}
           currentHand={currentHand}
+          splitCount={splitCount}
         />
         <Container className="text-center" id="bottomDiv">
           <WagerControls
