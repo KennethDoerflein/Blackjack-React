@@ -7,11 +7,9 @@ const chipNames = ["1Chip", "5Chip", "10Chip", "20Chip", "50Chip"];
 
 const preloadImages = (imageArray) => {
   const promises = imageArray.map((image) => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.src = `./assets/${image}.jpg`;
-      img.onload = resolve;
-    });
+    const img = new Image();
+    img.src = `./assets/${image}.jpg`;
+    return img.decode ? img.decode() : new Promise((r) => (img.onload = r));
   });
   return Promise.all(promises);
 };
@@ -104,7 +102,15 @@ export default function WagerControls({
   }
 
   return (
-    <Container hidden={playersHands[0].length !== 0 || showInfo} id="wagerDiv" className="mt-2">
+    <Container
+      id="wagerDiv"
+      className={`mt-2 ${playersHands[0].length !== 0 || showInfo ? "hidden" : ""}`}>
+      {/* Invisible preloader */}
+      <div style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}>
+        {chipNames.map((name) => (
+          <img key={name} src={`./assets/${name}.jpg`} alt="" loading="eager" />
+        ))}
+      </div>
       {[1, 5, 10, 20, 50].map((val, idx) => (
         <motion.div
           key={val}

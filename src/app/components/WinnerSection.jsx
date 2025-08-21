@@ -103,11 +103,12 @@ export default function WinnerSection({
   return (
     <Container className="d-flex justify-content-center">
       <Alert
-        hidden={resultsAlertHidden}
         id="resultsAlert"
         variant="info"
-        className="alert-dismissible fade show px-1 py-2"
-        role="alert">
+        role="alert"
+        className={`alert-dismissible fade show px-1 py-2 ${
+          resultsAlertHidden ? "is-hidden" : ""
+        }`}>
         <Container id="message" className="text-center">
           <h6 key={currentHand} className="my-1">
             {message}

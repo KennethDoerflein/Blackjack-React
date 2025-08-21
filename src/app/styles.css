@@ -4,12 +4,9 @@
 
 :root {
   --bg: #081013;
-  --panel: rgba(255, 255, 255, 0.06);
-  --panel-2: rgba(255, 255, 255, 0.04);
   --glass-border: rgba(255, 255, 255, 0.12);
   --glass-border-2: rgba(255, 255, 255, 0.08);
   --accent: #8be9fd;
-  --accent-2: #7ae7b9;
   --muted: rgba(255, 255, 255, 0.6);
   --warning: #ffd966;
   --radius: 14px;
@@ -18,7 +15,6 @@
   --glass-shadow: 0 6px 28px rgba(10, 15, 30, 0.6);
   --s-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Animation Timings */
   --anim-fast: 150ms;
   --anim-medium: 300ms;
   --anim-slow: 500ms;
@@ -98,7 +94,6 @@ body,
   will-change: transform, opacity;
   transition: opacity var(--anim-medium) var(--s-ease), transform var(--anim-medium) var(--s-ease);
 }
-
 .handTotal[hidden] {
   opacity: 0;
   transform: scale(0.96);
@@ -117,8 +112,6 @@ body,
   color: var(--muted);
   box-shadow: var(--soft-shadow);
   z-index: 120;
-  transition: background var(--anim-fast) var(--s-ease), color var(--anim-fast) var(--s-ease),
-    box-shadow var(--anim-fast) var(--s-ease);
 }
 #settings {
   right: 20px;
@@ -126,7 +119,6 @@ body,
 #info {
   right: 70px;
 }
-
 #settings:hover,
 #info:hover {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
@@ -145,7 +137,6 @@ body,
 .modal-backdrop.show {
   opacity: 0.45;
 }
-
 .modal.fade .modal-dialog {
   transform: translateY(-6px) scale(0.995);
   opacity: 0;
@@ -155,7 +146,6 @@ body,
   transform: translateY(0) scale(1);
   opacity: 1;
 }
-
 .modal-content {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02));
   border: 1px solid var(--glass-border-2);
@@ -164,8 +154,6 @@ body,
   -webkit-backdrop-filter: blur(10px) saturate(120%);
   border-radius: 12px;
   color: #eef6f7;
-  transition: box-shadow var(--anim-fast) var(--s-ease), transform var(--anim-fast) var(--s-ease),
-    opacity var(--anim-fast) var(--s-ease);
 }
 .modal-header,
 .modal-footer {
@@ -189,7 +177,6 @@ body,
   background-color: #fff;
   will-change: transform, box-shadow;
 }
-
 #dealersHand img[alt="Hidden Card"],
 #dealersHand img[src*="back.png"] {
   transform: none;
@@ -197,7 +184,6 @@ body,
   border-radius: 6px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
-
 #dealersHand img:last-child,
 #playersHands > div img:last-child {
   margin-right: 0;
@@ -280,7 +266,6 @@ body,
   backdrop-filter: blur(8px) saturate(120%);
   -webkit-backdrop-filter: blur(8px) saturate(120%);
 }
-
 .pointsLabel,
 .wagerLabel {
   flex: 0 0 auto;
@@ -289,7 +274,6 @@ body,
   white-space: nowrap;
   font-size: clamp(0.55rem, 0.9vw, 0.65rem);
 }
-
 .pointsValue,
 .wagerValue {
   flex: 1 1 auto;
@@ -304,6 +288,7 @@ body,
   font-size: clamp(0.7rem, 1.1vw, 0.95rem);
 }
 
+/* Responsive */
 @supports (container-type: inline-size) {
   #pointsDisplay,
   .wagerDisplay {
@@ -318,20 +303,17 @@ body,
     font-size: clamp(0.7rem, 2.2cqi, 0.95rem);
   }
 }
-
 @media (forced-colors: active) {
   #pointsDisplay,
   .wagerDisplay {
     border-color: CanvasText;
   }
 }
-
 @media (min-width: 768px) {
   .pointsLabel,
   .wagerLabel {
     font-size: 1rem;
   }
-
   .pointsValue,
   .wagerValue {
     font-size: 1.1rem;
@@ -352,7 +334,6 @@ body,
   transform: scale(1.05);
   box-shadow: 0 10px 30px rgba(2, 6, 23, 0.8);
 }
-
 #wagerDiv #wagerBtn,
 #wagerRst,
 #allInBtn {
@@ -375,26 +356,21 @@ body,
   padding: 4px 11px;
 }
 
-/* Wager container animation */
 #wagerDiv {
-  position: relative;
-  z-index: 110;
-  max-height: 420px;
   opacity: 1;
   transform: translateY(0);
+  transition: opacity 300ms var(--s-ease), transform 300ms var(--s-ease),
+    max-height 500ms var(--s-ease);
+  max-height: 420px;
   overflow: hidden;
-  will-change: transform, opacity;
-  transition: opacity var(--anim-medium) var(--s-ease), transform var(--anim-medium) var(--s-ease);
 }
 
-#wagerDiv[hidden] {
+#wagerDiv.hidden {
   opacity: 0;
-  transform: translateY(-6px) scale(0.995);
+  transform: translateY(-6px) scale(0.98);
   pointer-events: none;
   max-height: 0;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  margin: 0 !important;
+  padding: 0px;
 }
 
 /* Game actions container */
@@ -406,6 +382,31 @@ body,
   opacity: 0;
   transform: translateY(6px) scale(0.995);
   pointer-events: none;
+}
+
+/* Results alert */
+#resultsAlert {
+  z-index: 130;
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: -20px !important;
+  overflow: hidden;
+  will-change: transform, opacity;
+  transition: opacity var(--anim-medium) var(--s-ease), transform var(--anim-medium) var(--s-ease),
+    max-height var(--anim-slow) var(--s-ease);
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  max-height: 200px; /* adjust to fit */
+}
+
+#resultsAlert.is-hidden {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  pointer-events: none;
+  max-height: 0;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* disclaimer / misc */
@@ -433,7 +434,6 @@ body,
     transform: translate3d(0, 0, 0);
   }
 }
-
 @keyframes flip {
   0% {
     transform: rotateY(90deg) translateZ(0.1px);
@@ -445,7 +445,6 @@ body,
     transform: rotateY(0deg) translateZ(0.1px);
   }
 }
-
 @keyframes highlight {
   0% {
     background-color: #ccc;
@@ -454,7 +453,6 @@ body,
     background-color: transparent;
   }
 }
-
 @keyframes pulseUp {
   0% {
     transform: scale(1);
@@ -469,7 +467,6 @@ body,
     opacity: 1;
   }
 }
-
 @keyframes valuePop {
   0% {
     transform: translateY(0);
@@ -509,61 +506,19 @@ body,
   animation: valuePop var(--card-pulse-time) var(--s-ease);
 }
 
-/* Rolling text container */
-.rollingContainer {
-  display: inline-block;
-  overflow: hidden;
-  height: 1em;
-}
-.rollingInner {
-  display: inline-block;
-  transform: translateY(0);
-}
-.rollingItem {
-  display: block;
-  line-height: 1em;
-}
-
-/* Results alert */
-#resultsAlert {
-  z-index: 130;
-  max-width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
-  overflow: hidden;
-  will-change: transform, opacity;
-  transition: opacity var(--anim-medium) var(--s-ease), transform var(--anim-medium) var(--s-ease);
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  margin-bottom: -20px;
-}
-
-#resultsAlert[hidden] {
-  opacity: 0;
-  transform: translateY(-6px) scale(0.98);
-  pointer-events: none;
-  max-height: 0;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  margin: 0 !important;
-}
-
 /* Bottom container and spacing */
 .carousel {
   max-width: fit-content;
 }
-
 #bottomDiv {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
 }
-
 #bottomDiv > * {
   margin-bottom: 1.5rem;
 }
-
 #bottomDiv > *:last-child {
   margin-bottom: 0;
 }

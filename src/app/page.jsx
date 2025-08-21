@@ -484,13 +484,6 @@ export default function App() {
             devMode={devMode}
             setIsBusy={setIsBusy}
           />
-          <Container className="text-center mt-3" id="disclaimer">
-            <p className="small text-muted my-0 px-5">
-              <strong>* Disclaimer:</strong> Points in this game have{" "}
-              <strong>no monetary value</strong> and are for{" "}
-              <strong>entertainment purposes only</strong>.
-            </p>
-          </Container>
         </Container>
         {devMode && (
           <div className="text-center text-warning">
@@ -523,6 +516,13 @@ export default function App() {
             {JSON.stringify(debugDataMap[debugView] || {}, null, 2)}
           </pre>
         )}
+      </Container>
+
+      <Container className="text-center mt-4" id="disclaimer">
+        <p className="small text-muted my-0 px-5">
+          <strong>* Disclaimer:</strong> Points in this game have <strong>no monetary value</strong>{" "}
+          and are for <strong>entertainment purposes only</strong>.
+        </p>
       </Container>
 
       <SettingsModal
