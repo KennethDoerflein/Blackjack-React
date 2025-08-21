@@ -54,7 +54,7 @@ export default function App() {
   const [resultsAlertHidden, setResultsAlertHidden] = useState(true);
 
   const [soft17Checked, setSoft17Checked] = useState(true);
-  const [splitTypeChecked, setSplitTypeChecked] = useState(false);
+  const [splitTypeChecked, setSplitTypeChecked] = useState(true);
   const [autoStandChecked, setAutoStandChecked] = useState(false);
 
   const [deck, setCardDeck] = useState(null);
