@@ -492,6 +492,7 @@ export default function App() {
             isBusy={isBusy}
             devMode={devMode}
             setIsBusy={setIsBusy}
+            showInfo={showInfo}
           />
         </Container>
         {devMode && (

@@ -24,6 +24,7 @@ export default function GameControls({
   isBusy,
   devMode,
   setIsBusy,
+  showInfo,
 }) {
   const doubleDown = useCallback(async () => {
     setIsBusy(true);
@@ -105,7 +106,9 @@ export default function GameControls({
   const canResetPoints = !resultsAlertHidden && playerPoints === 0;
 
   return (
-    <Container className={`w-100 mt-2 ${showButtons ? "" : "hidden"}`} id="gameActions">
+    <Container
+      className={`w-100 mt-2 ${showButtons && !showInfo ? "" : "hidden"}`}
+      id="gameActions">
       <ButtonGroup>
         <Button
           onClick={isBusy ? undefined : handleHit}
