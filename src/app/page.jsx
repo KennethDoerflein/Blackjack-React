@@ -42,9 +42,10 @@ export default function App() {
     setDevMode(isDev);
     setShowInfo(!isDev);
     setPlayerPoints(isDev ? 100000 : 100);
+    newGame();
   }, []);
 
-  const [debugView, setDebugView] = useState("game"); // "game", "ui", "settings", "hands", "system"
+  const [debugView, setDebugView] = useState("ui"); // "game", "ui", "settings", "hands", "system"
 
   const [showSettings, setShowSettings] = useState(false);
   const handleShowInfo = () => setShowInfo(true);
@@ -148,6 +149,7 @@ export default function App() {
   };
 
   const updateWager = (value) => {
+    if (!resultsAlertHidden) return true; // Prevent actions after round over
     if (isBusy) return;
     const newWager = [...currentWager];
     newWager[currentHand] = parseInt(value, 10);
@@ -161,6 +163,7 @@ export default function App() {
     hand = currentHand,
     newPlayersHands = [...playersHands]
   ) => {
+    if (!resultsAlertHidden) return true; // Prevent actions after round over
     if ((disableButtons || isBusy) && origin === "user") return;
     if (origin === "user") setIsBusy(true);
 
@@ -198,6 +201,7 @@ export default function App() {
       handIndex,
       halfwayCallback
     );
+    if (!resultsAlertHidden) return true; // Prevent actions after round over
 
     if (isPlayer && origin === "user") {
       if (latestTotals[hand] > 21) {
@@ -220,6 +224,7 @@ export default function App() {
 
   // End hand
   const endHand = async () => {
+    if (!resultsAlertHidden) return true; // Prevent actions after round over
     setIsBusy(true);
     if (currentHand === splitCount) {
       let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
@@ -238,8 +243,10 @@ export default function App() {
   };
 
   async function advanceHand(newHand) {
+    if (!resultsAlertHidden) return true; // Prevent actions after round over
     setIsBusy(true);
     if (currentHand < splitCount && splitCount > 0) {
+      await delay(CARD_SLIDE_TIME);
       setCurrentHand(newHand);
       await delay(CARD_SLIDE_TIME);
     }
@@ -247,6 +254,7 @@ export default function App() {
   }
 
   const splitHand = async () => {
+    if (!resultsAlertHidden) return true; // Prevent actions after round over
     if (isBusy) return;
     setIsBusy(true);
     const oldHand = currentHand;
@@ -280,7 +288,7 @@ export default function App() {
 
     // Deal the second card to the first hand and wait for it to land.
     await hit("player", "split", currentHand, newPlayersHands);
-
+    await delay(CARD_FLIP_TIME);
     // Switch focus to the second hand, deal a card, and wait for it to land.
     setCurrentHand(newSplitCount);
     await delay(CARD_SPLIT_DELAY); // Allow UI to update before next animation.
@@ -301,6 +309,7 @@ export default function App() {
   };
 
   const playDealer = async () => {
+    if (!resultsAlertHidden) return true; // Prevent actions after round over
     setIsBusy(true);
     await delay(DEALER_DECISION_PAUSE);
     let newDealerTotal = dealerTotal;

@@ -150,6 +150,8 @@ body,
   opacity: 0.85;
   font-weight: bolder;
   color: var(--warning);
+  font-size: 20px;
+  text-shadow: 0.07em 0 black, 0 0.07em black, -0.07em 0 black, 0 -0.07em black;
 }
 .modal .btn-close {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));

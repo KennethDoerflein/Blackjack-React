@@ -43,7 +43,7 @@ export default function SettingsModal({
           <Form.Check
             type="switch"
             id="splitSwitch"
-            label="Split Based on Rank"
+            label="Consider Rank For Split"
             disabled={dealersHandElements.length > 0 || currentWager[0] > 0}
             checked={splitTypeChecked}
             onChange={() => setSplitTypeChecked(!splitTypeChecked)}

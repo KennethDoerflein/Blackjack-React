@@ -41,7 +41,7 @@ export default function GameControls({
       newWagers[currentHand] *= 2;
       updateWager(newWagers);
       setPlayerPoints(pointsLeft);
-      await hit("player", "doubleDown"); // FIX: actually deal the double down card
+      await hit("player", "doubleDown");
       await endHand();
       setIsBusy(false);
     }
