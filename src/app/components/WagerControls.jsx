@@ -105,12 +105,6 @@ export default function WagerControls({
     <Container
       id="wagerDiv"
       className={`mt-2 ${playersHands[0].length !== 0 || showInfo ? "hidden" : ""}`}>
-      {/* Invisible preloader */}
-      <div style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}>
-        {chipNames.map((name) => (
-          <img key={name} src={`./assets/${name}.jpg`} alt="" loading="eager" />
-        ))}
-      </div>
       {[1, 5, 10, 20, 50].map((val, idx) => (
         <motion.div
           key={val}
