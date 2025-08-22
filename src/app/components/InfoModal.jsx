@@ -15,7 +15,7 @@ export default function InfoModal({ show, handleClose, newGame, currentWager }) 
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body className="bg-light text-dark p-2" style={{ fontSize: "0.85rem" }}>
+      <Modal.Body className="p-2" style={{ fontSize: "0.75rem" }}>
         <section>
           <h6 className="text-center fw-bold" style={{ fontSize: "0.9rem" }}>
             <u>Disclaimer</u>

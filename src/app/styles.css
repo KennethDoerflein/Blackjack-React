@@ -106,10 +106,8 @@ body,
   position: fixed;
   top: 20px;
   padding: 8px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
   border: 1px solid var(--glass-border-2);
   border-radius: var(--radius);
-  color: var(--muted);
   box-shadow: var(--soft-shadow);
   z-index: 120;
 }
@@ -119,13 +117,9 @@ body,
 #info {
   right: 70px;
 }
-#settings:hover,
-#info:hover {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
-  color: #fff;
-  box-shadow: 0 8px 32px rgba(2, 6, 23, 0.7);
+.text-muted {
+  color: var(--warning) !important;
 }
-
 /* Modal backdrop / dialog */
 .modal-backdrop {
   opacity: 0;
@@ -134,18 +128,11 @@ body,
   transition: opacity 120ms var(--s-ease);
   will-change: opacity;
 }
+
 .modal-backdrop.show {
-  opacity: 0.45;
+  opacity: 0.25;
 }
-.modal.fade .modal-dialog {
-  transform: translateY(-6px) scale(0.995);
-  opacity: 0;
-  transition: transform var(--anim-fast) var(--s-ease), opacity var(--anim-fast) var(--s-ease);
-}
-.modal.show .modal-dialog {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-}
+
 .modal-content {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02));
   border: 1px solid var(--glass-border-2);
@@ -153,12 +140,16 @@ body,
   backdrop-filter: blur(10px) saturate(120%);
   -webkit-backdrop-filter: blur(10px) saturate(120%);
   border-radius: 12px;
-  color: #eef6f7;
 }
 .modal-header,
 .modal-footer {
   background: transparent !important;
   border-bottom: none;
+}
+.modal-body {
+  opacity: 0.85;
+  font-weight: bolder;
+  color: var(--warning);
 }
 .modal .btn-close {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
@@ -418,13 +409,6 @@ body,
   height: fit-content;
 }
 
-/* active hand styling */
-.activeHand {
-  outline: 3px solid rgba(255, 230, 120, 0.15);
-  box-shadow: 0 6px 24px rgba(255, 200, 60, 0.06);
-  border: 1px solid rgba(255, 230, 120, 0.3);
-}
-
 /* Keyframes */
 @keyframes slideIn {
   from {
@@ -510,15 +494,7 @@ body,
 .carousel {
   max-width: fit-content;
 }
-#bottomDiv {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-#bottomDiv > * {
-  margin-bottom: 1.5rem;
-}
+
 #bottomDiv > *:last-child {
   margin-bottom: 0;
 }

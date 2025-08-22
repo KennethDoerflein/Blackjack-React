@@ -23,7 +23,7 @@ export default function SettingsModal({
 
   return (
     <Modal show={show} onHide={handleClose} centered>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title>Settings</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -59,7 +59,7 @@ export default function SettingsModal({
         /> */}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose} className="mx-auto">
+        <Button variant="warning" onClick={handleClose} className="mx-auto fw-bolder">
           Close
         </Button>
       </Modal.Footer>

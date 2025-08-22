@@ -105,7 +105,7 @@ export default function GameControls({
   const canResetPoints = !resultsAlertHidden && playerPoints === 0;
 
   return (
-    <Container className="d-flex justify-content-center w-100 mt-2" id="gameActions">
+    <Container className="w-100 mt-2" id="gameActions">
       <ButtonGroup>
         <Button
           onClick={isBusy ? undefined : handleHit}
