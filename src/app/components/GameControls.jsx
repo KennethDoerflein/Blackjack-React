@@ -105,7 +105,7 @@ export default function GameControls({
   const canResetPoints = !resultsAlertHidden && playerPoints === 0;
 
   return (
-    <Container className="w-100 mt-2" id="gameActions">
+    <Container className={`w-100 mt-2 ${showButtons ? "" : "hidden"}`} id="gameActions">
       <ButtonGroup>
         <Button
           onClick={isBusy ? undefined : handleHit}

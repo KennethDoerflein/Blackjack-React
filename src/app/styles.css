@@ -349,7 +349,8 @@ body,
   padding: 4px 11px;
 }
 
-#wagerDiv {
+#wagerDiv,
+#gameActions {
   opacity: 1;
   transform: translateY(0);
   transition: opacity 300ms var(--s-ease), transform 300ms var(--s-ease),
@@ -358,23 +359,13 @@ body,
   overflow: hidden;
 }
 
-#wagerDiv.hidden {
+#wagerDiv.hidden,
+#gameActions.hidden {
   opacity: 0;
   transform: translateY(-6px) scale(0.98);
   pointer-events: none;
   max-height: 0;
   padding: 0px;
-}
-
-/* Game actions container */
-#gameActions {
-  will-change: transform, opacity;
-  transition: opacity 280ms var(--s-ease), transform 280ms var(--s-ease);
-}
-#gameActions[hidden] {
-  opacity: 0;
-  transform: translateY(6px) scale(0.995);
-  pointer-events: none;
 }
 
 /* Results alert */
