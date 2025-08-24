@@ -54,7 +54,7 @@ export default React.memo(function PlayerSection({
         interval={carousalInterval}
         controls={false}
         indicators={false}
-        className="my-3 mx-auto"
+        className="mb-2 mt-4 mx-auto"
         pause={null}>
         {playersHandElements.map((hand, i) => (
           <Carousel.Item key={i}>
