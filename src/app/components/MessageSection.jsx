@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Alert, Container, Row, Col } from "react-bootstrap";
+import { Alert, Container } from "react-bootstrap";
 
-export default function WinnerSection({
+export default function MessageSection({
   playersHands,
   playerTotals,
   playerPoints,
@@ -10,13 +10,15 @@ export default function WinnerSection({
   setPlayerPoints,
   splitCount,
   setCurrentWager,
-  resultsAlertHidden,
+  messageAlertHidden,
   currentHand,
+  isBusy,
+  globalMessage,
 }) {
   const [outcomes, setOutcomes] = useState([]);
 
   useEffect(() => {
-    if (resultsAlertHidden) return;
+    if (messageAlertHidden) return;
 
     // Defensive copies / fallbacks
     const hands = Array.isArray(playersHands) ? playersHands : [];
@@ -96,25 +98,22 @@ export default function WinnerSection({
     if (typeof setCurrentWager === "function") setCurrentWager([0]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resultsAlertHidden]);
+  }, [messageAlertHidden]);
 
-  const message = Array.isArray(outcomes) && outcomes[currentHand] ? outcomes[currentHand] : "";
+  let message = globalMessage;
+  if (currentWager[0] === 0 && playersHands[0].length === 0) {
+    message = "Waiting for wager ...";
+  } else if (currentWager[0] > 0 && playersHands[0].length === 0) {
+    message = "Place wager to begin";
+  } else if (Array.isArray(outcomes) && outcomes[currentHand] && message === "") {
+    message = outcomes[currentHand];
+  }
 
   return (
-    <Container className="d-flex justify-content-center">
-      <Alert
-        id="resultsAlert"
-        variant="info"
-        role="alert"
-        className={`alert-dismissible fade show px-1 py-2 ${
-          resultsAlertHidden ? "is-hidden" : ""
-        }`}>
-        <Container id="message" className="text-center">
-          <h6 key={currentHand} className="my-1">
-            {message}
-          </h6>
-        </Container>
-      </Alert>
+    <Container id="messageAlert" role="alert" className="p-2 mt-4  align-items-center">
+      <h6 id="message" key={message} className="m-0 text-center">
+        {message}
+      </h6>
     </Container>
   );
 }

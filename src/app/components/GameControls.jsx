@@ -16,7 +16,7 @@ export default function GameControls({
   playerTotals,
   splitCount,
   splitTypeChecked,
-  resultsAlertHidden,
+  messageAlertHidden,
   showButtons,
   disableButtons,
   newGameBtnHidden,
@@ -78,7 +78,7 @@ export default function GameControls({
 
   // Helper: Compute button visibility based on game state
   const canAct =
-    resultsAlertHidden &&
+    messageAlertHidden &&
     showButtons &&
     playersHands[currentHand].length >= 2 &&
     playerTotals[currentHand] <= 21;
@@ -102,8 +102,8 @@ export default function GameControls({
       currentWager,
       playerPoints
     );
-  const canNewGame = !resultsAlertHidden && playersHands[0].length > 0 && playerPoints > 0;
-  const canResetPoints = !resultsAlertHidden && playerPoints === 0;
+  const canNewGame = !messageAlertHidden && playersHands[0].length > 0 && playerPoints > 0;
+  const canResetPoints = !messageAlertHidden && playerPoints === 0;
 
   return (
     <Container

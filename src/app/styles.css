@@ -219,10 +219,52 @@ body,
   box-shadow: 0 8px 32px rgba(2, 6, 23, 0.7);
 }
 
+/* Results alert */
+#messageAlert {
+  /* --- glass effect --- */
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--glass-border-2);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  border-radius: var(--radius);
+  /* --- End of glass effect --- */
+
+  z-index: 130;
+  max-width: 250px !important;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: -20px !important;
+  overflow: hidden;
+  will-change: transform, opacity;
+  transition: opacity var(--anim-medium) var(--s-ease), transform var(--anim-medium) var(--s-ease),
+    max-height var(--anim-slow) var(--s-ease);
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  max-height: 200px;
+}
+
 /* Message */
-#message h6 {
-  color: rgb(204, 58, 58);
+#message {
+  color: var(--warning);
   font-weight: bolder;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+  /* Animation properties */
+  will-change: transform, opacity;
+  animation: messagePopIn var(--anim-medium) var(--s-ease) forwards;
+}
+
+/* Add this to your CSS file */
+@keyframes messagePopIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Main panel */
@@ -370,7 +412,7 @@ body,
 }
 
 /* Results alert */
-#resultsAlert {
+#messageAlert {
   z-index: 130;
   max-width: fit-content;
   margin-left: auto;
@@ -385,7 +427,7 @@ body,
   max-height: 200px; /* adjust to fit */
 }
 
-#resultsAlert.is-hidden {
+#messageAlert.is-hidden {
   opacity: 0;
   transform: translateY(-6px) scale(0.98);
   pointer-events: none;
