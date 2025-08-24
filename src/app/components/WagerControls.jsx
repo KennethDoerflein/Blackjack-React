@@ -143,6 +143,7 @@ export default function WagerControls({
         <Button
           onClick={isBusy ? undefined : placeWager}
           id="wagerBtn"
+          disabled={currentWager[currentHand] <= 0}
           variant="primary"
           size="sm"
           className="align-middle ms-2 my-3">
