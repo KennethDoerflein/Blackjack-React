@@ -26,6 +26,9 @@ export const addCard = async (
 
   // preload the back image and wait until it’s fully loaded
   await preloadImage(src);
+  if (entity === "player" && cards.length <= 1) {
+    await pausableDelay(CARD_FLIP_TIME, isTabVisible, visibilityPromiseResolver);
+  }
 
   updateHandElements(setHandElements, entity, currentHand, descriptor);
 
