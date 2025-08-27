@@ -282,7 +282,7 @@ export default function App() {
       }
       await playDealer();
       setMessageAlertHidden(false);
-      await pausableDelay(CARD_FLIP_TIME, isTabVisible, visibilityPromiseResolver);
+      await pausableDelay(CARD_FLIP_TIME * 1.5, isTabVisible, visibilityPromiseResolver);
       setGlobalMessage("");
       setCarousalInterval(BLACKJACK_PAUSE_TIME);
       setIsBusy(false);
