@@ -151,7 +151,7 @@ body,
   opacity: 0.85;
   font-weight: bolder;
   color: var(--warning);
-  font-size: 20px;
+  font-size: medium;
   text-shadow: 0.07em 0 black, 0 0.07em black, -0.07em 0 black, 0 -0.07em black;
 }
 .modal .btn-close {
