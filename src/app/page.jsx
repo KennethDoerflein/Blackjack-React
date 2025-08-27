@@ -379,10 +379,10 @@ export default function App() {
         if (playersHandElements[0].length > 2) {
           playersHandElements.forEach(async (hand, i) => {
             if (hand.length > 0) {
-              document.getElementById(`playersHands-${i}`).classList.add("viewportResize");
-              adjustCardMargins(document.getElementById(`playersHands-${i}`), true);
+              document.getElementById(`playersHand${i}`).classList.add("viewportResize");
+              adjustCardMargins(document.getElementById(`playersHand${i}`), true);
               await pausableDelay(CARD_SLIDE_TIME, isTabVisible, visibilityPromiseResolver);
-              document.getElementById(`playersHands-${i}`).classList.remove("viewportResize");
+              document.getElementById(`playersHand${i}`).classList.remove("viewportResize");
             }
           });
         }

@@ -519,7 +519,7 @@ body,
   animation: highlight 0.5s linear;
 }
 .viewportResize img {
-  transition: margin-left 0.3s ease-in-out;
+  transition: margin-left 0.3s ease-in-out !important;
 }
 .handPulse {
   animation: pulseUp var(--card-pulse-time) var(--s-ease);
