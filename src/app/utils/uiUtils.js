@@ -21,24 +21,19 @@ export const addCard = async (
   cards.push(card);
 
   const cardId = `card-${uniqueCardId}`;
+  const src = `./assets/cards-1.3/back.png`;
+  const descriptor = { id: cardId, src, image: card.image, className: "imgSlide" };
 
-  let descriptor;
-  let src = `./assets/cards-1.3/back.png`;
-  descriptor = {
-    id: cardId,
-    src,
-    image: card.image,
-    className: "imgSlide",
-  };
+  // preload the back image and wait until it’s fully loaded
+  await preloadImage(src);
 
-  // Update hand elements for both dealer and player
   updateHandElements(setHandElements, entity, currentHand, descriptor);
 
   await pausableDelay(CARD_FLIP_TIME, isTabVisible, visibilityPromiseResolver);
 
   if (shouldFlipCard(entity, cards)) {
     await flipCard(
-      descriptor.id,
+      cardId,
       card,
       setHandElements,
       entity,
@@ -49,7 +44,7 @@ export const addCard = async (
     );
   }
 
-  return descriptor.id;
+  return cardId;
 };
 
 const updateHandElements = (setHandElements, entity, currentHand, descriptor) => {

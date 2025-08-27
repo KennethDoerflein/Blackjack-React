@@ -164,7 +164,6 @@ export default function App() {
     setGlobalMessage("Dealing initial cards...");
     setIsBusy(true);
 
-    await pausableDelay(UI_TRANSITION_DELAY, isTabVisible, visibilityPromiseResolver);
     await hit("player", "init");
     await pausableDelay(UI_TRANSITION_DELAY, isTabVisible, visibilityPromiseResolver);
 
