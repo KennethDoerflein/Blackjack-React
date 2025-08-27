@@ -1,4 +1,5 @@
 import { pausableDelay } from "./utils";
+import { CARD_FLIP_TIME } from "./constants";
 
 // Animation timing constants
 const FLIP_ANIMATION_DURATION = 700; // ms for flip (match CSS)
@@ -19,14 +20,10 @@ export const addCard = async (
   const card = deck.getCard();
   cards.push(card);
 
-  const isFirstCard = cards.length === 1;
-  const delayTime = isFirstCard ? 100 : 0;
-
   const cardId = `card-${uniqueCardId}`;
 
   let descriptor;
   let src = `./assets/cards-1.3/back.png`;
-
   descriptor = {
     id: cardId,
     src,
@@ -37,7 +34,7 @@ export const addCard = async (
   // Update hand elements for both dealer and player
   updateHandElements(setHandElements, entity, currentHand, descriptor);
 
-  await pausableDelay(400 + delayTime, isTabVisible, visibilityPromiseResolver);
+  await pausableDelay(CARD_FLIP_TIME, isTabVisible, visibilityPromiseResolver);
 
   if (shouldFlipCard(entity, cards)) {
     await flipCard(
@@ -90,11 +87,11 @@ export const flipCard = async (
 
   // Call halfwayCallback at 350ms (halfway through 700ms flip)
   if (halfwayCallback) {
-    await pausableDelay(350, isTabVisible, visibilityPromiseResolver);
+    await pausableDelay(CARD_FLIP_TIME / 2, isTabVisible, visibilityPromiseResolver);
     await halfwayCallback();
   } else {
     // wait half the animation so timing stays consistent
-    await pausableDelay(350, isTabVisible, visibilityPromiseResolver);
+    await pausableDelay(CARD_FLIP_TIME / 2, isTabVisible, visibilityPromiseResolver);
   }
 
   await pausableDelay(FLIP_ANIMATION_DURATION, isTabVisible, visibilityPromiseResolver);
