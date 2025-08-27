@@ -56,7 +56,6 @@ export default function App() {
 
   const [soft17Checked, setSoft17Checked] = useState(true);
   const [splitTypeChecked, setSplitTypeChecked] = useState(true);
-  const [autoStandChecked, setAutoStandChecked] = useState(false);
 
   const [deck, setCardDeck] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -112,9 +111,6 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-bs-theme", "dark");
-    if (devMode) {
-      setAutoStandChecked(true);
-    }
   }, [devMode]);
 
   // Start a new game by shuffling the deck and resetting the UI
@@ -357,12 +353,9 @@ export default function App() {
     ({ newTotals } = calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
     setPlayerTotal(newTotals);
     await pausableDelay(CARD_SPLIT_DELAY, isTabVisible, visibilityPromiseResolver);
-    if (newTotals[oldHand] === 21 && autoStandChecked) {
-      await endHand();
-    } else {
-      setGlobalMessage("Player's turn");
-      setIsBusy(false);
-    }
+
+    setGlobalMessage("Player's turn");
+    setIsBusy(false);
   };
 
   const playDealer = async () => {
@@ -410,18 +403,6 @@ export default function App() {
   useEffect(() => {
     const handleButtonVisibility = async () => {
       const isSplitting = splitCount > 0 && playersHands.some((hand) => hand.length < 2);
-      const shouldAutoStand =
-        !isBusy &&
-        autoStandChecked &&
-        playerTotals[currentHand] === 21 &&
-        carousalInterval === null;
-
-      if (shouldAutoStand) {
-        setShowButtons(false);
-        await pausableDelay(BLACKJACK_PAUSE_TIME, isTabVisible, visibilityPromiseResolver);
-        await endHand();
-        return;
-      }
 
       if (isBusy) {
         const shouldHideButtons =
@@ -436,7 +417,7 @@ export default function App() {
 
     handleButtonVisibility();
     // eslint-disable-next-line
-  }, [currentHand, splitCount, isBusy, autoStandChecked, playerTotals, carousalInterval]);
+  }, [currentHand, splitCount, isBusy, playerTotals, carousalInterval]);
 
   const debugDataMap = {
     game: {
@@ -457,7 +438,6 @@ export default function App() {
     settings: {
       soft17Checked,
       splitTypeChecked,
-      autoStandChecked,
     },
     ui: {
       showInfo,
@@ -543,7 +523,6 @@ export default function App() {
             splitCount={splitCount}
             dealersHandElements={dealersHandElements}
             splitTypeChecked={splitTypeChecked}
-            autoStandChecked={autoStandChecked}
             messageAlertHidden={messageAlertHidden}
             showButtons={showButtons}
             disableButtons={disableButtons}
@@ -601,8 +580,6 @@ export default function App() {
         handleClose={handleCloseSettings}
         soft17Checked={soft17Checked}
         setSoft17Checked={setSoft17Checked}
-        autoStandChecked={autoStandChecked}
-        setAutoStandChecked={setAutoStandChecked}
         splitTypeChecked={splitTypeChecked}
         setSplitTypeChecked={setSplitTypeChecked}
         endHand={endHand}

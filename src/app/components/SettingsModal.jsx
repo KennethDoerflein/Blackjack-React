@@ -10,8 +10,6 @@ export default function SettingsModal({
   setSoft17Checked,
   splitTypeChecked,
   setSplitTypeChecked,
-  autoStandChecked,
-  setAutoStandChecked,
   dealersHandElements,
   audioRef,
 }) {
@@ -49,14 +47,6 @@ export default function SettingsModal({
             onChange={() => setSplitTypeChecked(!splitTypeChecked)}
           />
         </Form>
-        {/* <Form.Check
-          type="switch"
-          id="autoStandSwitch"
-          label="Auto Stand on 21 (Experimental)"
-          disabled={dealersHandElements.length > 0 || currentWager[0] > 0}
-          checked={autoStandChecked}
-          onChange={() => setAutoStandChecked(!autoStandChecked)}
-        /> */}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="warning" onClick={handleClose} className="mx-auto fw-bolder">
