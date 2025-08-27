@@ -7,6 +7,7 @@ import { UI_TRANSITION_DELAY } from "../utils/constants.js";
 export default React.memo(function DealerSection({ dealersHandElements, dealerTotal }) {
   const dealerHandRef = useRef(null);
   const dealerTotalRef = useRef(null);
+
   useEffect(() => {
     if (dealersHandElements.length > 2 && dealerHandRef.current) {
       adjustCardMargins(dealerHandRef.current);
@@ -21,14 +22,12 @@ export default React.memo(function DealerSection({ dealersHandElements, dealerTo
       return () => clearTimeout(t);
     }
   }, [dealerTotal]);
-  // Only show dealer's total when the dealer's face-down (second) card is revealed.
-  const secondCard = dealersHandElements && dealersHandElements[1];
-  const secondCardIsHidden = !!(
-    secondCard &&
-    secondCard.props &&
-    typeof secondCard.props.src === "string" &&
-    secondCard.props.src.includes("back.png")
-  );
+
+  // Check if second card is still hidden (back.png)
+  const secondCard = dealersHandElements[1];
+  const secondCardIsHidden =
+    secondCard && typeof secondCard.src === "string" && secondCard.src.includes("back.png");
+
   return (
     <>
       <Container className="text-center my-3">
@@ -49,24 +48,13 @@ export default React.memo(function DealerSection({ dealersHandElements, dealerTo
         </div>
       </Container>
       <Container fluid id="dealersHand" ref={dealerHandRef}>
-        {dealersHandElements.map((el, idx) => {
-          // For the dealer's face-down card (index 1), sanitize the element but preserve key to avoid layout shifts.
-          if (
-            idx === 1 &&
-            el &&
-            el.props &&
-            typeof el.props.src === "string" &&
-            el.props.src.includes("back.png")
-          ) {
-            // Clone element and replace alt text to avoid exposing card identity. Use a stable key (index-based fallback).
-            return React.cloneElement(el, {
-              alt: "Hidden Card",
-              src: el.props.src,
-              className: el.props.className,
-              key: el.key ?? `dealer-${idx}`,
-            });
-          }
-          return el;
+        {dealersHandElements.map((card, idx) => {
+          // For the dealer's face-down card (index 1), override alt text but keep same src
+          const altText = idx === 1 && card.src.includes("back.png") ? "Hidden Card" : card.image;
+          return (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={card.id} src={card.src} alt={altText} className={card.className} />
+          );
         })}
       </Container>
     </>

@@ -14,3 +14,15 @@ export function toggleDisabledElement(element) {
 export function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+export const pausableDelay = (duration, isTabVisible, visibilityPromiseResolver) => {
+  return new Promise(async (resolve) => {
+    if (!isTabVisible) {
+      await new Promise((resolveVisible) => {
+        // Use the resolver ref's .current property
+        visibilityPromiseResolver.current = resolveVisible;
+      });
+    }
+    setTimeout(resolve, duration);
+  });
+};

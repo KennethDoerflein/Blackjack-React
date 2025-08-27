@@ -14,7 +14,7 @@ import WagerControls from "./components/WagerControls.jsx";
 import MessageSection from "./components/MessageSection.jsx";
 
 import { addCard, adjustCardMargins, flipCard } from "./utils/uiUtils.js";
-import { delay } from "./utils/utils.js";
+import { pausableDelay } from "./utils/utils.js";
 import {
   CARD_FLIP_TIME,
   CARD_PULSE_TIME,
@@ -84,6 +84,32 @@ export default function App() {
 
   const audioRef = useRef(null);
 
+  const cardIdCounter = useRef(0);
+
+  const [isTabVisible, setIsTabVisible] = useState(true);
+  const visibilityPromiseResolver = useRef(null);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setIsTabVisible(false);
+      } else {
+        setIsTabVisible(true);
+        // If there's a pending promise, resolve it
+        if (visibilityPromiseResolver.current) {
+          visibilityPromiseResolver.current();
+          visibilityPromiseResolver.current = null;
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
   useEffect(() => {
     document.documentElement.setAttribute("data-bs-theme", "dark");
     if (devMode) {
@@ -141,12 +167,16 @@ export default function App() {
     if (isBusy) return;
     setGlobalMessage("Dealing initial cards...");
     setIsBusy(true);
+
     await hit("player", "init");
-    await delay(UI_TRANSITION_DELAY);
+    await pausableDelay(UI_TRANSITION_DELAY, isTabVisible, visibilityPromiseResolver);
+
     await hit("dealer", "init");
-    await delay(UI_TRANSITION_DELAY);
+    await pausableDelay(UI_TRANSITION_DELAY, isTabVisible, visibilityPromiseResolver);
+
     await hit("player", "init");
-    await delay(UI_TRANSITION_DELAY);
+    await pausableDelay(UI_TRANSITION_DELAY, isTabVisible, visibilityPromiseResolver);
+
     await hit("dealer", "init");
     setIsBusy(false);
     setGlobalMessage("Player's turn");
@@ -170,7 +200,8 @@ export default function App() {
     if (!messageAlertHidden) return true; // Prevent actions after round over
     if ((disableButtons || isBusy) && origin === "user") return;
     if (origin === "user") setIsBusy(true);
-
+    cardIdCounter.current += 1; // Increment the counter
+    const uniqueCardId = cardIdCounter.current; // Get the new ID
     let halfwayTotalsUpdated = false;
     let latestTotals = playerTotals;
     const halfwayCallback = async () => {
@@ -203,13 +234,16 @@ export default function App() {
       deck,
       setTargetHandElements,
       handIndex,
-      halfwayCallback
+      halfwayCallback,
+      isTabVisible,
+      visibilityPromiseResolver,
+      uniqueCardId
     );
     if (!messageAlertHidden) return true; // Prevent actions after round over
 
     if (isPlayer && origin === "user") {
       if (latestTotals[hand] > 21) {
-        await delay(CARD_PULSE_TIME);
+        await pausableDelay(CARD_PULSE_TIME, isTabVisible, visibilityPromiseResolver);
         await endHand();
       }
       setIsBusy(false);
@@ -232,12 +266,27 @@ export default function App() {
     setIsBusy(true);
     if (currentHand === splitCount) {
       setGlobalMessage("Dealer's turn");
-      let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
-      let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
-      await delay(CARD_FLIP_TIME);
-      await flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
+
+      const holeDescriptor = dealersHandElements[1];
+      if (holeDescriptor) {
+        await pausableDelay(CARD_FLIP_TIME, isTabVisible, visibilityPromiseResolver);
+        await flipCard(
+          holeDescriptor.id, // use descriptor id
+          dealersHand[1], // card object (deck card)
+          setDealersHandElements, // state setter
+          "dealer",
+          -1,
+          null, // no halfway callback here
+          isTabVisible,
+          visibilityPromiseResolver
+        );
+      }
+      if (!shouldDealerHit(dealerTotal, dealersHand, soft17Checked)) {
+        await pausableDelay(CARD_FLIP_TIME, isTabVisible, visibilityPromiseResolver);
+      }
       await playDealer();
       setMessageAlertHidden(false);
+      await pausableDelay(CARD_FLIP_TIME, isTabVisible, visibilityPromiseResolver);
       setGlobalMessage("");
       setCarousalInterval(BLACKJACK_PAUSE_TIME);
       setIsBusy(false);
@@ -252,9 +301,9 @@ export default function App() {
     if (!messageAlertHidden) return true; // Prevent actions after round over
     setIsBusy(true);
     if (currentHand < splitCount && splitCount > 0) {
-      await delay(CARD_SLIDE_TIME);
+      await pausableDelay(CARD_SLIDE_TIME, isTabVisible, visibilityPromiseResolver);
       setCurrentHand(newHand);
-      await delay(CARD_SLIDE_TIME);
+      await pausableDelay(CARD_SLIDE_TIME, isTabVisible, visibilityPromiseResolver);
     }
     setIsBusy(false);
   }
@@ -291,23 +340,23 @@ export default function App() {
 
     // Wait for the card to visually move to the new hand's position.
     const CARD_SPLIT_DELAY = CARD_SLIDE_TIME + CARD_FLIP_TIME;
-    await delay(CARD_SLIDE_TIME * 1.25);
+    await pausableDelay(CARD_SLIDE_TIME * 1.25, isTabVisible, visibilityPromiseResolver);
 
     // Deal the second card to the first hand and wait for it to land.
     await hit("player", "split", currentHand, newPlayersHands);
-    await delay(CARD_FLIP_TIME);
+    await pausableDelay(CARD_FLIP_TIME, isTabVisible, visibilityPromiseResolver);
     // Switch focus to the second hand, deal a card, and wait for it to land.
     setCurrentHand(newSplitCount);
-    await delay(CARD_SPLIT_DELAY); // Allow UI to update before next animation.
+    await pausableDelay(CARD_SPLIT_DELAY, isTabVisible, visibilityPromiseResolver);
     await hit("player", "split", newSplitCount, newPlayersHands);
-    await delay(CARD_SPLIT_DELAY);
+    await pausableDelay(CARD_SPLIT_DELAY, isTabVisible, visibilityPromiseResolver);
 
     // Switch focus back to the original hand to continue play.
     setCurrentHand(oldHand);
 
     ({ newTotals } = calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
     setPlayerTotal(newTotals);
-    await delay(CARD_SPLIT_DELAY);
+    await pausableDelay(CARD_SPLIT_DELAY, isTabVisible, visibilityPromiseResolver);
     if (newTotals[oldHand] === 21 && autoStandChecked) {
       await endHand();
     } else {
@@ -319,13 +368,13 @@ export default function App() {
   const playDealer = async () => {
     if (!messageAlertHidden) return true; // Prevent actions after round over
     setIsBusy(true);
-    await delay(DEALER_DECISION_PAUSE);
+    await pausableDelay(DEALER_DECISION_PAUSE, isTabVisible, visibilityPromiseResolver);
     let newDealerTotal = dealerTotal;
     while (shouldDealerHit(newDealerTotal, dealersHand, soft17Checked)) {
       await hit("dealer", "endGame");
       newDealerTotal = calculateTotal(dealersHand);
       setDealerTotal(newDealerTotal);
-      await delay(CARD_SLIDE_TIME);
+      await pausableDelay(CARD_SLIDE_TIME, isTabVisible, visibilityPromiseResolver);
     }
     setIsBusy(false);
   };
@@ -338,7 +387,7 @@ export default function App() {
             if (hand.length > 0) {
               document.getElementById(playersHandNames[i]).classList.add("viewportResize");
               adjustCardMargins(document.getElementById(playersHandNames[i]), true);
-              await delay(CARD_SLIDE_TIME);
+              await pausableDelay(CARD_SLIDE_TIME, isTabVisible, visibilityPromiseResolver);
               document.getElementById(playersHandNames[i]).classList.remove("viewportResize");
             }
           });
@@ -346,7 +395,7 @@ export default function App() {
         if (dealersHandElements.length > 2) {
           document.getElementById("dealersHand").classList.add("viewportResize");
           adjustCardMargins(document.getElementById("dealersHand"), true);
-          await delay(CARD_SLIDE_TIME);
+          await pausableDelay(CARD_SLIDE_TIME, isTabVisible, visibilityPromiseResolver);
           document.getElementById("dealersHand").classList.remove("viewportResize");
         }
       });
@@ -369,7 +418,7 @@ export default function App() {
 
       if (shouldAutoStand) {
         setShowButtons(false);
-        await delay(BLACKJACK_PAUSE_TIME); // Used constant for consistent timing
+        await pausableDelay(BLACKJACK_PAUSE_TIME, isTabVisible, visibilityPromiseResolver);
         await endHand();
         return;
       }

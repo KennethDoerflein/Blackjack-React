@@ -1,4 +1,4 @@
-import { delay } from "./utils";
+import { pausableDelay } from "./utils";
 
 // Animation timing constants
 const FLIP_ANIMATION_DURATION = 700; // ms for flip (match CSS)
@@ -11,105 +11,110 @@ export const addCard = async (
   deck,
   setHandElements,
   currentHand,
-  halfwayCallback
+  halfwayCallback,
+  isTabVisible,
+  visibilityPromiseResolver,
+  uniqueCardId
 ) => {
   const card = deck.getCard();
   cards.push(card);
 
-  // Add a conditional delay for the first card to ensure uniformity
   const isFirstCard = cards.length === 1;
   const delayTime = isFirstCard ? 100 : 0;
 
-  const imgElement = await createCardImage("./assets/cards-1.3/back.png");
-  // Use a unique, stable key for each card (e.g., card.rank + card.suit + cards.length)
-  let reactImgElement = createReactImageElement(
-    `${card.rank}_${card.suit}_${cards.length}`,
-    imgElement.src,
-    card.image,
-    "imgSlide"
-  );
+  const cardId = `card-${uniqueCardId}`;
 
-  requestAnimationFrame(() => {
-    updateHandElements(setHandElements, entity, currentHand, reactImgElement);
-  });
+  let descriptor;
+  let src = `./assets/cards-1.3/back.png`;
 
-  await delay(400 + delayTime);
+  descriptor = {
+    id: cardId,
+    src,
+    image: card.image,
+    className: "imgSlide",
+  };
+
+  // Update hand elements for both dealer and player
+  updateHandElements(setHandElements, entity, currentHand, descriptor);
+
+  await pausableDelay(400 + delayTime, isTabVisible, visibilityPromiseResolver);
 
   if (shouldFlipCard(entity, cards)) {
-    await flipCard(reactImgElement, card, setHandElements, entity, currentHand, halfwayCallback);
+    await flipCard(
+      descriptor.id,
+      card,
+      setHandElements,
+      entity,
+      currentHand,
+      halfwayCallback,
+      isTabVisible,
+      visibilityPromiseResolver
+    );
   }
+
+  return descriptor.id;
 };
 
-const createReactImageElement = (key, src, alt, className) => {
-  return <img key={key} src={src} alt={alt} className={className} />;
-};
-
-const updateHandElements = (setHandElements, entity, currentHand, reactImgElement) => {
+const updateHandElements = (setHandElements, entity, currentHand, descriptor) => {
   setHandElements((prev) => {
-    let newHandElements = [...prev];
     if (entity !== "dealer") {
-      newHandElements[currentHand] = [...newHandElements[currentHand], reactImgElement];
+      // prev is array of hands: [ [cards], [cards], ... ]
+      const newHands = prev.map((h) => h.slice());
+      // ensure hand exists
+      if (!newHands[currentHand]) newHands[currentHand] = [];
+      newHands[currentHand] = [...newHands[currentHand], descriptor];
+      return newHands;
     } else {
-      newHandElements = [...newHandElements, reactImgElement];
+      // dealersHandElements is a flat array
+      return [...prev, descriptor];
     }
-    return newHandElements;
   });
 };
 
 export const flipCard = async (
-  reactImgElement,
+  cardId,
   card,
   setHandElements,
   entity,
   currentHand,
-  halfwayCallback
+  halfwayCallback,
+  isTabVisible,
+  visibilityPromiseResolver
 ) => {
   const finalImgPath = `./assets/cards-1.3/${card.image}`;
   const newSrc = await preloadAndGetImage(finalImgPath);
-  const flippedReactImgElement = createReactImageElement(
-    reactImgElement.key,
-    newSrc,
-    card.image,
-    "imgFlip"
-  );
-  updateFlippedHandElements(setHandElements, entity, currentHand, flippedReactImgElement);
+
+  // first stage of flip (class 'imgFlip' should drive the CSS 3D flip)
+  const flippedDescriptor = { id: cardId, src: newSrc, image: card.image, className: "imgFlip" };
+  updateFlippedHandElements(setHandElements, entity, currentHand, flippedDescriptor);
 
   // Call halfwayCallback at 350ms (halfway through 700ms flip)
   if (halfwayCallback) {
-    setTimeout(() => {
-      halfwayCallback();
-    }, 350);
+    await pausableDelay(350, isTabVisible, visibilityPromiseResolver);
+    await halfwayCallback();
+  } else {
+    // wait half the animation so timing stays consistent
+    await pausableDelay(350, isTabVisible, visibilityPromiseResolver);
   }
 
-  // Let the CSS animation handle the flip, no extra delay needed
-  await delay(FLIP_ANIMATION_DURATION); // Match this to your CSS animation duration
-  // Remove the flip class after animation
-  const normalReactImgElement = createReactImageElement(
-    reactImgElement.key,
-    newSrc,
-    card.image,
-    ""
-  );
-  updateFlippedHandElements(setHandElements, entity, currentHand, normalReactImgElement);
+  await pausableDelay(FLIP_ANIMATION_DURATION, isTabVisible, visibilityPromiseResolver);
+
+  // final stable state (no flip class)
+  const normalDescriptor = { id: cardId, src: newSrc, image: card.image, className: "" };
+  updateFlippedHandElements(setHandElements, entity, currentHand, normalDescriptor);
 };
 
-const updateFlippedHandElements = (
-  setHandElements,
-  entity,
-  currentHand,
-  flippedReactImgElement
-) => {
+const updateFlippedHandElements = (setHandElements, entity, currentHand, descriptor) => {
   setHandElements((prev) => {
-    let newHandElements = [...prev];
     if (entity !== "dealer") {
-      newHandElements[currentHand] = [
-        ...newHandElements[currentHand].slice(0, -1),
-        flippedReactImgElement,
-      ];
+      const newHands = prev.map((h) => h.slice());
+      newHands[currentHand] = newHands[currentHand].map((c) =>
+        c.id === descriptor.id ? descriptor : c
+      );
+      return newHands;
     } else {
-      newHandElements = [...newHandElements.slice(0, -1), flippedReactImgElement];
+      return prev.map((c) => (c.id === descriptor.id ? descriptor : c));
     }
-    return newHandElements;
   });
 };
 
@@ -128,7 +133,7 @@ export function animateElement(element, animationClass, delayTime) {
   });
 }
 
-// Create an HTML image element
+// Create an HTML image element for preloading
 export async function createCardImage(initialSrc) {
   await preloadImage(initialSrc);
   const imgElement = document.createElement("img");
@@ -158,6 +163,7 @@ export function preloadImage(src) {
 // Calculate and adjust card margins to avoid overflow
 export async function adjustCardMargins(div, resize = false) {
   const images = div.querySelectorAll("img");
+  if (images.length === 0) return;
   if (images[images.length - 1].className !== "imgSlide" && !resize) return;
   await Promise.all(
     Array.from(images).map((img) => {
@@ -182,11 +188,11 @@ export async function adjustCardMargins(div, resize = false) {
     }
   });
 
-  const imgWidthPx = images[1].offsetWidth;
+  const imgWidthPx = images[1] ? images[1].offsetWidth : images[0].offsetWidth;
   const overlapFactor = window.innerHeight > window.innerWidth ? 0.9 : 0.75;
   const maxImageOffsetPx = -imgWidthPx * overlapFactor;
   let marginLeftPx = -(allWidth - viewportWidth) / (cardCount - 1);
-  marginLeftPx += parseFloat(window.getComputedStyle(images[1]).marginLeft) || 0;
+  marginLeftPx += parseFloat(window.getComputedStyle(images[1] || images[0]).marginLeft) || 0;
   marginLeftPx = marginLeftPx > 0 ? 0 : marginLeftPx;
 
   const finalMarginPx = Math.max(marginLeftPx, maxImageOffsetPx);

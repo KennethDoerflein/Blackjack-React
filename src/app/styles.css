@@ -39,7 +39,7 @@ body,
 
 /* Hands / containers */
 #dealersHand,
-#playersHands > div {
+.playersHands > div {
   display: flex;
   padding: 11px;
   margin-bottom: 15px;
@@ -160,7 +160,7 @@ body,
 
 /* Card images */
 #dealersHand img,
-#playersHands > div img {
+.playersHands > div img {
   max-height: 100% !important;
   margin-right: 11px;
   transform-style: preserve-3d;
@@ -179,7 +179,7 @@ body,
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 #dealersHand img:last-child,
-#playersHands > div img:last-child {
+.playersHands > div img:last-child {
   margin-right: 0;
 }
 
@@ -231,7 +231,8 @@ body,
   /* --- End of glass effect --- */
 
   z-index: 130;
-  max-width: 250px !important;
+  width: fit-content;
+  min-width: 200px !important;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: -20px !important;
@@ -247,7 +248,8 @@ body,
 /* Message */
 #message {
   color: var(--warning);
-  font-weight: bolder;
+  font-size: medium;
+  font-weight: bold;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 
   /* Animation properties */

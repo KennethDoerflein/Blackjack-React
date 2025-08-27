@@ -36,7 +36,6 @@ export default React.memo(function PlayerSection({
   }, [playersHandElements, playersHandNames]);
 
   useEffect(() => {
-    // pulse the total for the current hand when it changes
     if (totalRefs.current[currentHand]) {
       const el = totalRefs.current[currentHand];
       el.classList.add("handPulse");
@@ -47,43 +46,44 @@ export default React.memo(function PlayerSection({
   }, [playerTotals[currentHand]]);
 
   return (
-    <>
-      <Carousel
-        activeIndex={currentHand}
-        onSelect={handleSelect}
-        interval={carousalInterval}
-        controls={false}
-        indicators={false}
-        className="mb-2 mt-4 mx-auto"
-        pause={null}>
-        {playersHandElements.map((hand, i) => (
-          <Carousel.Item key={i}>
-            <Container className="text-center my-3">
-              <div className="handHeader">
-                <h6 id="playerHeader" style={{ margin: 0 }}>
-                  Player's Hand{` ${splitCount > 0 ? i + 1 : ""}`}
-                </h6>
-                <div ref={(r) => (totalRefs.current[i] = r)} className="handTotal">
-                  Total: &nbsp;
-                  <RollingValue
-                    ref={{ totalRefs, duration: UI_TRANSITION_DELAY }}
-                    value={playerTotals[i]}
-                  />
-                </div>
+    <Carousel
+      activeIndex={currentHand}
+      onSelect={handleSelect}
+      interval={carousalInterval}
+      controls={false}
+      indicators={false}
+      className="mb-2 mt-4 mx-auto"
+      pause={null}>
+      {playersHandElements.map((hand, i) => (
+        <Carousel.Item key={`player-hand-${i}`}>
+          <Container className="text-center my-3">
+            <div className="handHeader">
+              <h6 id="playerHeader" style={{ margin: 0 }}>
+                Player's Hand{` ${splitCount > 0 ? i + 1 : ""}`}
+              </h6>
+              <div ref={(r) => (totalRefs.current[i] = r)} className="handTotal">
+                Total: &nbsp;
+                <RollingValue
+                  ref={{ totalRefs, duration: UI_TRANSITION_DELAY }}
+                  value={playerTotals[i]}
+                />
               </div>
+            </div>
+          </Container>
+          <span className="playersHands" id={`playersHands-${i}`}>
+            <Container
+              fluid
+              key={playersHandNames[i]}
+              id={playersHandNames[i]}
+              ref={(el) => (handRefs.current[i] = el)}>
+              {hand.map((card) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={card.id} src={card.src} alt={card.image} className={card.className} />
+              ))}
             </Container>
-            <span id="playersHands">
-              <Container
-                fluid
-                key={playersHandNames[i]}
-                id={playersHandNames[i]}
-                ref={(el) => (handRefs.current[i] = el)}>
-                {hand}
-              </Container>
-            </span>
-          </Carousel.Item>
-        ))}
-      </Carousel>
-    </>
+          </span>
+        </Carousel.Item>
+      ))}
+    </Carousel>
   );
 });
