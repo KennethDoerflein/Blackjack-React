@@ -13,7 +13,7 @@ import TopButtons from "./components/TopButtons.jsx";
 import WagerControls from "./components/WagerControls.jsx";
 import MessageSection from "./components/MessageSection.jsx";
 
-import { addCard, adjustCardMargins, flipCard } from "./utils/uiUtils.js";
+import { addCard, adjustCardMargins, flipCard, preloadDeckImages } from "./utils/uiUtils.js";
 import { pausableDelay } from "./utils/utils.js";
 import {
   CARD_FLIP_TIME,
@@ -123,19 +123,9 @@ export default function App() {
       setNewGameBtnHidden(true); // Hide new game button via state
 
       if (!deck) {
-        // Create a new deck and wait for images to preload
         const newDeck = new CardDeck(10);
         setCardDeck(newDeck);
-
-        // Wait until deck loading is complete asynchronously
-        await new Promise((resolve) => {
-          const checkIfLoaded = setInterval(() => {
-            if (!newDeck.loading) {
-              clearInterval(checkIfLoaded);
-              resolve();
-            }
-          }, 200); // Check every 200ms
-        });
+        await preloadDeckImages(newDeck); // all images fetched + decoded
       } else {
         deck.reshuffle();
       }

@@ -146,13 +146,26 @@ export async function preloadAndGetImage(src) {
   return src;
 }
 
-// Preload an image
 export function preloadImage(src) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const img = new Image();
     img.src = src;
-    img.onload = resolve;
+    img
+      .decode()
+      .then(() => resolve())
+      .catch(() => {
+        // fallback for browsers that don’t support decode()
+        img.onload = resolve;
+        img.onerror = reject;
+      });
   });
+}
+
+export async function preloadDeckImages(deck) {
+  const allImages = deck.cards.map((card) => `./assets/cards-1.3/${card.image}`);
+  allImages.push("./assets/cards-1.3/back.png");
+
+  await Promise.all(allImages.map(preloadImage));
 }
 
 // Calculate and adjust card margins to avoid overflow
