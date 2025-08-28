@@ -125,7 +125,7 @@ export default function App() {
       if (!deck) {
         const newDeck = new CardDeck(10);
         setCardDeck(newDeck);
-        await preloadDeckImages(newDeck); // all images fetched + decoded
+        await preloadDeckImages(newDeck);
       } else {
         deck.reshuffle();
       }

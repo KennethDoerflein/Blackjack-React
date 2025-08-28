@@ -3,6 +3,7 @@ import { CARD_FLIP_TIME } from "./constants";
 
 // Animation timing constants
 const FLIP_ANIMATION_DURATION = 700; // ms for flip (match CSS)
+const decodedCache = new Map();
 
 export const addCard = async (
   cards,
@@ -21,11 +22,13 @@ export const addCard = async (
   cards.push(card);
 
   const cardId = `card-${uniqueCardId}`;
-  const src = `./assets/cards-1.3/back.png`;
-  const descriptor = { id: cardId, src, image: card.image, className: "imgSlide" };
+  const backSrc = `./assets/cards-1.3/back.png`;
 
-  // preload the back image and wait until it’s fully loaded
-  await preloadImage(src);
+  // get from cache
+  const backImg = getCachedImage(backSrc) || (await preloadImage(backSrc));
+
+  const descriptor = { id: cardId, src: backImg.src, image: card.image, className: "imgSlide" };
+
   if (entity === "player" && cards.length <= 1) {
     await pausableDelay(CARD_FLIP_TIME, isTabVisible, visibilityPromiseResolver);
   }
@@ -77,10 +80,15 @@ export const flipCard = async (
   visibilityPromiseResolver
 ) => {
   const finalImgPath = `./assets/cards-1.3/${card.image}`;
-  const newSrc = await preloadAndGetImage(finalImgPath);
+  const faceImg = getCachedImage(finalImgPath) || (await preloadImage(finalImgPath));
 
   // first stage of flip (class 'imgFlip' should drive the CSS 3D flip)
-  const flippedDescriptor = { id: cardId, src: newSrc, image: card.image, className: "imgFlip" };
+  const flippedDescriptor = {
+    id: cardId,
+    src: faceImg.src,
+    image: card.image,
+    className: "imgFlip",
+  };
   updateFlippedHandElements(setHandElements, entity, currentHand, flippedDescriptor);
 
   // Call halfwayCallback at 350ms (halfway through 700ms flip)
@@ -95,7 +103,7 @@ export const flipCard = async (
   await pausableDelay(FLIP_ANIMATION_DURATION, isTabVisible, visibilityPromiseResolver);
 
   // final stable state (no flip class)
-  const normalDescriptor = { id: cardId, src: newSrc, image: card.image, className: "" };
+  const normalDescriptor = { id: cardId, src: faceImg.src, image: card.image, className: "" };
   updateFlippedHandElements(setHandElements, entity, currentHand, normalDescriptor);
 };
 
@@ -146,26 +154,34 @@ export async function preloadAndGetImage(src) {
   return src;
 }
 
-export function preloadImage(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.src = src;
-    img
-      .decode()
-      .then(() => resolve())
-      .catch(() => {
-        // fallback for browsers that don’t support decode()
+export async function preloadImage(src) {
+  if (decodedCache.has(src)) return decodedCache.get(src);
+
+  const img = new Image();
+  img.src = src;
+
+  // force decode
+  await img.decode().catch(
+    () =>
+      new Promise((resolve, reject) => {
         img.onload = resolve;
         img.onerror = reject;
-      });
-  });
+      })
+  );
+
+  decodedCache.set(src, img); // store the decoded <img>
+  return img;
 }
 
 export async function preloadDeckImages(deck) {
   const allImages = deck.cards.map((card) => `./assets/cards-1.3/${card.image}`);
   allImages.push("./assets/cards-1.3/back.png");
-
   await Promise.all(allImages.map(preloadImage));
+}
+
+// for lookups later
+export function getCachedImage(src) {
+  return decodedCache.get(src) || null;
 }
 
 // Calculate and adjust card margins to avoid overflow
