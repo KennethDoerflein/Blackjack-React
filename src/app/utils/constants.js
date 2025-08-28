@@ -1,5 +1,5 @@
 // Centralized animation timings
-const delay = 100; // ms
+const delay = 50; // ms
 export const CARD_SLIDE_TIME = 500 + delay; // ms
 export const CARD_FLIP_TIME = 600 + delay; // ms
 export const CARD_PULSE_TIME = 250 + delay; // ms

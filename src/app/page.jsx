@@ -268,11 +268,10 @@ export default function App() {
         );
       }
       if (!shouldDealerHit(dealerTotal, dealersHand, soft17Checked)) {
-        await pausableDelay(CARD_FLIP_TIME, isTabVisible, visibilityPromiseResolver);
+        await pausableDelay(CARD_FLIP_TIME * 0.5, isTabVisible, visibilityPromiseResolver);
       }
       await playDealer();
       setMessageAlertHidden(false);
-      await pausableDelay(CARD_FLIP_TIME * 1.5, isTabVisible, visibilityPromiseResolver);
       setGlobalMessage("");
       setCarousalInterval(BLACKJACK_PAUSE_TIME);
       setIsBusy(false);
