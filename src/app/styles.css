@@ -19,8 +19,8 @@
   --anim-medium: 300ms;
   --anim-slow: 500ms;
 
-  --card-slide-time: 500ms;
-  --card-flip-time: 600ms;
+  --card-slide-time: 400ms;
+  --card-flip-time: 400ms;
 
   --card-pulse-time: 500ms;
 }
@@ -77,6 +77,7 @@ body,
   color: #e9fbff;
   line-height: 1;
   padding: 5px;
+  max-height: 25px;
 }
 
 /* Totals with smooth pop */

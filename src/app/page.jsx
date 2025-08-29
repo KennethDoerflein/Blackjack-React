@@ -271,8 +271,8 @@ export default function App() {
         await pausableDelay(CARD_FLIP_TIME * 0.5, isTabVisible, visibilityPromiseResolver);
       }
       await playDealer();
-      setResultsHidden(false);
       setGlobalMessage("");
+      setResultsHidden(false);
       setCarousalInterval(BLACKJACK_PAUSE_TIME);
       setIsBusy(false);
     } else if (currentHand !== splitCount) {
