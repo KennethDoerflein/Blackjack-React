@@ -82,7 +82,7 @@ export const flipCard = async (
   const finalImgPath = `./assets/cards-1.3/${card.image}`;
   const faceImg = getCachedImage(finalImgPath) || (await preloadImage(finalImgPath));
 
-  // first stage of flip (class 'imgFlip' should drive the CSS 3D flip)
+  // start flip immediately
   const flippedDescriptor = {
     id: cardId,
     src: faceImg.src,
@@ -91,18 +91,14 @@ export const flipCard = async (
   };
   updateFlippedHandElements(setHandElements, entity, currentHand, flippedDescriptor);
 
-  // Call halfwayCallback at 350ms (halfway through 700ms flip)
-  if (halfwayCallback) {
-    await pausableDelay(CARD_FLIP_TIME / 2, isTabVisible, visibilityPromiseResolver);
-    await halfwayCallback();
-  } else {
-    // wait half the animation so timing stays consistent
-    await pausableDelay(CARD_FLIP_TIME / 2, isTabVisible, visibilityPromiseResolver);
-  }
+  // halfway point (350ms of 700ms)
+  await pausableDelay(FLIP_ANIMATION_DURATION / 2, isTabVisible, visibilityPromiseResolver);
+  if (halfwayCallback) await halfwayCallback();
 
-  await pausableDelay(FLIP_ANIMATION_DURATION, isTabVisible, visibilityPromiseResolver);
+  // second half of flip
+  await pausableDelay(FLIP_ANIMATION_DURATION / 2, isTabVisible, visibilityPromiseResolver);
 
-  // final stable state (no flip class)
+  // final stable state
   const normalDescriptor = { id: cardId, src: faceImg.src, image: card.image, className: "" };
   updateFlippedHandElements(setHandElements, entity, currentHand, normalDescriptor);
 };
