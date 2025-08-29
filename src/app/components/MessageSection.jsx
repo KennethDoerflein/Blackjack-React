@@ -38,16 +38,29 @@ export default function MessageSection({
       const rawWager = typeof wagers[handIndex] === "number" ? wagers[handIndex] : 0;
       const wager = Math.max(0, rawWager);
 
-      if (playerTotal === null) continue; // nothing to compare
+      if (playerTotal === null) continue;
 
-      // Compute a discrete case key so we can switch on it
       let caseKey = "UNKNOWN";
-      if (playerTotal > 21) caseKey = "PLAYER_BUST";
-      else if (dealerTotal > 21) caseKey = "DEALER_BUST";
-      else if (playerTotal === 21 && hand.length === 2) caseKey = "BLACKJACK";
-      else if (playerTotal > dealerTotal) caseKey = "PLAYER_WIN";
-      else if (playerTotal < dealerTotal) caseKey = "DEALER_WIN";
-      else if (playerTotal === dealerTotal) caseKey = "PUSH";
+      const isPlayerBlackjack = playerTotal === 21 && hand.length === 2;
+      const isDealerBlackjack = dealerTotal === 21 && dealerCards.length === 2;
+
+      if (isPlayerBlackjack && isDealerBlackjack) {
+        caseKey = "BLACKJACK_PUSH";
+      } else if (isPlayerBlackjack) {
+        caseKey = "PLAYER_BLACKJACK";
+      } else if (isDealerBlackjack) {
+        caseKey = "DEALER_BLACKJACK";
+      } else if (playerTotal > 21) {
+        caseKey = "PLAYER_BUST";
+      } else if (dealerTotal > 21) {
+        caseKey = "DEALER_BUST";
+      } else if (playerTotal > dealerTotal) {
+        caseKey = "PLAYER_WIN";
+      } else if (playerTotal < dealerTotal) {
+        caseKey = "DEALER_WIN";
+      } else if (playerTotal === dealerTotal) {
+        caseKey = "PUSH";
+      }
 
       let outcome = "Result Unknown";
       let wagerMultiplier = 1;
@@ -61,10 +74,17 @@ export default function MessageSection({
           outcome = "Dealer Busted, Player Wins";
           wagerMultiplier = 2;
           break;
-        case "BLACKJACK":
+        case "PLAYER_BLACKJACK":
           outcome = "Blackjack, Player Wins";
-          // preserve previous behavior (unusual multiplier kept intentionally)
           wagerMultiplier = 2.2;
+          break;
+        case "DEALER_BLACKJACK":
+          outcome = "Dealer Blackjack, Dealer Wins";
+          wagerMultiplier = 0;
+          break;
+        case "BLACKJACK_PUSH":
+          outcome = "Blackjack Push (Tie)";
+          wagerMultiplier = 1;
           break;
         case "PLAYER_WIN":
           outcome = "Player Wins";
