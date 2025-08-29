@@ -460,6 +460,7 @@ export default function App() {
           playersHands={playersHands}
           splitCount={splitCount}
           playerTotals={playerTotals}
+          dealersHand={dealersHand}
           dealerTotal={dealerTotal}
           setCurrentWager={setCurrentWager}
           resultsHidden={resultsHidden}

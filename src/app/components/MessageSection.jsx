@@ -5,6 +5,7 @@ export default function MessageSection({
   playersHands,
   playerTotals,
   playerPoints,
+  dealersHand,
   dealerTotal,
   currentWager,
   setPlayerPoints,
@@ -42,7 +43,7 @@ export default function MessageSection({
 
       let caseKey = "UNKNOWN";
       const isPlayerBlackjack = playerTotal === 21 && hand.length === 2;
-      const isDealerBlackjack = dealerTotal === 21 && dealerCards.length === 2;
+      const isDealerBlackjack = dealerTotal === 21 && dealersHand.length === 2;
 
       if (isPlayerBlackjack && isDealerBlackjack) {
         caseKey = "BLACKJACK_PUSH";
@@ -116,9 +117,7 @@ export default function MessageSection({
     if (typeof setPlayerPoints === "function") setPlayerPoints(newPlayerPoints);
     setOutcomes(newOutcomes);
     if (typeof setCurrentWager === "function") setCurrentWager([0]);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resultsHidden]);
+  }, [resultsHidden, isBusy]);
 
   let message = globalMessage;
   if (currentWager[0] === 0 && playersHands[0].length === 0) {
