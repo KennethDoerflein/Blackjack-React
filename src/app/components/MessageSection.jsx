@@ -10,7 +10,7 @@ export default function MessageSection({
   setPlayerPoints,
   splitCount,
   setCurrentWager,
-  messageAlertHidden,
+  resultsHidden,
   currentHand,
   isBusy,
   globalMessage,
@@ -18,7 +18,7 @@ export default function MessageSection({
   const [outcomes, setOutcomes] = useState([]);
 
   useEffect(() => {
-    if (messageAlertHidden) return;
+    if (resultsHidden) return;
 
     // Defensive copies / fallbacks
     const hands = Array.isArray(playersHands) ? playersHands : [];
@@ -118,7 +118,7 @@ export default function MessageSection({
     if (typeof setCurrentWager === "function") setCurrentWager([0]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messageAlertHidden]);
+  }, [resultsHidden]);
 
   let message = globalMessage;
   if (currentWager[0] === 0 && playersHands[0].length === 0) {

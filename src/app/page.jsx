@@ -52,7 +52,7 @@ export default function App() {
   const handleCloseInfo = () => setShowInfo(false);
   const handleShowSettings = () => setShowSettings(true);
   const handleCloseSettings = () => setShowSettings(false);
-  const [messageAlertHidden, setMessageAlertHidden] = useState(true);
+  const [resultsHidden, setResultsHidden] = useState(true);
 
   const [soft17Checked, setSoft17Checked] = useState(true);
   const [splitTypeChecked, setSplitTypeChecked] = useState(true);
@@ -143,7 +143,7 @@ export default function App() {
       setDealersHandElements([]);
 
       // Hide the results alert if it's showing
-      if (!messageAlertHidden) setMessageAlertHidden(true);
+      if (!resultsHidden) setResultsHidden(true);
       setIsBusy(false);
     }
   };
@@ -169,7 +169,7 @@ export default function App() {
   };
 
   const updateWager = (value) => {
-    if (!messageAlertHidden) return true; // Prevent actions after round over
+    if (!resultsHidden) return true; // Prevent actions after round over
     if (isBusy) return;
     const newWager = [...currentWager];
     newWager[currentHand] = parseInt(value, 10);
@@ -183,7 +183,7 @@ export default function App() {
     hand = currentHand,
     newPlayersHands = [...playersHands]
   ) => {
-    if (!messageAlertHidden) return true; // Prevent actions after round over
+    if (!resultsHidden) return true; // Prevent actions after round over
     if ((disableButtons || isBusy) && origin === "user") return;
     if (origin === "user") setIsBusy(true);
     cardIdCounter.current += 1; // Increment the counter
@@ -225,7 +225,7 @@ export default function App() {
       visibilityPromiseResolver,
       uniqueCardId
     );
-    if (!messageAlertHidden) return true; // Prevent actions after round over
+    if (!resultsHidden) return true; // Prevent actions after round over
 
     if (isPlayer && origin === "user") {
       if (latestTotals[hand] > 21) {
@@ -248,7 +248,7 @@ export default function App() {
 
   // End hand
   const endHand = async () => {
-    if (!messageAlertHidden) return true; // Prevent actions after round over
+    if (!resultsHidden) return true; // Prevent actions after round over
     setIsBusy(true);
     if (currentHand === splitCount) {
       setGlobalMessage("Dealer's turn");
@@ -271,7 +271,7 @@ export default function App() {
         await pausableDelay(CARD_FLIP_TIME * 0.5, isTabVisible, visibilityPromiseResolver);
       }
       await playDealer();
-      setMessageAlertHidden(false);
+      setResultsHidden(false);
       setGlobalMessage("");
       setCarousalInterval(BLACKJACK_PAUSE_TIME);
       setIsBusy(false);
@@ -283,7 +283,7 @@ export default function App() {
   };
 
   async function advanceHand(newHand) {
-    if (!messageAlertHidden) return true; // Prevent actions after round over
+    if (!resultsHidden) return true; // Prevent actions after round over
     setIsBusy(true);
     if (currentHand < splitCount && splitCount > 0) {
       await pausableDelay(CARD_SLIDE_TIME, isTabVisible, visibilityPromiseResolver);
@@ -294,7 +294,7 @@ export default function App() {
   }
 
   const splitHand = async () => {
-    if (!messageAlertHidden) return true; // Prevent actions after round over
+    if (!resultsHidden) return true; // Prevent actions after round over
     if (isBusy) return;
     setGlobalMessage("Splitting hand...");
     setIsBusy(true);
@@ -348,7 +348,7 @@ export default function App() {
   };
 
   const playDealer = async () => {
-    if (!messageAlertHidden) return true; // Prevent actions after round over
+    if (!resultsHidden) return true; // Prevent actions after round over
     setIsBusy(true);
     await pausableDelay(DEALER_DECISION_PAUSE, isTabVisible, visibilityPromiseResolver);
     let newDealerTotal = dealerTotal;
@@ -432,7 +432,7 @@ export default function App() {
       showInfo,
       showSettings,
       showButtons,
-      messageAlertHidden,
+      resultsHidden,
       newGameBtnHidden,
       carousalInterval,
       carouselKey,
@@ -462,7 +462,7 @@ export default function App() {
           playerTotals={playerTotals}
           dealerTotal={dealerTotal}
           setCurrentWager={setCurrentWager}
-          messageAlertHidden={messageAlertHidden}
+          resultsHidden={resultsHidden}
           currentHand={currentHand}
           isBusy={isBusy}
           globalMessage={globalMessage}
@@ -512,7 +512,7 @@ export default function App() {
             splitCount={splitCount}
             dealersHandElements={dealersHandElements}
             splitTypeChecked={splitTypeChecked}
-            messageAlertHidden={messageAlertHidden}
+            resultsHidden={resultsHidden}
             showButtons={showButtons}
             disableButtons={disableButtons}
             newGameBtnHidden={newGameBtnHidden}
