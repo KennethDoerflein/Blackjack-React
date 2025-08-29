@@ -5,10 +5,10 @@ import gitInfo from "../../generatedGitInfo.json";
 export default function InfoModal({ show, handleClose, newGame, currentWager }) {
   return (
     <Modal show={show} onHide={handleClose} centered backdrop="static" keyboard={false}>
-      <Modal.Header className="bg-primary text-white p-2">
+      <Modal.Header className="bg-primary text-white p-0">
         <Modal.Title className="mx-auto fw-bold" style={{ fontSize: "1.2rem" }}>
           <Container className="text-center">Game Info</Container>
-          <Container className="text-center" style={{ fontSize: "0.7rem" }}>
+          <Container className="text-center text-muted" style={{ fontSize: "0.6rem" }}>
             App Version: {appInfo.version}
             <p className="mb-0">Branch: {gitInfo.branch || "N/A"}</p>
           </Container>
@@ -18,15 +18,16 @@ export default function InfoModal({ show, handleClose, newGame, currentWager }) 
       <Modal.Body className="p-2" style={{ fontSize: "0.75rem" }}>
         <section>
           <h6 className="text-center fw-bold" style={{ fontSize: "0.9rem" }}>
-            <u>Disclaimer</u>
+            <u>Disclaimer & Terms</u>
           </h6>
-          <p className="mb-1">By playing, you acknowledge:</p>
+          <p className="mb-1">By using this game, you acknowledge and agree to the following:</p>
           <ul className="ps-3 mb-2">
-            <li>Points are fictional; no monetary value.</li>
-            <li>This game doesn't promote gambling; 18+ only.</li>
-            <li>Play responsibly; don't neglect duties.</li>
-            <li>Rules may change; check regularly.</li>
-            <li>Proceeding means acceptance of terms.</li>
+            <li>For entertainment only. Points have no real value.</li>
+            <li>Not a gambling platform. No real gambling occurs.</li>
+            <li>Players must be 21+ and confirm age by playing.</li>
+            <li>Play responsibly; the developer is not liable for misuse.</li>
+            <li>Rules may change without notice. Review as needed.</li>
+            <li>Continuing to play indicates acceptance of these terms.</li>
           </ul>
         </section>
 
@@ -34,25 +35,25 @@ export default function InfoModal({ show, handleClose, newGame, currentWager }) 
 
         <section>
           <h6 className="text-center fw-bold" style={{ fontSize: "0.9rem" }}>
-            <u>Blackjack Rules</u>
+            <u>How to Play</u>
           </h6>
-          <ol className="ps-3 mb-2">
-            <li>Beat the dealer without exceeding 21.</li>
-            <li>Face cards = 10; Aces = 1 or 11.</li>
-            <li>Start with 2 cards; 1 dealer card hidden.</li>
+          <ol className="ps-3 mb-2" style={{ fontSize: "0.75rem" }}>
+            <li>Get a hand higher than the dealer without exceeding 21.</li>
+            <li>Face cards = 10, Aces = 1 or 11.</li>
+            <li>Start with 2 cards; dealer shows 1 card.</li>
             <li>
-              <strong>Hit:</strong> Ask for another card.
+              <strong>Hit:</strong> Draw a card.
             </li>
             <li>
-              <strong>Stand:</strong> Hold total, end turn.
+              <strong>Stand:</strong> Keep your hand.
             </li>
             <li>
-              <strong>Bust:</strong> (&gt;21) = Loss.
+              <strong>Bust:</strong> Over 21 loses.
             </li>
             <li>
-              <strong>Blackjack:</strong> : Ace + 10/Face card.
+              <strong>Blackjack:</strong> Ace + 10/face card.
             </li>
-            <li>Dealer hits until 17+; `soft17Switch` affects strategy.</li>
+            <li>Dealer hits until 17+; optional rules may apply.</li>
           </ol>
         </section>
 
@@ -60,23 +61,23 @@ export default function InfoModal({ show, handleClose, newGame, currentWager }) 
 
         <section>
           <h6 className="text-center fw-bold" style={{ fontSize: "0.9rem" }}>
-            <u>Button Guide</u>
+            <u>Controls</u>
           </h6>
-          <ul className="ps-3 mb-2">
+          <ul className="ps-3 mb-2" style={{ fontSize: "0.75rem" }}>
             <li>
-              <strong>Hit:</strong> Request another card.
+              <strong>Hit:</strong> Draw a card.
             </li>
             <li>
-              <strong>Split:</strong> Divide same-value cards; double wager.
+              <strong>Split:</strong> Separate matching cards into 2 hands.
             </li>
             <li>
-              <strong>Double Down:</strong> Double wager; one more card.
+              <strong>Double Down:</strong> Double wager, draw 1 card.
             </li>
             <li>
-              <strong>Stand:</strong> End turn
+              <strong>Stand:</strong> End turn.
             </li>
             <li>
-              <strong>New Game:</strong> Start next game.
+              <strong>New Game:</strong> Start a new round.
             </li>
             <li>
               <strong>Music:</strong> Toggle on/off (default off).
@@ -96,7 +97,7 @@ export default function InfoModal({ show, handleClose, newGame, currentWager }) 
             }, 200);
           }}
           variant="warning"
-          className="mx-auto"
+          className="mx-auto mb-0 mt-3"
           style={{ fontSize: "0.9rem", padding: "0.5rem 1rem" }}>
           I Acknowledge and Accept
         </Button>

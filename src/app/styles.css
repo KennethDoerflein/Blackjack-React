@@ -124,6 +124,7 @@ body,
 .text-muted {
   color: var(--warning) !important;
 }
+
 /* Modal backdrop / dialog */
 .modal-backdrop {
   opacity: 0;
@@ -138,25 +139,28 @@ body,
 }
 
 .modal-content {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02));
-  border: 1px solid var(--glass-border-2);
+  background: rgba(0, 0, 0, 0.3); /* semi-transparent dark overlay for contrast */
+  border-radius: 12px;
+  padding: 1rem;
   box-shadow: var(--glass-shadow);
   backdrop-filter: blur(10px) saturate(120%);
-  -webkit-backdrop-filter: blur(10px) saturate(120%);
-  border-radius: 12px;
 }
+
+.modal-body {
+  color: #fff; /* high contrast */
+  font-weight: 600;
+  font-size: 1rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* subtle outline for readability */
+  line-height: 1.5;
+}
+
 .modal-header,
 .modal-footer {
   background: transparent !important;
   border-bottom: none;
 }
-.modal-body {
-  opacity: 0.85;
-  font-weight: bolder;
-  color: var(--warning);
-  font-size: medium;
-  text-shadow: 0.07em 0 black, 0 0.07em black, -0.07em 0 black, 0 -0.07em black;
-}
+
+/* Close button shadow */
 .modal .btn-close {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
 }
