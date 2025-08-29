@@ -19,7 +19,7 @@ export default function MessageSection({
   const [outcomes, setOutcomes] = useState([]);
 
   useEffect(() => {
-    if (resultsHidden) return;
+    if (resultsHidden || isBusy) return;
 
     // Defensive copies / fallbacks
     const hands = Array.isArray(playersHands) ? playersHands : [];
