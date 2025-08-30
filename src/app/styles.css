@@ -19,8 +19,8 @@
   --anim-medium: 300ms;
   --anim-slow: 500ms;
 
-  --card-slide-time: 400ms;
-  --card-flip-time: 400ms;
+  --card-slide-time: 444ms;
+  --card-flip-time: 444ms;
 
   --card-pulse-time: 500ms;
 }
@@ -177,6 +177,7 @@ body,
   background-clip: padding-box;
   background-color: #fff;
   will-change: transform, box-shadow;
+  overflow: hidden;
 }
 #dealersHand img[alt="Hidden Card"],
 #dealersHand img[src*="back.png"] {
