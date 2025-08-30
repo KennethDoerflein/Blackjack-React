@@ -368,7 +368,7 @@ export default function App() {
             if (hand.length > 0) {
               document.getElementById(`playersHand${i}`).classList.add("viewportResize");
               adjustCardMargins(document.getElementById(`playersHand${i}`), true);
-              await pausableDelay(CARD_SLIDE_TIME, isTabVisible, visibilityPromiseResolver);
+              await pausableDelay(120, isTabVisible, visibilityPromiseResolver);
               document.getElementById(`playersHand${i}`).classList.remove("viewportResize");
             }
           });
@@ -376,11 +376,11 @@ export default function App() {
         if (dealersHandElements.length > 2) {
           document.getElementById("dealersHand").classList.add("viewportResize");
           adjustCardMargins(document.getElementById("dealersHand"), true);
-          await pausableDelay(CARD_SLIDE_TIME, isTabVisible, visibilityPromiseResolver);
+          await pausableDelay(120, isTabVisible, visibilityPromiseResolver);
           document.getElementById("dealersHand").classList.remove("viewportResize");
         }
       });
-    }, CARD_SLIDE_TIME);
+    }, 180);
 
     window.visualViewport?.addEventListener("resize", handleViewportChange);
     return () => {
