@@ -177,7 +177,6 @@ body,
   background-clip: padding-box;
   background-color: #fff;
   will-change: transform, box-shadow;
-  overflow: hidden;
 }
 #dealersHand img[alt="Hidden Card"],
 #dealersHand img[src*="back.png"] {
