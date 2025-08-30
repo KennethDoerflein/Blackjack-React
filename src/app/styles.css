@@ -64,10 +64,6 @@ body,
   will-change: transform, opacity;
 }
 
-#dealersHand {
-  align-items: center;
-}
-
 .handHeader {
   display: flex;
   align-items: center;
