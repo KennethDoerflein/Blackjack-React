@@ -9,12 +9,16 @@ export default React.memo(function DealerSection({ dealersHandElements, dealerTo
   const dealerTotalRef = useRef(null);
 
   useEffect(() => {
-    if (
-      (dealersHandElements.length > 2 && dealerHandRef.current) ||
-      dealersHandElements.length === 0
-    ) {
-      adjustCardMargins(dealerHandRef.current);
-    }
+    const adjust = () => {
+      if (
+        (dealersHandElements.length > 2 && dealerHandRef.current) ||
+        dealersHandElements.length === 0
+      ) {
+        adjustCardMargins(dealerHandRef.current);
+      }
+    };
+
+    requestAnimationFrame(adjust);
   }, [dealersHandElements]);
 
   useEffect(() => {
