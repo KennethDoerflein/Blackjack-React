@@ -9,7 +9,10 @@ export default React.memo(function DealerSection({ dealersHandElements, dealerTo
   const dealerTotalRef = useRef(null);
 
   useEffect(() => {
-    if (dealersHandElements.length > 2 && dealerHandRef.current) {
+    if (
+      (dealersHandElements.length > 2 && dealerHandRef.current) ||
+      dealersHandElements.length === 0
+    ) {
       adjustCardMargins(dealerHandRef.current);
     }
   }, [dealersHandElements]);

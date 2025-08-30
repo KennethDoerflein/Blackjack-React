@@ -183,7 +183,13 @@ export function getCachedImage(src) {
 // Calculate and adjust card margins to avoid overflow
 export async function adjustCardMargins(div, resize = false) {
   const images = div.querySelectorAll("img");
-  if (images.length === 0) return;
+  const cardCount = images.length;
+  if (images.length < 3) {
+    console.log("resetting width");
+    div.style.width = "fit-content";
+    return; // no adjustment needed
+  }
+
   if (images[images.length - 1].className !== "imgSlide" && !resize) return;
   await Promise.all(
     Array.from(images).map((img) => {
@@ -194,36 +200,36 @@ export async function adjustCardMargins(div, resize = false) {
     })
   );
 
-  const viewportWidth = getViewportWidth();
-  const cardCount = images.length;
-  let allWidth = 0;
+  const containerPadding =
+    parseFloat(window.getComputedStyle(div).paddingLeft) +
+    parseFloat(window.getComputedStyle(div).paddingRight);
 
-  images.forEach((img, index) => {
-    const computedStyle = window.getComputedStyle(img);
-    const marginLeft = parseFloat(computedStyle.marginLeft) || 0;
-    const marginRight = parseFloat(computedStyle.marginRight) || 0;
-    allWidth += marginLeft + marginRight + img.offsetWidth;
-    if (index === cardCount - 3) {
-      allWidth += marginLeft + marginRight + img.offsetWidth || 0;
-    }
-  });
+  const viewportWidth = getViewportWidth() - containerPadding;
+  const cardWidth =
+    images[1].offsetWidth + (parseFloat(window.getComputedStyle(images[1]).marginRight) || 0);
 
-  const imgWidthPx = images[1].offsetWidth;
+  let allWidth = cardWidth * cardCount;
+
+  if (allWidth >= viewportWidth) {
+    div.style.width = `${viewportWidth + 0.6 * containerPadding}px`; // lock width to prevent jitter
+  }
+
   const overlapFactor = window.innerHeight > window.innerWidth ? 0.9 : 0.75;
-  const maxImageOffsetPx = -imgWidthPx * overlapFactor;
+  const maxImageOffsetPx = -cardWidth * overlapFactor;
   let marginLeftPx = -(allWidth - viewportWidth) / (cardCount - 1);
-  marginLeftPx += parseFloat(window.getComputedStyle(images[1]).marginLeft) || 0;
   marginLeftPx = marginLeftPx > 0 ? 0 : marginLeftPx;
 
-  const finalMarginPx = Math.floor(Math.max(marginLeftPx, maxImageOffsetPx));
+  const finalMarginPx = Math.max(marginLeftPx, maxImageOffsetPx);
 
   images.forEach((img, index) => {
     if (index !== 0) {
       img.style.marginLeft = `${finalMarginPx}px`;
+    } else {
+      img.style.marginLeft = "0px";
     }
   });
 }
 
 function getViewportWidth() {
-  return window.innerWidth < 1000 ? window.innerWidth : window.innerWidth * 0.5;
+  return window.innerWidth < 1000 ? window.innerWidth * 0.85 : window.innerWidth * 0.5;
 }

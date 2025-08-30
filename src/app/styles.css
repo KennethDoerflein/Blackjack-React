@@ -60,7 +60,6 @@ body,
   overflow: hidden;
   align-items: flex-start;
   justify-content: center;
-  justify-content: flex-start;
 }
 
 .handHeader {
@@ -167,11 +166,8 @@ body,
   margin-right: 11px;
   transform-style: preserve-3d;
   border-radius: var(--card-radius);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), inset 0 0 0 12px #fff;
-  transition: transform 220ms var(--s-ease), box-shadow 220ms var(--s-ease), border-color 160ms ease;
   background-clip: padding-box;
   background-color: #fff;
-  will-change: transform, box-shadow;
 }
 #dealersHand img[alt="Hidden Card"],
 #dealersHand img[src*="back.png"] {
