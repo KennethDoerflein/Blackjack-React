@@ -74,7 +74,6 @@ export default React.memo(function PlayerSection({
               id={playersHandNames[i]}
               ref={(el) => (handRefs.current[i] = el)}>
               {hand.map((card) => (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img key={card.id} src={card.src} alt={card.image} className={card.className} />
               ))}
             </Container>

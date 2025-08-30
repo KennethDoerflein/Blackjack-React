@@ -173,6 +173,7 @@ body,
   background-clip: padding-box;
   background-color: #fff;
   will-change: transform, box-shadow;
+  justify-content: flex-start;
 }
 #dealersHand img[alt="Hidden Card"],
 #dealersHand img[src*="back.png"] {

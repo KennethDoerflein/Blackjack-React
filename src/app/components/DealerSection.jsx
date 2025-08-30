@@ -48,10 +48,7 @@ export default React.memo(function DealerSection({ dealersHandElements, dealerTo
           {dealersHandElements.map((card, idx) => {
             // For the dealer's face-down card (index 1), override alt text but keep same src
             const altText = idx === 1 && card.src.includes("back.png") ? "Hidden Card" : card.image;
-            return (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={card.id} src={card.src} alt={altText} className={card.className} />
-            );
+            return <img key={card.id} src={card.src} alt={altText} className={card.className} />;
           })}
         </Container>
       </Carousel.Item>
