@@ -129,7 +129,7 @@ export default function MessageSection({
   }
 
   return (
-    <Container id="messageAlert" role="alert" className="p-2 mt-4  align-items-center">
+    <Container id="messageAlert" role="alert" className="p-2 mt-2 align-items-center">
       <h6 id="message" key={message} className="m-0 text-center">
         {message}
       </h6>
