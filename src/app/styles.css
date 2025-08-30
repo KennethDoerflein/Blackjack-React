@@ -424,7 +424,7 @@ body,
 /* Keyframes */
 @keyframes slideIn {
   from {
-    transform: translate3d(-120%, 0, 0) scale(0.95);
+    transform: translate3d(-120%, 0, 0) scale(0.8);
     opacity: 0;
   }
   to {
