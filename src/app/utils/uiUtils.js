@@ -208,11 +208,11 @@ export async function adjustCardMargins(div, resize = false) {
     }
   });
 
-  const imgWidthPx = images[1] ? images[1].offsetWidth : images[0].offsetWidth;
+  const imgWidthPx = images[1].offsetWidth;
   const overlapFactor = window.innerHeight > window.innerWidth ? 0.9 : 0.75;
   const maxImageOffsetPx = -imgWidthPx * overlapFactor;
   let marginLeftPx = -(allWidth - viewportWidth) / (cardCount - 1);
-  marginLeftPx += parseFloat(window.getComputedStyle(images[1] || images[0]).marginLeft) || 0;
+  marginLeftPx += parseFloat(window.getComputedStyle(images[1]).marginLeft) || 0;
   marginLeftPx = marginLeftPx > 0 ? 0 : marginLeftPx;
 
   const finalMarginPx = Math.max(marginLeftPx, maxImageOffsetPx);

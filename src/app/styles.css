@@ -60,8 +60,7 @@ body,
   overflow: hidden;
   align-items: flex-start;
   justify-content: center;
-  transform-origin: center;
-  will-change: transform, opacity;
+  justify-content: flex-start;
 }
 
 .handHeader {
@@ -173,7 +172,6 @@ body,
   background-clip: padding-box;
   background-color: #fff;
   will-change: transform, box-shadow;
-  justify-content: flex-start;
 }
 #dealersHand img[alt="Hidden Card"],
 #dealersHand img[src*="back.png"] {
