@@ -215,7 +215,7 @@ export async function adjustCardMargins(div, resize = false) {
   marginLeftPx += parseFloat(window.getComputedStyle(images[1]).marginLeft) || 0;
   marginLeftPx = marginLeftPx > 0 ? 0 : marginLeftPx;
 
-  const finalMarginPx = Math.max(marginLeftPx, maxImageOffsetPx);
+  const finalMarginPx = Math.floor(Math.max(marginLeftPx, maxImageOffsetPx));
 
   images.forEach((img, index) => {
     if (index !== 0) {
