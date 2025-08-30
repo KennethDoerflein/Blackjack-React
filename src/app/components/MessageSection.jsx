@@ -19,7 +19,7 @@ export default function MessageSection({
   const [outcomes, setOutcomes] = useState([]);
 
   useEffect(() => {
-    if (resultsHidden || isBusy) return;
+    if (resultsHidden) return;
 
     // Defensive copies / fallbacks
     const hands = Array.isArray(playersHands) ? playersHands : [];
@@ -119,7 +119,7 @@ export default function MessageSection({
     if (typeof setCurrentWager === "function") setCurrentWager([0]);
   }, [resultsHidden, isBusy]);
 
-  let message = globalMessage;
+  let message = resultsHidden ? globalMessage : "";
   if (currentWager[0] === 0 && playersHands[0].length === 0) {
     message = "Waiting for wager ...";
   } else if (currentWager[0] > 0 && playersHands[0].length === 0) {
