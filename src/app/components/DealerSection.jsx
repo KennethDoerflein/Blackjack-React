@@ -51,13 +51,15 @@ export default React.memo(function DealerSection({ dealersHandElements, dealerTo
             ) : null}
           </div>
         </Container>
-        <Container fluid id={"dealersHand"} key={"dealersHand"} ref={dealerHandRef}>
-          {dealersHandElements.map((card, idx) => {
-            // For the dealer's face-down card (index 1), override alt text but keep same src
-            const altText = idx === 1 && card.src.includes("back.png") ? "Hidden Card" : card.image;
-            return <img key={card.id} src={card.src} alt={altText} className={card.className} />;
-          })}
-        </Container>
+        <span className="dealersHandContainer">
+          <Container fluid id={"dealersHand"} key={"dealersHand"} ref={dealerHandRef}>
+            {dealersHandElements.map((card, idx) => {
+              const altText =
+                idx === 1 && card.src.includes("back.png") ? "Hidden Card" : card.image;
+              return <img key={card.id} src={card.src} alt={altText} className={card.className} />;
+            })}
+          </Container>
+        </span>
       </Carousel.Item>
     </Carousel>
   );

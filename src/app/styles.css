@@ -40,7 +40,7 @@ body,
 }
 
 /* Hands / containers */
-#dealersHand,
+.dealersHandContainer > div,
 .playersHands > div {
   display: flex;
   padding: 11px;
@@ -160,7 +160,7 @@ body,
 }
 
 /* Card images */
-#dealersHand img,
+.dealersHandContainer > div img,
 .playersHands > div img {
   max-height: 100% !important;
   margin-right: 11px;
@@ -169,14 +169,14 @@ body,
   background-clip: padding-box;
   background-color: #fff;
 }
-#dealersHand img[alt="Hidden Card"],
-#dealersHand img[src*="back.png"] {
+.dealersHandContainer > div img[alt="Hidden Card"],
+.dealersHandContainer > div img[src*="back.png"] {
   transform: none;
   align-self: center;
   border-radius: 6px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
-#dealersHand img:last-child,
+.dealersHandContainer > div img:last-child,
 .playersHands > div img:last-child {
   margin-right: 0;
 }
