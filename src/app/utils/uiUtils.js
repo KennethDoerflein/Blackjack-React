@@ -187,6 +187,7 @@ export async function adjustCardMargins(div, resize = false) {
   if (images.length < 3) {
     console.log("resetting width");
     div.style.width = "fit-content";
+    div.style.justifyContent = "center";
     return; // no adjustment needed
   }
 
@@ -212,6 +213,7 @@ export async function adjustCardMargins(div, resize = false) {
 
   if (allWidth >= viewportWidth) {
     div.style.width = `${viewportWidth + 0.6 * containerPadding}px`; // lock width to prevent jitter
+    div.style.justifyContent = "flex-start";
   }
 
   const overlapFactor = window.innerHeight > window.innerWidth ? 0.9 : 0.75;

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Container, Carousel } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import RollingValue from "./RollingValue.jsx";
 import { adjustCardMargins } from "../utils/uiUtils.js";
 import { CARD_FLIP_TIME } from "../utils/constants.js";
@@ -36,31 +36,27 @@ export default React.memo(function DealerSection({ dealersHandElements, dealerTo
     secondCard && typeof secondCard.src === "string" && secondCard.src.includes("back.png");
 
   return (
-    <Carousel interval={null} controls={false} indicators={false} className="mb-2 mt-4 mx-auto">
-      <Carousel.Item key={`dealers-hand-0`}>
-        <Container className="text-center my-3">
-          <div className="handHeader">
-            <h6 id="dealerHeader" style={{ margin: 0 }}>
-              Dealer's Cards
-            </h6>
-            {!secondCardIsHidden && secondCard ? (
-              <div ref={dealerTotalRef} className="handTotal">
-                Total: &nbsp;
-                <RollingValue ref={dealerTotalRef} duration={CARD_FLIP_TIME} value={dealerTotal} />
-              </div>
-            ) : null}
-          </div>
+    <>
+      <Container className="text-center my-3">
+        <div className="handHeader">
+          <h6 id="dealerHeader" style={{ margin: 0 }}>
+            Dealer's Cards
+          </h6>
+          {!secondCardIsHidden && secondCard ? (
+            <div ref={dealerTotalRef} className="handTotal">
+              Total: &nbsp;
+              <RollingValue ref={dealerTotalRef} duration={CARD_FLIP_TIME} value={dealerTotal} />
+            </div>
+          ) : null}
+        </div>
+      </Container>
+      <span className="dealersHandContainer">
+        <Container fluid id="dealersHand" key="dealersHand" ref={dealerHandRef}>
+          {dealersHandElements.map((card) => (
+            <img key={card.id} src={card.src} alt={card.image} className={card.className} />
+          ))}
         </Container>
-        <span className="dealersHandContainer">
-          <Container fluid id={"dealersHand"} key={"dealersHand"} ref={dealerHandRef}>
-            {dealersHandElements.map((card, idx) => {
-              const altText =
-                idx === 1 && card.src.includes("back.png") ? "Hidden Card" : card.image;
-              return <img key={card.id} src={card.src} alt={altText} className={card.className} />;
-            })}
-          </Container>
-        </span>
-      </Carousel.Item>
-    </Carousel>
+      </span>
+    </>
   );
 });
