@@ -228,7 +228,7 @@ export default function App() {
     if (!resultsHidden) return true; // Prevent actions after round over
 
     if (isPlayer && origin === "user") {
-      if (latestTotals[hand] > 50) {
+      if (latestTotals[hand] > 21) {
         await pausableDelay(CARD_PULSE_TIME, isTabVisible, visibilityPromiseResolver);
         await endHand();
       }
@@ -393,7 +393,7 @@ export default function App() {
 
       if (isBusy) {
         const shouldHideButtons =
-          playerTotals[currentHand] > 50 || dealersHandElements.length < 2 || isSplitting;
+          playerTotals[currentHand] > 21 || dealersHandElements.length < 2 || isSplitting;
         setShowButtons(!shouldHideButtons);
         setDisableButtons(true);
       } else {
