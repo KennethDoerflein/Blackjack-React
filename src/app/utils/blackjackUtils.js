@@ -18,7 +18,7 @@ export const calculateTotal = (cards) => {
 // Determine if the dealer should hit based on game rules
 export function shouldDealerHit(total, hand, soft17Checked) {
   if (soft17Checked) {
-    return total < 17 || (total === 17 && isSoft17(hand));
+    return total < 30 || (total === 17 && isSoft17(hand));
   }
   return total < 17;
 }

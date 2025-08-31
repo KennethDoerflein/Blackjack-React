@@ -397,6 +397,12 @@ body,
   transition: opacity 300ms var(--s-ease), transform 300ms var(--s-ease),
     max-height 500ms var(--s-ease);
   max-height: 420px;
+}
+#wagerDiv {
+  overflow: visible;
+}
+
+#gameActions {
   overflow: hidden;
 }
 
@@ -407,6 +413,7 @@ body,
   pointer-events: none;
   max-height: 0;
   padding: 0px;
+  overflow: hidden;
 }
 
 /* disclaimer / misc */
