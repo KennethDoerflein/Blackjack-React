@@ -50,7 +50,7 @@ body,
   max-height: 18vh !important;
   min-height: 18vh !important;
   max-width: 85vw !important;
-  min-width: 22vh;
+  min-width: 200px;
   width: fit-content;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
   border: 1px solid var(--glass-border-2);
@@ -166,8 +166,6 @@ body,
   margin-right: 11px;
   transform-style: preserve-3d;
   border-radius: var(--card-radius);
-  background-clip: padding-box;
-  background-color: #fff;
 }
 .dealersHandContainer > div img[alt="Hidden Card"],
 .dealersHandContainer > div img[src*="back.png"] {

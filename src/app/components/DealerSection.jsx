@@ -9,7 +9,7 @@ export default React.memo(function DealerSection({ dealersHandElements, dealerTo
   const dealerTotalRef = useRef(null);
 
   useEffect(() => {
-    const adjust = () => {
+    const adjustMargins = () => {
       if (
         (dealersHandElements.length > 2 && dealerHandRef.current) ||
         dealersHandElements.length === 0
@@ -18,7 +18,7 @@ export default React.memo(function DealerSection({ dealersHandElements, dealerTo
       }
     };
 
-    requestAnimationFrame(adjust);
+    requestAnimationFrame(adjustMargins);
   }, [dealersHandElements]);
 
   useEffect(() => {
