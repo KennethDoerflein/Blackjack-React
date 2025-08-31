@@ -33,7 +33,12 @@ export const addCard = async (
     await pausableDelay(CARD_FLIP_TIME, isTabVisible, visibilityPromiseResolver);
   }
 
-  updateHandElements(setHandElements, entity, currentHand, descriptor);
+  await new Promise((r) =>
+    requestAnimationFrame(() => {
+      updateHandElements(setHandElements, entity, currentHand, descriptor);
+      r();
+    })
+  );
 
   await pausableDelay(CARD_FLIP_TIME, isTabVisible, visibilityPromiseResolver);
 
@@ -54,19 +59,21 @@ export const addCard = async (
 };
 
 const updateHandElements = (setHandElements, entity, currentHand, descriptor) => {
-  setHandElements((prev) => {
-    if (entity !== "dealer") {
-      // prev is array of hands: [ [cards], [cards], ... ]
-      const newHands = prev.map((h) => h.slice());
-      // ensure hand exists
-      if (!newHands[currentHand]) newHands[currentHand] = [];
-      newHands[currentHand] = [...newHands[currentHand], descriptor];
-      return newHands;
-    } else {
-      // dealersHandElements is a flat array
-      return [...prev, descriptor];
-    }
-  });
+  requestAnimationFrame(() =>
+    setHandElements((prev) => {
+      if (entity !== "dealer") {
+        // prev is array of hands: [ [cards], [cards], ... ]
+        const newHands = prev.map((h) => h.slice());
+        // ensure hand exists
+        if (!newHands[currentHand]) newHands[currentHand] = [];
+        newHands[currentHand] = [...newHands[currentHand], descriptor];
+        return newHands;
+      } else {
+        // dealersHandElements is a flat array
+        return [...prev, descriptor];
+      }
+    })
+  );
 };
 
 export const flipCard = async (
@@ -89,9 +96,14 @@ export const flipCard = async (
     image: card.image,
     className: "imgFlip",
   };
-  updateFlippedHandElements(setHandElements, entity, currentHand, flippedDescriptor);
+  await new Promise((r) =>
+    requestAnimationFrame(() => {
+      updateFlippedHandElements(setHandElements, entity, currentHand, flippedDescriptor);
+      r();
+    })
+  );
 
-  // halfway point (350ms of 700ms)
+  // halfway point (222ms of 444ms)
   await pausableDelay(FLIP_ANIMATION_DURATION / 2, isTabVisible, visibilityPromiseResolver);
   if (halfwayCallback) await halfwayCallback();
 
@@ -100,35 +112,46 @@ export const flipCard = async (
 
   // final stable state
   const normalDescriptor = { id: cardId, src: faceImg.src, image: card.image, className: "" };
-  updateFlippedHandElements(setHandElements, entity, currentHand, normalDescriptor);
+  await new Promise((r) =>
+    requestAnimationFrame(() => {
+      updateFlippedHandElements(setHandElements, entity, currentHand, normalDescriptor);
+      r();
+    })
+  );
 };
 
 const updateFlippedHandElements = (setHandElements, entity, currentHand, descriptor) => {
-  setHandElements((prev) => {
-    if (entity !== "dealer") {
-      const newHands = prev.map((h) => h.slice());
-      newHands[currentHand] = newHands[currentHand].map((c) =>
-        c.id === descriptor.id ? descriptor : c
-      );
-      return newHands;
-    } else {
-      return prev.map((c) => (c.id === descriptor.id ? descriptor : c));
-    }
-  });
+  requestAnimationFrame(() =>
+    setHandElements((prev) => {
+      if (entity !== "dealer") {
+        const newHands = prev.map((h) => h.slice());
+        newHands[currentHand] = newHands[currentHand].map((c) =>
+          c.id === descriptor.id ? descriptor : c
+        );
+        return newHands;
+      } else {
+        return prev.map((c) => (c.id === descriptor.id ? descriptor : c));
+      }
+    })
+  );
 };
 
 // Animate the card with a given class and delay
 export function animateElement(element, animationClass, delayTime) {
   return new Promise((resolve) => {
-    // Remove any lingering animation class before starting
-    element.classList.remove(animationClass);
-    // Force reflow to restart animation if needed
-    void element.offsetWidth;
-    element.classList.add(animationClass);
-    setTimeout(() => {
+    requestAnimationFrame(() => {
+      // Remove any lingering animation class before starting
       element.classList.remove(animationClass);
-      resolve();
-    }, delayTime);
+      // Force reflow to restart animation if needed
+      void element.offsetWidth;
+      requestAnimationFrame(() => {
+        element.classList.add(animationClass);
+        setTimeout(() => {
+          element.classList.remove(animationClass);
+          resolve();
+        }, delayTime);
+      });
+    });
   });
 }
 
@@ -184,11 +207,11 @@ export function getCachedImage(src) {
 export async function adjustCardMargins(div, resize = false) {
   const images = div.querySelectorAll("img");
   const cardCount = images.length;
-  if (images.length < 3 || resize) {
+  if (images.length < 2 || resize) {
     console.log("resetting width");
     div.style.width = "fit-content";
     div.style.justifyContent = "center";
-    if (!resize) return;
+    if (!resize && images.length < 3) return;
   }
 
   if (images[images.length - 1].className !== "imgSlide" && !resize) return;
@@ -226,14 +249,16 @@ export async function adjustCardMargins(div, resize = false) {
 
   const finalMarginPx = Math.max(marginLeftPx, maxImageOffsetPx);
 
-  if (finalMarginPx === parseFloat(window.getComputedStyle(images[1]).marginLeft)) return;
-  images.forEach((img, index) => {
-    if (index !== 0) {
-      img.style.marginLeft = `${finalMarginPx}px`;
-    }
+  requestAnimationFrame(() => {
+    if (finalMarginPx === parseFloat(window.getComputedStyle(images[1]).marginLeft)) return;
+    images.forEach((img, index) => {
+      if (index !== 0) {
+        img.style.marginLeft = `${finalMarginPx}px`;
+      }
+    });
   });
 }
 
 function getViewportWidth() {
-  return window.innerWidth < 1000 ? window.innerWidth * 0.85 : window.innerWidth * 0.5;
+  return window.innerWidth < 1000 ? window.innerWidth * 0.85 : window.innerWidth * 0.4;
 }

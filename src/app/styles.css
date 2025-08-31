@@ -21,6 +21,7 @@
 
   --card-slide-time: 444ms;
   --card-flip-time: 444ms;
+  --margin-adjust-time: calc(0.5 * var(--card-slide-time));
 
   --card-pulse-time: 500ms;
 }
@@ -166,7 +167,8 @@ body,
   margin-right: 11px;
   transform-style: preserve-3d;
   border-radius: var(--card-radius);
-  transition: all var(--card-slide-time) ease-in-out;
+  border: 0.5px solid #041018;
+  transition: all var(--margin-adjust-time) ease-out;
 }
 .dealersHandContainer > div img[alt="Hidden Card"],
 .dealersHandContainer > div img[src*="back.png"] {
