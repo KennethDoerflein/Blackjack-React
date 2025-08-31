@@ -61,6 +61,7 @@ body,
   overflow: hidden;
   align-items: flex-start;
   justify-content: center;
+  transition: all var(--margin-adjust-time) ease-out;
 }
 
 .handHeader {
