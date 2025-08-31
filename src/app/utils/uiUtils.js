@@ -211,8 +211,11 @@ export async function adjustCardMargins(div, resize = false) {
 
   let allWidth = cardWidth * cardCount;
 
-  if (allWidth >= viewportWidth) {
-    div.style.width = `${viewportWidth + 0.6 * containerPadding}px`; // lock width to prevent jitter
+  if (allWidth <= viewportWidth) {
+    div.style.width = `${allWidth + 2 * containerPadding}px`;
+    div.style.justifyContent = "center";
+  } else {
+    div.style.width = `${viewportWidth + 0.6 * containerPadding}px`;
     div.style.justifyContent = "flex-start";
   }
 
