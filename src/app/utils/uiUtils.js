@@ -184,11 +184,11 @@ export function getCachedImage(src) {
 export async function adjustCardMargins(div, resize = false) {
   const images = div.querySelectorAll("img");
   const cardCount = images.length;
-  if (images.length < 3) {
+  if (images.length < 3 || resize) {
     console.log("resetting width");
     div.style.width = "fit-content";
     div.style.justifyContent = "center";
-    return; // no adjustment needed
+    if (!resize) return;
   }
 
   if (images[images.length - 1].className !== "imgSlide" && !resize) return;
@@ -227,8 +227,6 @@ export async function adjustCardMargins(div, resize = false) {
   images.forEach((img, index) => {
     if (index !== 0) {
       img.style.marginLeft = `${finalMarginPx}px`;
-    } else {
-      img.style.marginLeft = "0px";
     }
   });
 }
