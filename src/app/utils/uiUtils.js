@@ -235,7 +235,8 @@ export async function adjustCardMargins(div, resize = false) {
   let allWidth = cardWidth * cardCount;
 
   if (allWidth <= viewportWidth) {
-    div.style.width = `${allWidth + 2 * containerPadding}px`;
+    const padding = cardCount <= 3 ? containerPadding : containerPadding * 2;
+    div.style.width = `${allWidth + 2 * padding}px`;
     div.style.justifyContent = "center";
   } else {
     div.style.width = `${viewportWidth + 0.6 * containerPadding}px`;
