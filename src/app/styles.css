@@ -168,7 +168,7 @@ body,
   margin-right: 11px;
   transform-style: preserve-3d;
   border-radius: var(--card-radius);
-  border: 0.5px solid #041018;
+  border: 1px solid #04101871;
   transition: all var(--margin-adjust-time) ease-out;
 }
 .dealersHandContainer > div img[alt="Hidden Card"],
