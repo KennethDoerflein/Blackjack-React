@@ -24,7 +24,7 @@ export default React.memo(function PlayerSection({
 
   useEffect(() => {
     const adjustMargins = () => {
-      if (playersHandElements[0].length > 2 || playersHandElements.length === 0) {
+      if (playersHandElements[0].length > 2 || playersHandElements[0].length === 0) {
         playersHandElements.forEach((hand, i) => {
           if (hand.length > 0 && handRefs.current[i]) {
             adjustCardMargins(handRefs.current[i]);
