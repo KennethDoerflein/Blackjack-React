@@ -51,7 +51,7 @@ body,
   max-height: 18vh !important;
   min-height: 18vh !important;
   max-width: 85vw !important;
-  min-width: 200px;
+  min-width: 180px;
   width: fit-content;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
   border: 1px solid var(--glass-border-2);
