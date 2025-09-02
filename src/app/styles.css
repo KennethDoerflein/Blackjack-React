@@ -13,7 +13,7 @@
   --card-radius: 7px;
   --soft-shadow: 0 8px 30px rgba(2, 6, 23, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.02);
   --glass-shadow: 0 6px 28px rgba(10, 15, 30, 0.6);
-  --s-ease: ease-out;
+  --s-ease: ease-in-out;
 
   --anim-fast: 150ms;
   --anim-medium: 300ms;
@@ -61,7 +61,7 @@ body,
   overflow: hidden;
   align-items: flex-start;
   justify-content: center;
-  transition: all var(--margin-adjust-time) ease-out;
+  transition: all var(--margin-adjust-time) var(--s-ease);
 }
 
 .handHeader {
@@ -169,7 +169,7 @@ body,
   transform-style: preserve-3d;
   border-radius: var(--card-radius);
   border: 1px solid #04101871;
-  transition: all var(--margin-adjust-time) ease-out;
+  transition: all var(--margin-adjust-time) var(--s-ease);
 }
 .dealersHandContainer > div img[alt="Hidden Card"],
 .dealersHandContainer > div img[src*="back.png"] {
