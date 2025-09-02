@@ -211,11 +211,11 @@ export async function adjustCardMargins(div, resize = false) {
     requestAnimationFrame(() => {
       div.style.width = "fit-content";
       div.style.justifyContent = "center";
-      if (!resize && images.length < 3) return;
     });
+    if (!resize && images.length < 3) return;
   }
 
-  if (images[images.length - 1].className !== "imgSlide" && !resize) return;
+  if (images.length > 0 && images[images.length - 1].className !== "imgSlide" && !resize) return;
   await Promise.all(
     Array.from(images).map((img) => {
       return new Promise((resolve) => {
