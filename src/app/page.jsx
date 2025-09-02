@@ -12,6 +12,7 @@ import SettingsModal from "./components/SettingsModal.jsx";
 import TopButtons from "./components/TopButtons.jsx";
 import WagerControls from "./components/WagerControls.jsx";
 import MessageSection from "./components/MessageSection.jsx";
+import { FpsDisplay } from "./components/FpsDisplay.jsx";
 
 import { addCard, adjustCardMargins, flipCard, preloadDeckImages } from "./utils/uiUtils.js";
 import { pausableDelay } from "./utils/utils.js";
@@ -527,6 +528,7 @@ export default function App() {
             <p>
               <strong>Developer Mode Enabled</strong>
             </p>
+            <FpsDisplay />
           </div>
         )}
         {devMode && (
