@@ -242,13 +242,14 @@ export async function adjustCardMargins(div, resize = false) {
 
   const finalMarginPx = Math.max(marginLeftPx, maxImageOffsetPx);
 
-  if (allWidth <= viewportWidth && finalMarginPx === 0) {
-    const padding = cardCount <= 3 ? containerPadding : containerPadding * 2;
-    requestAnimationFrame(() => {
-      div.style.width = `${allWidth + 2 * padding}px`;
-      div.style.justifyContent = "center";
-    });
-  } else if (allWidth > viewportWidth && finalMarginPx < 0) {
+  // if (allWidth <= viewportWidth && finalMarginPx === 0) {
+  //   const padding = cardCount <= 3 ? containerPadding : containerPadding * 2;
+  //   requestAnimationFrame(() => {
+  //     div.style.width = `${allWidth + 2 * padding}px`;
+  //     div.style.justifyContent = "center";
+  //   });
+  // } else
+  if (allWidth > viewportWidth && finalMarginPx < 0) {
     requestAnimationFrame(() => {
       div.style.width = `${viewportWidth + 0.6 * containerPadding}px`;
       div.style.justifyContent = "flex-start";
