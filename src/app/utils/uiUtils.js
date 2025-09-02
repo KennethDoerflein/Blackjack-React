@@ -208,9 +208,11 @@ export async function adjustCardMargins(div, resize = false) {
   const images = div.querySelectorAll("img");
   const cardCount = images.length;
   if (images.length < 2 || resize) {
-    div.style.width = "fit-content";
-    div.style.justifyContent = "center";
-    if (!resize && images.length < 3) return;
+    requestAnimationFrame(() => {
+      div.style.width = "fit-content";
+      div.style.justifyContent = "center";
+      if (!resize && images.length < 3) return;
+    });
   }
 
   if (images[images.length - 1].className !== "imgSlide" && !resize) return;
@@ -242,11 +244,15 @@ export async function adjustCardMargins(div, resize = false) {
 
   if (allWidth <= viewportWidth && finalMarginPx === 0) {
     const padding = cardCount <= 3 ? containerPadding : containerPadding * 2;
-    div.style.width = `${allWidth + 2 * padding}px`;
-    div.style.justifyContent = "center";
+    requestAnimationFrame(() => {
+      div.style.width = `${allWidth + 2 * padding}px`;
+      div.style.justifyContent = "center";
+    });
   } else if (allWidth > viewportWidth && finalMarginPx < 0) {
-    div.style.width = `${viewportWidth + 0.6 * containerPadding}px`;
-    div.style.justifyContent = "flex-start";
+    requestAnimationFrame(() => {
+      div.style.width = `${viewportWidth + 0.6 * containerPadding}px`;
+      div.style.justifyContent = "flex-start";
+    });
   }
 
   requestAnimationFrame(() => {
