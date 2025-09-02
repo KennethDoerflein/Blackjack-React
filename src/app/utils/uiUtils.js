@@ -208,7 +208,6 @@ export async function adjustCardMargins(div, resize = false) {
   const images = div.querySelectorAll("img");
   const cardCount = images.length;
   if (images.length < 2 || resize) {
-    console.log("resetting width");
     div.style.width = "fit-content";
     div.style.justifyContent = "center";
     if (!resize && images.length < 3) return;
@@ -234,21 +233,21 @@ export async function adjustCardMargins(div, resize = false) {
 
   let allWidth = cardWidth * cardCount;
 
-  if (allWidth <= viewportWidth) {
-    const padding = cardCount <= 3 ? containerPadding : containerPadding * 2;
-    div.style.width = `${allWidth + 2 * padding}px`;
-    div.style.justifyContent = "center";
-  } else {
-    div.style.width = `${viewportWidth + 0.6 * containerPadding}px`;
-    div.style.justifyContent = "flex-start";
-  }
-
   const overlapFactor = window.innerHeight > window.innerWidth ? 0.9 : 0.75;
   const maxImageOffsetPx = -cardWidth * overlapFactor;
   let marginLeftPx = -(allWidth - viewportWidth) / (cardCount - 1);
   marginLeftPx = marginLeftPx > 0 ? 0 : marginLeftPx;
 
   const finalMarginPx = Math.max(marginLeftPx, maxImageOffsetPx);
+
+  if (allWidth <= viewportWidth && finalMarginPx === 0) {
+    const padding = cardCount <= 3 ? containerPadding : containerPadding * 2;
+    div.style.width = `${allWidth + 2 * padding}px`;
+    div.style.justifyContent = "center";
+  } else if (allWidth > viewportWidth && finalMarginPx < 0) {
+    div.style.width = `${viewportWidth + 0.6 * containerPadding}px`;
+    div.style.justifyContent = "flex-start";
+  }
 
   requestAnimationFrame(() => {
     if (finalMarginPx === parseFloat(window.getComputedStyle(images[1]).marginLeft)) return;
