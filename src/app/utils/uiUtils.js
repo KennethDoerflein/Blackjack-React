@@ -215,7 +215,6 @@ export async function adjustCardMargins(div, resize = false) {
     if (!resize && images.length < 3) return;
   }
 
-  if (images.length > 0 && images[images.length - 1].className !== "imgSlide" && !resize) return;
   await Promise.all(
     Array.from(images).map((img) => {
       return new Promise((resolve) => {
@@ -234,6 +233,10 @@ export async function adjustCardMargins(div, resize = false) {
     images[1].offsetWidth + (parseFloat(window.getComputedStyle(images[1]).marginRight) || 0);
 
   let allWidth = cardWidth * cardCount;
+  allWidth -= parseFloat(window.getComputedStyle(images[1]).marginRight) || 0; // last card doesn't have margin right
+
+  const classSelector = allWidth < viewportWidth && cardCount === 3 ? "imgFlip" : "imgSlide";
+  if (images.length > 0 && images[images.length - 1].className !== classSelector && !resize) return;
 
   const overlapFactor = window.innerHeight > window.innerWidth ? 0.9 : 0.75;
   const maxImageOffsetPx = -cardWidth * overlapFactor;
@@ -242,16 +245,15 @@ export async function adjustCardMargins(div, resize = false) {
 
   const finalMarginPx = Math.max(marginLeftPx, maxImageOffsetPx);
 
-  // if (allWidth <= viewportWidth && finalMarginPx === 0) {
-  //   const padding = cardCount <= 3 ? containerPadding : containerPadding * 2;
-  //   requestAnimationFrame(() => {
-  //     div.style.width = `${allWidth + 2 * padding}px`;
-  //     div.style.justifyContent = "center";
-  //   });
-  // } else
-  if (allWidth > viewportWidth && finalMarginPx < 0) {
+  if (finalMarginPx === 0) {
     requestAnimationFrame(() => {
-      div.style.width = `${viewportWidth + 0.6 * containerPadding}px`;
+      let newWidth = (allWidth / viewportWidth) * viewportWidth;
+      div.style.width = `${newWidth + containerPadding}px`;
+      div.style.justifyContent = "flex-start";
+    });
+  } else if (allWidth > viewportWidth && finalMarginPx < 0) {
+    requestAnimationFrame(() => {
+      div.style.width = `${viewportWidth + containerPadding}px`;
       div.style.justifyContent = "flex-start";
     });
   }
