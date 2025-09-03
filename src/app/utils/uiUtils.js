@@ -234,6 +234,7 @@ export async function adjustCardMargins(div, resize = false) {
 
   let allWidth = cardWidth * cardCount;
   allWidth -= parseFloat(window.getComputedStyle(images[1]).marginRight) || 0; // last card doesn't have margin right
+  allWidth = Math.ceil(allWidth);
 
   const classSelector = allWidth < viewportWidth && cardCount === 3 ? "imgFlip" : "imgSlide";
   if (images.length > 0 && images[images.length - 1].className !== classSelector && !resize) return;
@@ -248,8 +249,7 @@ export async function adjustCardMargins(div, resize = false) {
   if (!resize) {
     if (finalMarginPx === 0) {
       requestAnimationFrame(() => {
-        let newWidth = (allWidth / viewportWidth) * viewportWidth;
-        div.style.width = `${newWidth + containerPadding}px`;
+        div.style.width = `${allWidth + containerPadding}px`;
         div.style.justifyContent = "flex-start";
       });
     } else if (allWidth > viewportWidth && finalMarginPx < 0) {
