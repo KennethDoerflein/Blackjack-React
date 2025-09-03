@@ -245,17 +245,19 @@ export async function adjustCardMargins(div, resize = false) {
 
   const finalMarginPx = Math.max(marginLeftPx, maxImageOffsetPx);
 
-  if (finalMarginPx === 0) {
-    requestAnimationFrame(() => {
-      let newWidth = (allWidth / viewportWidth) * viewportWidth;
-      div.style.width = `${newWidth + containerPadding}px`;
-      div.style.justifyContent = "flex-start";
-    });
-  } else if (allWidth > viewportWidth && finalMarginPx < 0) {
-    requestAnimationFrame(() => {
-      div.style.width = `${viewportWidth + containerPadding}px`;
-      div.style.justifyContent = "flex-start";
-    });
+  if (!resize) {
+    if (finalMarginPx === 0) {
+      requestAnimationFrame(() => {
+        let newWidth = (allWidth / viewportWidth) * viewportWidth;
+        div.style.width = `${newWidth + containerPadding}px`;
+        div.style.justifyContent = "flex-start";
+      });
+    } else if (allWidth > viewportWidth && finalMarginPx < 0) {
+      requestAnimationFrame(() => {
+        div.style.width = `${viewportWidth + containerPadding}px`;
+        div.style.justifyContent = "flex-start";
+      });
+    }
   }
 
   requestAnimationFrame(() => {
