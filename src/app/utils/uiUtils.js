@@ -210,11 +210,10 @@ export async function adjustCardMargins(div, resize = false) {
   if (images.length < 2 || resize) {
     requestAnimationFrame(() => {
       div.style.width = "fit-content";
-      div.style.justifyContent = "center";
+      div.style.justifyContent = cardCount < 2 ? "center" : "flex-start";
     });
-    if (!resize && images.length < 3) return;
+    if (!resize && images.length < 2) return;
   }
-
   await Promise.all(
     Array.from(images).map((img) => {
       return new Promise((resolve) => {
@@ -265,6 +264,8 @@ export async function adjustCardMargins(div, resize = false) {
     images.forEach((img, index) => {
       if (index !== 0) {
         img.style.marginLeft = `${finalMarginPx}px`;
+        // Force Safari to respect the margin by triggering layout
+        void img.offsetWidth;
       }
     });
   });
