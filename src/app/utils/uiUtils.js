@@ -210,7 +210,7 @@ export async function adjustCardMargins(div, resize = false) {
   if (images.length < 2 || resize) {
     requestAnimationFrame(() => {
       div.style.width = "fit-content";
-      div.style.justifyContent = cardCount < 2 ? "center" : "flex-start";
+      div.style.justifyContent = cardCount < 2 || resize ? "center" : "flex-start";
     });
     if (!resize && images.length < 2) return;
   }
