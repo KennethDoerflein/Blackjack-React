@@ -169,15 +169,12 @@ body,
   margin-right: 11px;
   transform-style: preserve-3d;
   border-radius: var(--card-radius);
-  border: 1px solid #04101871;
   transition: all var(--margin-adjust-time) var(--s-ease);
 }
 .dealersHandContainer > div img[alt="Hidden Card"],
 .dealersHandContainer > div img[src*="back.png"] {
   transform: none;
   align-self: center;
-  border-radius: 6px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 .dealersHandContainer > div img:last-child,
 .playersHands > div img:last-child {
@@ -271,6 +268,7 @@ body,
 #main {
   min-height: 90vh;
   margin: 0 !important;
+  padding: 0;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
   border-radius: var(--radius);
   border: 1px solid var(--glass-border-2);

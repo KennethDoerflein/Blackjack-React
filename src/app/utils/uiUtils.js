@@ -225,7 +225,9 @@ export async function adjustCardMargins(div, resize = false) {
 
   const containerPadding =
     parseFloat(window.getComputedStyle(div).paddingLeft) +
-    parseFloat(window.getComputedStyle(div).paddingRight);
+    parseFloat(window.getComputedStyle(div).paddingRight) +
+    parseFloat(window.getComputedStyle(div).borderLeftWidth) +
+    parseFloat(window.getComputedStyle(div).borderRightWidth);
 
   const viewportWidth = getViewportWidth() - containerPadding;
   const cardWidth =
@@ -260,7 +262,6 @@ export async function adjustCardMargins(div, resize = false) {
   }
 
   requestAnimationFrame(() => {
-    if (finalMarginPx === parseFloat(window.getComputedStyle(images[1]).marginLeft)) return;
     images.forEach((img, index) => {
       if (index !== 0) {
         img.style.marginLeft = `${finalMarginPx}px`;
