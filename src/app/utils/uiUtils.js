@@ -247,16 +247,6 @@ export async function adjustCardMargins(div, resize = false) {
 
   const finalMarginPx = Math.max(marginLeftPx, maxImageOffsetPx);
 
-  requestAnimationFrame(() => {
-    images.forEach((img, index) => {
-      if (index !== 0) {
-        img.style.marginLeft = `${finalMarginPx}px`;
-        // Force Safari to respect the margin by triggering layout
-        void img.offsetWidth;
-      }
-    });
-  });
-
   if (!resize) {
     if (finalMarginPx === 0) {
       requestAnimationFrame(() => {
@@ -270,6 +260,16 @@ export async function adjustCardMargins(div, resize = false) {
       });
     }
   }
+
+  requestAnimationFrame(() => {
+    images.forEach((img, index) => {
+      if (index !== 0) {
+        img.style.marginLeft = `${finalMarginPx}px`;
+        // Force Safari to respect the margin by triggering layout
+        void img.offsetWidth;
+      }
+    });
+  });
 }
 
 function getViewportWidth() {
