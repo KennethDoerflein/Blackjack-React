@@ -251,12 +251,10 @@ export async function adjustCardMargins(div, resize = false) {
     if (finalMarginPx === 0) {
       requestAnimationFrame(() => {
         div.style.width = `${allWidth + containerPadding}px`;
-        div.style.justifyContent = "flex-start";
       });
     } else if (allWidth > viewportWidth && finalMarginPx < 0) {
       requestAnimationFrame(() => {
         div.style.width = `${viewportWidth + containerPadding}px`;
-        div.style.justifyContent = "flex-start";
       });
     }
   }
@@ -270,6 +268,10 @@ export async function adjustCardMargins(div, resize = false) {
       }
     });
   });
+
+  if (!resize && cardCount > 1) {
+    div.style.justifyContent = "flex-start";
+  }
 }
 
 function getViewportWidth() {
