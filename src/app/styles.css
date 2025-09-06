@@ -19,9 +19,9 @@
   --anim-medium: 300ms;
   --anim-slow: 500ms;
 
-  --card-slide-time: 444ms;
-  --card-flip-time: 444ms;
-  --margin-adjust-time: calc(0.5 * var(--card-slide-time));
+  --card-slide-time: 600ms;
+  --card-flip-time: 500ms;
+  --margin-adjust-time: calc(0.334 * var(--card-slide-time));
 
   --card-pulse-time: 500ms;
 }
