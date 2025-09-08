@@ -38,9 +38,27 @@ export default React.memo(function PlayerSection({
   useEffect(() => {
     if (totalRefs.current[currentHand]) {
       const el = totalRefs.current[currentHand];
-      el.classList.add("handPulse");
-      const t = setTimeout(() => el.classList.remove("handPulse"), 420);
-      return () => clearTimeout(t);
+      let frameId;
+      
+      requestAnimationFrame(() => {
+        el.classList.add("handPulse");
+        const startTime = performance.now();
+        
+        const removePulse = (now) => {
+          if (now - startTime >= 420) {
+            el.classList.remove("handPulse");
+          } else {
+            frameId = requestAnimationFrame(removePulse);
+          }
+        };
+        
+        frameId = requestAnimationFrame(removePulse);
+      });
+
+      return () => {
+        if (frameId) cancelAnimationFrame(frameId);
+        el.classList.remove("handPulse");
+      };
     }
     // eslint-disable-next-line
   }, [playerTotals[currentHand]]);

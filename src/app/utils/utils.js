@@ -10,9 +10,19 @@ export function toggleDisabledElement(element) {
   }
 }
 
-// Create a delay in milliseconds
+// Create a delay in milliseconds using requestAnimationFrame for smoother timing
 export function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => {
+    const start = performance.now();
+    function tick(now) {
+      if (now - start >= ms) {
+        resolve();
+      } else {
+        requestAnimationFrame(tick);
+      }
+    }
+    requestAnimationFrame(tick);
+  });
 }
 
 export const pausableDelay = (duration, isTabVisible, visibilityPromiseResolver) => {
@@ -23,6 +33,14 @@ export const pausableDelay = (duration, isTabVisible, visibilityPromiseResolver)
         visibilityPromiseResolver.current = resolveVisible;
       });
     }
-    setTimeout(resolve, duration);
+    const start = performance.now();
+    function tick(now) {
+      if (now - start >= duration) {
+        resolve();
+      } else {
+        requestAnimationFrame(tick);
+      }
+    }
+    requestAnimationFrame(tick);
   });
 };

@@ -361,49 +361,57 @@ export default function App() {
   };
 
   useEffect(() => {
+    let lastFrameId;
     const handleViewportChange = _.throttle(() => {
-      requestAnimationFrame(() => {
-        const resizeAndAdjust = (handId) => {
-          const handElement = document.getElementById(handId);
-          if (handElement) {
+      const resizeAndAdjust = (handId) => {
+        const handElement = document.getElementById(handId);
+        if (handElement) {
+          requestAnimationFrame(() => {
+            handElement.style.willChange = 'transform';
             handElement.classList.add("viewportResize");
             adjustCardMargins(handElement, true);
-          }
-          return handElement;
-        };
-
-        const removeResizeClass = async (handElement) => {
-          if (handElement) {
-            await pausableDelay(120, isTabVisible, visibilityPromiseResolver);
-            handElement.classList.remove("viewportResize");
-          }
-        };
-
-        const handsToResize = [];
-
-        // Check and add players' hands to the resize queue
-        if (playersHandElements[0]?.length > 2) {
-          playersHandElements.forEach((hand, i) => {
-            if (hand.length > 0) {
-              handsToResize.push(`playersHand${i}`);
-            }
           });
         }
+        return handElement;
+      };
 
-        // Check and add the dealer's hand to the resize queue
-        if (dealersHandElements.length > 2) {
-          handsToResize.push("dealersHand");
+      const removeResizeClass = async (handElement) => {
+        if (handElement) {
+          if (lastFrameId) cancelAnimationFrame(lastFrameId);
+          
+          lastFrameId = requestAnimationFrame(async () => {
+            await pausableDelay(120, isTabVisible, visibilityPromiseResolver);
+            handElement.classList.remove("viewportResize");
+            handElement.style.willChange = 'auto';
+          });
         }
+      };
 
-        // Process all hands in the queue
-        const resizedElements = handsToResize.map(resizeAndAdjust);
-        resizedElements.forEach(removeResizeClass);
-      });
+      const handsToResize = [];
+
+      // Check and add players' hands to the resize queue
+      if (playersHandElements[0]?.length > 2) {
+        playersHandElements.forEach((hand, i) => {
+          if (hand.length > 0) {
+            handsToResize.push(`playersHand${i}`);
+          }
+        });
+      }
+
+      // Check and add the dealer's hand to the resize queue
+      if (dealersHandElements.length > 2) {
+        handsToResize.push("dealersHand");
+      }
+
+      // Process all hands in the queue
+      const resizedElements = handsToResize.map(resizeAndAdjust);
+      resizedElements.forEach(removeResizeClass);
     }, 180);
 
     window.visualViewport?.addEventListener("resize", handleViewportChange);
 
     return () => {
+      if (lastFrameId) cancelAnimationFrame(lastFrameId);
       window.visualViewport?.removeEventListener("resize", handleViewportChange);
     };
   }, [playersHandElements, dealersHandElements, playersHandNames]);
