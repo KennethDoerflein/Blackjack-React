@@ -1,5 +1,5 @@
 // Centralized animation timings
-const slowdown = -180; // ms
+const slowdown = -150; // ms
 export const CARD_SLIDE_TIME = 600 + slowdown; // ms
 export const CARD_FLIP_TIME = 500 + (0.5 * slowdown); // ms
 export const CARD_PULSE_TIME = 500 + slowdown; // ms
