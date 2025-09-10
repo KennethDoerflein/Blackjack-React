@@ -77,7 +77,6 @@ body,
   max-height: 25px;
 }
 
-/* Totals with smooth pop */
 .handTotal {
   display: flex;
   align-items: center;
@@ -169,14 +168,15 @@ body,
   margin-right: 11px;
   transform-style: preserve-3d;
   border-radius: var(--card-radius);
-  border: 1px solid #04101871;
-  transition: all var(--margin-adjust-time) var(--s-ease);
+  border: 0.5px solid #04101871;
+  transition: all var(--margin-adjust-time) cubic-bezier(0.2, 0.9, 0.2, 1),
+    opacity var(--anim-fast) var(--s-ease);
+  will-change: all;
 }
 .dealersHandContainer > div img[alt="Hidden Card"],
 .dealersHandContainer > div img[src*="back.png"] {
   transform: none;
   align-self: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 .dealersHandContainer > div img:last-child,
 .playersHands > div img:last-child {
@@ -430,8 +430,12 @@ body,
 /* Keyframes */
 @keyframes slideIn {
   from {
-    transform: translate3d(-120%, 0, 0) scale(0.8);
+    transform: translate3d(-120%, 0, 0) scale(0.75);
     opacity: 0;
+  }
+  60% {
+    transform: translate3d(6%, 0, 0) scale(1.02);
+    opacity: 1;
   }
   to {
     transform: translate3d(0, 0, 0) scale(1);
@@ -500,7 +504,8 @@ body,
   animation: highlight 0.5s linear;
 }
 .viewportResize img {
-  transition: margin-left 0.3s ease-in-out !important;
+  transition: margin-left 0.32s cubic-bezier(0.2, 0.9, 0.2, 1) !important;
+  will-change: margin-left;
 }
 .handPulse {
   animation: pulseUp var(--card-pulse-time) var(--s-ease);

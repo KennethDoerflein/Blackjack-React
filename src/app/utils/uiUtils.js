@@ -203,76 +203,93 @@ export function getCachedImage(src) {
   return decodedCache.get(src) || null;
 }
 
-// Calculate and adjust card margins to avoid overflow
-export async function adjustCardMargins(div, resize = false) {
-  const images = div.querySelectorAll("img");
-  const cardCount = images.length;
-  if (images.length < 2 || resize) {
-    requestAnimationFrame(() => {
-      div.style.width = "fit-content";
-      div.style.justifyContent = cardCount < 2 || resize ? "center" : "flex-start";
-    });
-    if (!resize && images.length < 2) return;
-  }
-  await Promise.all(
-    Array.from(images).map((img) => {
-      return new Promise((resolve) => {
-        if (img.complete) resolve();
-        else img.onload = resolve;
-      });
-    })
-  );
+// Debounce timers for each container
+const marginDebounceMap = new WeakMap();
 
-  const containerPadding =
-    parseFloat(window.getComputedStyle(div).paddingLeft) +
-    parseFloat(window.getComputedStyle(div).paddingRight) +
-    parseFloat(window.getComputedStyle(div).borderLeftWidth) +
-    parseFloat(window.getComputedStyle(div).borderRightWidth);
+export function adjustCardMargins(div, resize = false) {
+  // Clear any existing debounce timer for this container
+  const prevTimer = marginDebounceMap.get(div);
+  if (prevTimer) clearTimeout(prevTimer);
 
-  const viewportWidth = getViewportWidth() - containerPadding;
-  const cardWidth =
-    images[1].offsetWidth + (parseFloat(window.getComputedStyle(images[1]).marginRight) || 0);
-
-  let allWidth = cardWidth * cardCount;
-  allWidth -= parseFloat(window.getComputedStyle(images[1]).marginRight) || 0; // last card doesn't have margin right
-  allWidth = Math.ceil(allWidth);
-
-  const classSelector = allWidth < viewportWidth && cardCount === 3 ? "imgFlip" : "imgSlide";
-  if (images.length > 0 && images[images.length - 1].className !== classSelector && !resize) return;
-
-  const overlapFactor = window.innerHeight > window.innerWidth ? 0.9 : 0.75;
-  const maxImageOffsetPx = -cardWidth * overlapFactor;
-  let marginLeftPx = -(allWidth - viewportWidth) / (cardCount - 1);
-  marginLeftPx = marginLeftPx > 0 ? 0 : marginLeftPx;
-
-  const finalMarginPx = Math.max(marginLeftPx, maxImageOffsetPx);
-
-  if (!resize) {
-    if (finalMarginPx === 0) {
+  // Debounced margin adjustment function
+  const runMarginAdjust = async () => {
+    const images = div.querySelectorAll("img");
+    const cardCount = images.length;
+    if (images.length < 2 || resize) {
       requestAnimationFrame(() => {
-        div.style.width = `${allWidth + containerPadding}px`;
+        div.style.width = "fit-content";
+        div.style.justifyContent = cardCount < 2 || resize ? "center" : "flex-start";
       });
-    } else if (allWidth > viewportWidth && finalMarginPx < 0) {
-      requestAnimationFrame(() => {
-        div.style.width = `${viewportWidth + containerPadding}px`;
-      });
+      if (!resize && images.length < 2) return;
     }
-  }
+    await Promise.all(
+      Array.from(images).map((img) => {
+        return new Promise((resolve) => {
+          if (img.complete) resolve();
+          else img.onload = resolve;
+        });
+      })
+    );
 
-  requestAnimationFrame(() => {
-    images.forEach((img, index) => {
-      if (index !== 0) {
-        img.style.marginLeft = `${finalMarginPx}px`;
-        // Force Safari to respect the margin by triggering layout
-        void img.offsetWidth;
+    const containerPadding =
+      parseFloat(window.getComputedStyle(div).paddingLeft) +
+      parseFloat(window.getComputedStyle(div).paddingRight) +
+      parseFloat(window.getComputedStyle(div).borderLeftWidth) +
+      parseFloat(window.getComputedStyle(div).borderRightWidth);
+
+    const viewportWidth = getViewportWidth() - containerPadding;
+    const cardWidth =
+      images[1].offsetWidth + (parseFloat(window.getComputedStyle(images[1]).marginRight) || 0);
+
+    let allWidth = cardWidth * cardCount;
+    allWidth -= parseFloat(window.getComputedStyle(images[1]).marginRight) || 0; // last card doesn't have margin right
+    allWidth = Math.ceil(allWidth);
+
+    const classSelector = allWidth < viewportWidth && cardCount === 3 ? "imgFlip" : "imgSlide";
+    if (images.length > 0 && images[images.length - 1].className !== classSelector && !resize) return;
+
+    const overlapFactor = window.innerHeight > window.innerWidth ? 0.9 : 0.75;
+    const maxImageOffsetPx = -cardWidth * overlapFactor;
+    let marginLeftPx = -(allWidth - viewportWidth) / (cardCount - 1);
+    marginLeftPx = marginLeftPx > 0 ? 0 : marginLeftPx;
+
+    const finalMarginPx = Math.max(marginLeftPx, maxImageOffsetPx);
+
+    if (!resize) {
+      if (finalMarginPx === 0) {
+        requestAnimationFrame(() => {
+          div.style.width = `${allWidth + containerPadding}px`;
+        });
+      } else if (allWidth > viewportWidth && finalMarginPx < 0) {
+        requestAnimationFrame(() => {
+          div.style.width = `${viewportWidth + containerPadding}px`;
+        });
       }
-    });
-  });
+    }
 
-  if (!resize && cardCount > 1) {
-    div.style.justifyContent = "flex-start";
-  }
+    requestAnimationFrame(() => {
+      images.forEach((img, index) => {
+        if (index !== 0) {
+          img.style.marginLeft = `${finalMarginPx}px`;
+          img.style.willChange = 'margin-left';
+        } else {
+          img.style.willChange = 'auto';
+        }
+      });
+    });
+
+    if (!resize && cardCount > 1) {
+      div.style.justifyContent = "flex-start";
+    }
+    marginDebounceMap.delete(div);
+  };
+
+  // Set new debounce timer
+  const timer = setTimeout(runMarginAdjust, 60);
+  marginDebounceMap.set(div, timer);
 }
+
+
 
 function getViewportWidth() {
   return window.innerWidth < 1000 ? window.innerWidth * 0.85 : window.innerWidth * 0.4;
