@@ -11,17 +11,25 @@ import PointSection from "./components/PointSection.jsx";
 import SettingsModal from "./components/SettingsModal.jsx";
 import TopButtons from "./components/TopButtons.jsx";
 import WagerControls from "./components/WagerControls.jsx";
-import WinnerSection from "./components/WinnerSection.jsx";
+import MessageSection from "./components/MessageSection.jsx";
+import { FpsDisplay } from "./components/FpsDisplay.jsx";
 
-import { delay } from "./utils/utils.js";
+import { addCard, adjustCardMargins, flipCard, preloadDeckImages } from "./utils/uiUtils.js";
+import { pausableDelay } from "./utils/utils.js";
+import {
+  CARD_FLIP_TIME,
+  CARD_PULSE_TIME,
+  CARD_SLIDE_TIME,
+  BLACKJACK_PAUSE_TIME,
+  UI_TRANSITION_DELAY,
+  DEALER_DECISION_PAUSE,
+} from "./utils/constants.js";
 
 import {
   calculateAndReturnTotals,
   calculateTotal,
   shouldDealerHit,
 } from "./utils/blackjackUtils.js";
-
-import { addCard, adjustCardMargins, flipCard } from "./utils/uiUtils.js";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
@@ -34,21 +42,21 @@ export default function App() {
     const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
     setDevMode(isDev);
     setShowInfo(!isDev);
-    setPlayerPoints(isDev ? 1000000000000 : 100);
+    setPlayerPoints(isDev ? 100000 : 100);
+    newGame();
   }, []);
 
-  const [debugView, setDebugView] = useState("game"); // "game", "ui", "settings", "hands", "system"
+  const [debugView, setDebugView] = useState("ui"); // "game", "ui", "settings", "hands", "system"
 
   const [showSettings, setShowSettings] = useState(false);
   const handleShowInfo = () => setShowInfo(true);
   const handleCloseInfo = () => setShowInfo(false);
   const handleShowSettings = () => setShowSettings(true);
   const handleCloseSettings = () => setShowSettings(false);
-  const [resultsAlertHidden, setResultsAlertHidden] = useState(true);
+  const [resultsHidden, setResultsHidden] = useState(true);
 
   const [soft17Checked, setSoft17Checked] = useState(true);
-  const [splitTypeChecked, setSplitTypeChecked] = useState(false);
-  const [autoStandChecked, setAutoStandChecked] = useState(false);
+  const [splitTypeChecked, setSplitTypeChecked] = useState(true);
 
   const [deck, setCardDeck] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -72,13 +80,38 @@ export default function App() {
 
   const [isBusy, setIsBusy] = useState(false);
 
+  const [globalMessage, setGlobalMessage] = useState("");
+
   const audioRef = useRef(null);
+
+  const cardIdCounter = useRef(0);
+
+  const [isTabVisible, setIsTabVisible] = useState(true);
+  const visibilityPromiseResolver = useRef(null);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setIsTabVisible(false);
+      } else {
+        setIsTabVisible(true);
+        // If there's a pending promise, resolve it
+        if (visibilityPromiseResolver.current) {
+          visibilityPromiseResolver.current();
+          visibilityPromiseResolver.current = null;
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-bs-theme", "dark");
-    if (devMode) {
-      setAutoStandChecked(true);
-    }
   }, [devMode]);
 
   // Start a new game by shuffling the deck and resetting the UI
@@ -91,19 +124,9 @@ export default function App() {
       setNewGameBtnHidden(true); // Hide new game button via state
 
       if (!deck) {
-        // Create a new deck and wait for images to preload
         const newDeck = new CardDeck(10);
         setCardDeck(newDeck);
-
-        // Wait until deck loading is complete asynchronously
-        await new Promise((resolve) => {
-          const checkIfLoaded = setInterval(() => {
-            if (!newDeck.loading) {
-              clearInterval(checkIfLoaded);
-              resolve();
-            }
-          }, 200); // Check every 200ms
-        });
+        await preloadDeckImages(newDeck);
       } else {
         deck.reshuffle();
       }
@@ -121,27 +144,33 @@ export default function App() {
       setDealersHandElements([]);
 
       // Hide the results alert if it's showing
-      if (!resultsAlertHidden) setResultsAlertHidden(true);
+      if (!resultsHidden) setResultsHidden(true);
       setIsBusy(false);
     }
   };
 
-  // Deal initial cards to player and dealer
+  // Deal initial cards
   const initialDeal = async () => {
     if (isBusy) return;
+    setGlobalMessage("Dealing initial cards...");
     setIsBusy(true);
+
     await hit("player", "init");
-    await delay(120);
+    await pausableDelay(UI_TRANSITION_DELAY, isTabVisible, visibilityPromiseResolver);
+
     await hit("dealer", "init");
-    await delay(120);
+    await pausableDelay(UI_TRANSITION_DELAY, isTabVisible, visibilityPromiseResolver);
+
     await hit("player", "init");
-    await delay(120);
+    await pausableDelay(UI_TRANSITION_DELAY, isTabVisible, visibilityPromiseResolver);
+
     await hit("dealer", "init");
-    //setDealerTotal(calculateTotal(dealersHand));
     setIsBusy(false);
+    setGlobalMessage("Player's turn");
   };
 
   const updateWager = (value) => {
+    if (!resultsHidden) return true; // Prevent actions after round over
     if (isBusy) return;
     const newWager = [...currentWager];
     newWager[currentHand] = parseInt(value, 10);
@@ -155,11 +184,13 @@ export default function App() {
     hand = currentHand,
     newPlayersHands = [...playersHands]
   ) => {
+    if (!resultsHidden) return true; // Prevent actions after round over
     if ((disableButtons || isBusy) && origin === "user") return;
     if (origin === "user") setIsBusy(true);
+    cardIdCounter.current += 1; // Increment the counter
+    const uniqueCardId = cardIdCounter.current; // Get the new ID
     let halfwayTotalsUpdated = false;
     let latestTotals = playerTotals;
-    // Define a callback to update totals halfway through the flip
     const halfwayCallback = async () => {
       if (!halfwayTotalsUpdated) {
         halfwayTotalsUpdated = true;
@@ -176,43 +207,33 @@ export default function App() {
       }
     };
 
-    if (entity !== "dealer") {
-      await addCard(
-        newPlayersHands[hand],
-        playersHandElements[hand],
-        entity,
-        origin,
-        deck,
-        setPlayersHandElements,
-        hand,
-        halfwayCallback
-      );
-    } else {
-      await addCard(
-        dealersHand,
-        dealersHandElements,
-        entity,
-        origin,
-        deck,
-        setDealersHandElements,
-        undefined,
-        halfwayCallback
-      );
-    }
+    const isPlayer = entity !== "dealer";
+    const targetHand = isPlayer ? newPlayersHands[hand] : dealersHand;
+    const targetHandElements = isPlayer ? playersHandElements[hand] : dealersHandElements;
+    const setTargetHandElements = isPlayer ? setPlayersHandElements : setDealersHandElements;
+    const handIndex = isPlayer ? hand : undefined;
 
-    if (entity !== "dealer" && origin === "user") {
-      // Wait for totals to update before checking for bust or auto-stand
+    await addCard(
+      targetHand,
+      targetHandElements,
+      entity,
+      origin,
+      deck,
+      setTargetHandElements,
+      handIndex,
+      halfwayCallback,
+      isTabVisible,
+      visibilityPromiseResolver,
+      uniqueCardId
+    );
+    if (!resultsHidden) return true; // Prevent actions after round over
 
-      // Use latestTotals instead of playerTotals
+    if (isPlayer && origin === "user") {
       if (latestTotals[hand] > 21) {
-        await delay(250); // was 500
+        await pausableDelay(CARD_PULSE_TIME, isTabVisible, visibilityPromiseResolver);
         await endHand();
       }
-    }
-    // Animation delay only for pacing, not for state update
-    //await delay(320); // was 600
-    if (entity !== "dealer" && origin === "user") setIsBusy(false);
-    if (entity !== "dealer") {
+      setIsBusy(false);
       return latestTotals[hand];
     }
 
@@ -226,19 +247,33 @@ export default function App() {
     setPlayerHand(newPlayersHands);
   };
 
-  // End the current hand and proceed to the next hand or end the game
+  // End hand
   const endHand = async () => {
+    if (!resultsHidden) return true; // Prevent actions after round over
     setIsBusy(true);
     if (currentHand === splitCount) {
-      let imgPath = `./assets/cards-1.3/${dealersHand[1].image}`;
-      let reactImgElement = <img key={2} src={imgPath} alt={dealersHand[1].image} />;
-      // Reduce the delay before flipping the dealer's card for a snappier feel
-      await delay(220); // was 200
-      await flipCard(reactImgElement, dealersHand[1], setDealersHandElements, "dealer", -1);
-      await delay(250); // was 400
+      setGlobalMessage("Dealer's turn");
+
+      const holeDescriptor = dealersHandElements[1];
+      if (holeDescriptor) {
+        await pausableDelay(CARD_FLIP_TIME, isTabVisible, visibilityPromiseResolver);
+        await flipCard(
+          holeDescriptor.id, // use descriptor id
+          dealersHand[1], // card object (deck card)
+          setDealersHandElements, // state setter
+          "dealer",
+          -1,
+          null, // no halfway callback here
+          isTabVisible,
+          visibilityPromiseResolver
+        );
+      }
+      if (!shouldDealerHit(dealerTotal, dealersHand, soft17Checked)) {
+        await pausableDelay(CARD_FLIP_TIME * 0.5, isTabVisible, visibilityPromiseResolver);
+      }
       await playDealer();
-      setResultsAlertHidden(false);
-      setCarousalInterval(1750); // was 1750
+      setResultsHidden(false);
+      setCarousalInterval(BLACKJACK_PAUSE_TIME);
       setIsBusy(false);
     } else if (currentHand !== splitCount) {
       let newHand = currentHand + 1;
@@ -247,19 +282,21 @@ export default function App() {
     }
   };
 
-  // Advance to the next player hand if splits occurred
   async function advanceHand(newHand) {
+    if (!resultsHidden) return true; // Prevent actions after round over
     setIsBusy(true);
     if (currentHand < splitCount && splitCount > 0) {
+      await pausableDelay(CARD_SLIDE_TIME, isTabVisible, visibilityPromiseResolver);
       setCurrentHand(newHand);
-      await delay(350);
+      await pausableDelay(CARD_SLIDE_TIME, isTabVisible, visibilityPromiseResolver);
     }
     setIsBusy(false);
   }
 
-  // Split the player's hand into two separate hands
   const splitHand = async () => {
+    if (!resultsHidden) return true; // Prevent actions after round over
     if (isBusy) return;
+    setGlobalMessage("Splitting hand...");
     setIsBusy(true);
     const oldHand = currentHand;
     const newSplitCount = splitCount + 1;
@@ -278,7 +315,6 @@ export default function App() {
     });
 
     const newPlayerTotals = [...playerTotals, 0];
-    // Calculate the new totals before updating the state
     let { newTotals } = calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand);
     setPlayerTotal(newTotals);
 
@@ -286,105 +322,180 @@ export default function App() {
     setPlayersHandElements(newPlayerHandElements);
     setCurrentWager(newCurrentWager);
     setPlayerPoints(playerPoints - newCurrentWager[newSplitCount]);
-    await delay(500); // was 500
+
+    // Wait for the card to visually move to the new hand's position.
+    const CARD_SPLIT_DELAY = CARD_SLIDE_TIME + CARD_FLIP_TIME;
+    await pausableDelay(CARD_SLIDE_TIME * 1.25, isTabVisible, visibilityPromiseResolver);
+
+    // Deal the second card to the first hand and wait for it to land.
     await hit("player", "split", currentHand, newPlayersHands);
+    await pausableDelay(CARD_FLIP_TIME, isTabVisible, visibilityPromiseResolver);
+    // Switch focus to the second hand, deal a card, and wait for it to land.
     setCurrentHand(newSplitCount);
-    await delay(1200); // was 1200
+    await pausableDelay(CARD_SPLIT_DELAY, isTabVisible, visibilityPromiseResolver);
     await hit("player", "split", newSplitCount, newPlayersHands);
-    await delay(500); // was 500
+    await pausableDelay(CARD_SPLIT_DELAY, isTabVisible, visibilityPromiseResolver);
+
+    // Switch focus back to the original hand to continue play.
     setCurrentHand(oldHand);
 
-    // Recalculate the new totals after hitting
     ({ newTotals } = calculateAndReturnTotals(newPlayersHands, newPlayerTotals, dealersHand));
     setPlayerTotal(newTotals);
-    await delay(950); // was 750
-    if (newTotals[oldHand] === 21 && autoStandChecked) {
-      await endHand();
-    } else {
-      setIsBusy(false);
-    }
+    await pausableDelay(CARD_SPLIT_DELAY, isTabVisible, visibilityPromiseResolver);
+
+    setGlobalMessage("Player's turn");
+    setIsBusy(false);
   };
 
-  // Play the dealer's hand according to the rules
   const playDealer = async () => {
+    if (!resultsHidden) return true; // Prevent actions after round over
     setIsBusy(true);
-    await delay(220); // was 500
+    await pausableDelay(DEALER_DECISION_PAUSE, isTabVisible, visibilityPromiseResolver);
     let newDealerTotal = dealerTotal;
     while (shouldDealerHit(newDealerTotal, dealersHand, soft17Checked)) {
       await hit("dealer", "endGame");
       newDealerTotal = calculateTotal(dealersHand);
       setDealerTotal(newDealerTotal);
-      await delay(220); // was 400
     }
     setIsBusy(false);
   };
 
   useEffect(() => {
+    let lastFrameId;
     const handleViewportChange = _.throttle(() => {
-      requestAnimationFrame(async () => {
-        if (playersHandElements[0].length > 2) {
-          playersHandElements.forEach(async (hand, i) => {
-            if (hand.length > 0) {
-              document.getElementById(playersHandNames[i]).classList.add("viewportResize");
-              adjustCardMargins(document.getElementById(playersHandNames[i]), true);
-              await delay(120); // was 300
-              document.getElementById(playersHandNames[i]).classList.remove("viewportResize");
-            }
+      const resizeAndAdjust = (handId) => {
+        const handElement = document.getElementById(handId);
+        if (handElement) {
+          requestAnimationFrame(() => {
+            handElement.style.willChange = 'transform';
+            handElement.classList.add("viewportResize");
+            adjustCardMargins(handElement, true);
           });
         }
-        if (dealersHandElements.length > 2) {
-          document.getElementById("dealersHand").classList.add("viewportResize");
-          adjustCardMargins(document.getElementById("dealersHand"), true);
-          await delay(120); // was 300
-          document.getElementById("dealersHand").classList.remove("viewportResize");
+        return handElement;
+      };
+
+      const removeResizeClass = async (handElement) => {
+        if (handElement) {
+          if (lastFrameId) cancelAnimationFrame(lastFrameId);
+          
+          lastFrameId = requestAnimationFrame(async () => {
+            await pausableDelay(120, isTabVisible, visibilityPromiseResolver);
+            handElement.classList.remove("viewportResize");
+            handElement.style.willChange = 'auto';
+          });
         }
-      });
-    }, 180); // was 300ms throttle
+      };
+
+      const handsToResize = [];
+
+      // Check and add players' hands to the resize queue
+      if (playersHandElements[0]?.length > 2) {
+        playersHandElements.forEach((hand, i) => {
+          if (hand.length > 0) {
+            handsToResize.push(`playersHand${i}`);
+          }
+        });
+      }
+
+      // Check and add the dealer's hand to the resize queue
+      if (dealersHandElements.length > 2) {
+        handsToResize.push("dealersHand");
+      }
+
+      // Process all hands in the queue
+      const resizedElements = handsToResize.map(resizeAndAdjust);
+      resizedElements.forEach(removeResizeClass);
+    }, 180);
 
     window.visualViewport?.addEventListener("resize", handleViewportChange);
 
     return () => {
+      if (lastFrameId) cancelAnimationFrame(lastFrameId);
       window.visualViewport?.removeEventListener("resize", handleViewportChange);
     };
-    // eslint-disable-next-line
-  }, [playersHandElements, dealersHandElements]);
+  }, [playersHandElements, dealersHandElements, playersHandNames]);
 
   useEffect(() => {
-    async function fetchData() {
+    const handleButtonVisibility = async () => {
       const isSplitting = splitCount > 0 && playersHands.some((hand) => hand.length < 2);
-      if (
-        !isBusy &&
-        autoStandChecked &&
-        playerTotals[currentHand] === 21 &&
-        carousalInterval === null
-      ) {
-        setShowButtons(false);
-        await delay(750);
-        await endHand(); // dealers card flips before the final player hand ends
-      } else if (!isBusy) {
+
+      if (isBusy) {
+        const shouldHideButtons =
+          playerTotals[currentHand] > 21 || dealersHandElements.length < 2 || isSplitting;
+        setShowButtons(!shouldHideButtons);
+        setDisableButtons(true);
+      } else {
         setShowButtons(true);
         setDisableButtons(false);
-      } else if (isBusy) {
-        if (playerTotals[currentHand] > 21 || dealersHandElements.length < 2 || isSplitting) {
-          setShowButtons(false);
-        } else {
-          setDisableButtons(true);
-        }
       }
-    }
-    fetchData();
+    };
+
+    handleButtonVisibility();
     // eslint-disable-next-line
-  }, [currentHand, splitCount, isBusy, autoStandChecked, playerTotals, carousalInterval]);
+  }, [currentHand, splitCount, isBusy, playerTotals, carousalInterval]);
+
+  const debugDataMap = {
+    game: {
+      playerPoints,
+      currentWager,
+      playerTotals,
+      dealerTotal,
+      currentHand,
+      splitCount,
+    },
+    hands: {
+      playersHands,
+      playersHandElements,
+      dealersHand,
+      dealersHandElements,
+      playersHandNames,
+    },
+    settings: {
+      soft17Checked,
+      splitTypeChecked,
+    },
+    ui: {
+      showInfo,
+      showSettings,
+      showButtons,
+      resultsHidden,
+      newGameBtnHidden,
+      carousalInterval,
+      carouselKey,
+    },
+    system: {
+      isBusy,
+      // deck,
+      // audioRef: audioRef?.current ? "ready" : "null",
+    },
+  };
 
   return (
     <>
-      <TopButtons
-        showInfoModal={handleShowInfo}
-        showSettingsModal={handleShowSettings}
-        ref={audioRef}
-      />
       <Container fluid className="my-2" id="main">
+        <TopButtons
+          showInfoModal={handleShowInfo}
+          showSettingsModal={handleShowSettings}
+          ref={audioRef}
+        />
         <DealerSection dealersHandElements={dealersHandElements} dealerTotal={dealerTotal} />
+        <MessageSection
+          playerPoints={playerPoints}
+          setPlayerPoints={setPlayerPoints}
+          currentWager={currentWager}
+          playersHands={playersHands}
+          splitCount={splitCount}
+          playerTotals={playerTotals}
+          dealersHand={dealersHand}
+          dealerTotal={dealerTotal}
+          setCurrentWager={setCurrentWager}
+          resultsHidden={resultsHidden}
+          currentHand={currentHand}
+          isBusy={isBusy}
+          globalMessage={globalMessage}
+          setGlobalMessage={setGlobalMessage}
+        />
         <PlayerSection
           playersHandElements={playersHandElements}
           playerTotals={playerTotals}
@@ -399,6 +510,7 @@ export default function App() {
           playerPoints={playerPoints}
           currentWager={currentWager[currentHand]}
           currentHand={currentHand}
+          splitCount={splitCount}
         />
         <Container className="text-center" id="bottomDiv">
           <WagerControls
@@ -412,18 +524,6 @@ export default function App() {
             showInfo={showInfo}
             loading={loading}
             isBusy={isBusy}
-          />
-          <WinnerSection
-            playerPoints={playerPoints}
-            setPlayerPoints={setPlayerPoints}
-            currentWager={currentWager}
-            playersHands={playersHands}
-            splitCount={splitCount}
-            playerTotals={playerTotals}
-            dealerTotal={dealerTotal}
-            setCurrentWager={setCurrentWager}
-            resultsAlertHidden={resultsAlertHidden}
-            currentHand={currentHand}
           />
           <GameControls
             hit={hit}
@@ -440,8 +540,7 @@ export default function App() {
             splitCount={splitCount}
             dealersHandElements={dealersHandElements}
             splitTypeChecked={splitTypeChecked}
-            autoStandChecked={autoStandChecked}
-            resultsAlertHidden={resultsAlertHidden}
+            resultsHidden={resultsHidden}
             showButtons={showButtons}
             disableButtons={disableButtons}
             newGameBtnHidden={newGameBtnHidden}
@@ -449,20 +548,15 @@ export default function App() {
             isBusy={isBusy}
             devMode={devMode}
             setIsBusy={setIsBusy}
+            showInfo={showInfo}
           />
-        </Container>
-        <Container className="text-center mt-3" id="disclaimer">
-          <p className="small text-muted my-0 px-5">
-            <strong>* Disclaimer:</strong> Points in this game have{" "}
-            <strong>no monetary value</strong> and are for{" "}
-            <strong>entertainment purposes only</strong>.
-          </p>
         </Container>
         {devMode && (
           <div className="text-center text-warning">
             <p>
               <strong>Developer Mode Enabled</strong>
             </p>
+            <FpsDisplay />
           </div>
         )}
         {devMode && (
@@ -486,50 +580,16 @@ export default function App() {
 
         {devMode && (
           <pre className="debug-panel bg-dark text-light p-2 rounded">
-            {JSON.stringify(
-              debugView === "game"
-                ? {
-                    playerPoints,
-                    currentWager,
-                    playerTotals,
-                    dealerTotal,
-                    currentHand,
-                    splitCount,
-                  }
-                : debugView === "hands"
-                ? {
-                    playersHands,
-                    playersHandElements,
-                    dealersHand,
-                    dealersHandElements,
-                    playersHandNames,
-                  }
-                : debugView === "settings"
-                ? {
-                    soft17Checked,
-                    splitTypeChecked,
-                    autoStandChecked,
-                  }
-                : debugView === "ui"
-                ? {
-                    showInfo,
-                    showSettings,
-                    showButtons,
-                    resultsAlertHidden,
-                    newGameBtnHidden,
-                    carousalInterval,
-                    carouselKey,
-                  }
-                : {
-                    isBusy,
-                    // deck,
-                    // audioRef: audioRef?.current ? "ready" : "null",
-                  },
-              null,
-              2
-            )}
+            {JSON.stringify(debugDataMap[debugView] || {}, null, 2)}
           </pre>
         )}
+      </Container>
+
+      <Container className="text-center mt-4" id="disclaimer">
+        <p className="small text-muted my-0 px-5">
+          <strong>* Disclaimer:</strong> Points in this game have <strong>no monetary value</strong>{" "}
+          and are for <strong>entertainment purposes only</strong>.
+        </p>
       </Container>
 
       <SettingsModal
@@ -538,8 +598,6 @@ export default function App() {
         handleClose={handleCloseSettings}
         soft17Checked={soft17Checked}
         setSoft17Checked={setSoft17Checked}
-        autoStandChecked={autoStandChecked}
-        setAutoStandChecked={setAutoStandChecked}
         splitTypeChecked={splitTypeChecked}
         setSplitTypeChecked={setSplitTypeChecked}
         endHand={endHand}

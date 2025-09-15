@@ -16,7 +16,7 @@ export default function GameControls({
   playerTotals,
   splitCount,
   splitTypeChecked,
-  resultsAlertHidden,
+  resultsHidden,
   showButtons,
   disableButtons,
   newGameBtnHidden,
@@ -24,6 +24,7 @@ export default function GameControls({
   isBusy,
   devMode,
   setIsBusy,
+  showInfo,
 }) {
   const doubleDown = useCallback(async () => {
     setIsBusy(true);
@@ -41,7 +42,7 @@ export default function GameControls({
       newWagers[currentHand] *= 2;
       updateWager(newWagers);
       setPlayerPoints(pointsLeft);
-      await hit("player", "doubleDown"); // FIX: actually deal the double down card
+      await hit("player", "doubleDown");
       await endHand();
       setIsBusy(false);
     }
@@ -77,20 +78,21 @@ export default function GameControls({
 
   // Helper: Compute button visibility based on game state
   const canAct =
-    resultsAlertHidden &&
+    resultsHidden &&
     showButtons &&
     playersHands[currentHand].length >= 2 &&
     playerTotals[currentHand] <= 21;
   const canSplit =
-    canAct &&
-    isSplitAllowed(
-      playersHands,
-      currentHand,
-      splitCount,
-      currentWager,
-      playerPoints,
-      splitTypeChecked
-    );
+    devMode ||
+    (canAct &&
+      isSplitAllowed(
+        playersHands,
+        currentHand,
+        splitCount,
+        currentWager,
+        playerPoints,
+        splitTypeChecked
+      ));
   const canDouble =
     canAct &&
     isDoubleDownAllowed(
@@ -100,11 +102,13 @@ export default function GameControls({
       currentWager,
       playerPoints
     );
-  const canNewGame = !resultsAlertHidden && playersHands[0].length > 0 && playerPoints > 0;
-  const canResetPoints = !resultsAlertHidden && playerPoints === 0;
+  const canNewGame = !resultsHidden && playersHands[0].length > 0 && playerPoints > 0;
+  const canResetPoints = !resultsHidden && playerPoints === 0;
 
   return (
-    <Container className="d-flex justify-content-center w-100 mt-2" id="gameActions">
+    <Container
+      className={`w-100 mt-2 ${showButtons && !showInfo ? "" : "hidden"}`}
+      id="gameActions">
       <ButtonGroup>
         <Button
           onClick={isBusy ? undefined : handleHit}

@@ -7,11 +7,9 @@ const chipNames = ["1Chip", "5Chip", "10Chip", "20Chip", "50Chip"];
 
 const preloadImages = (imageArray) => {
   const promises = imageArray.map((image) => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.src = `./assets/${image}.jpg`;
-      img.onload = resolve;
-    });
+    const img = new Image();
+    img.src = `./assets/${image}.jpg`;
+    return img.decode ? img.decode() : new Promise((r) => (img.onload = r));
   });
   return Promise.all(promises);
 };
@@ -41,7 +39,11 @@ export default function WagerControls({
       if (isBusy) return;
       const idx = [1, 5, 10, 20, 50].indexOf(parseInt(e.target.getAttribute("data-value"), 10));
       if (idx !== -1) {
-        chipControls[idx].start({ rotateX: [180, 0], rotateY: [360, 0], transition: { duration: 0.7, ease: "linear" } });
+        chipControls[idx].start({
+          rotateX: [180, 0],
+          rotateY: [360, 0],
+          transition: { duration: 0.7, ease: "linear" },
+        });
       }
       // Highlight the wager box for the current hand
       const wagerBox = document.getElementById(`wagerDisplay-${currentHand}`);
@@ -100,7 +102,9 @@ export default function WagerControls({
   }
 
   return (
-    <Container hidden={playersHands[0].length !== 0 || showInfo} id="wagerDiv" className="mt-2">
+    <Container
+      id="wagerDiv"
+      className={`mt-2 ${playersHands[0].length !== 0 || showInfo ? "hidden" : ""}`}>
       {[1, 5, 10, 20, 50].map((val, idx) => (
         <motion.div
           key={val}
@@ -108,8 +112,7 @@ export default function WagerControls({
           initial={{ rotateX: 0, rotateY: 0 }}
           whileTap={{ scale: 1.2, rotate: 12 }}
           whileHover={{ scale: 1.08 }}
-          style={{ display: "inline-block", margin: "0 4px", perspective: 600 }}
-        >
+          style={{ display: "inline-block", margin: "0 4px", perspective: 600 }}>
           <BSImage
             onClick={isBusy ? undefined : addChipValue}
             className="chip"
@@ -140,6 +143,7 @@ export default function WagerControls({
         <Button
           onClick={isBusy ? undefined : placeWager}
           id="wagerBtn"
+          disabled={currentWager[currentHand] <= 0}
           variant="primary"
           size="sm"
           className="align-middle ms-2 my-3">

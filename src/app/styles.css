@@ -2,122 +2,444 @@
   touch-action: manipulation;
 }
 
-#dealersHand,
-#playersHands > div {
+:root {
+  --bg: #081013;
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-2: rgba(255, 255, 255, 0.08);
+  --accent: #8be9fd;
+  --muted: rgba(255, 255, 255, 0.6);
+  --warning: #ffd966;
+  --radius: 14px;
+  --card-radius: 7px;
+  --soft-shadow: 0 8px 30px rgba(2, 6, 23, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  --glass-shadow: 0 6px 28px rgba(10, 15, 30, 0.6);
+  --s-ease: ease-in-out;
+
+  --anim-fast: 150ms;
+  --anim-medium: 300ms;
+  --anim-slow: 500ms;
+
+  --card-slide-time: 600ms;
+  --card-flip-time: 500ms;
+  --margin-adjust-time: calc(0.334 * var(--card-slide-time));
+
+  --card-pulse-time: 500ms;
+}
+
+/* Base */
+html,
+body,
+#root {
+  height: 100%;
+  background: linear-gradient(180deg, #041018 0%, #09121a 50%, var(--bg) 100%);
+  color: #eef6f7;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Hands / containers */
+.dealersHandContainer > div,
+.playersHands > div {
   display: flex;
-  border: 1px solid #ccc;
   padding: 11px;
   margin-bottom: 15px;
-  border-radius: 5px;
+  border-radius: var(--radius);
+  height: 18vh !important;
   max-height: 18vh !important;
   min-height: 18vh !important;
-  height: 18vh !important;
   max-width: 85vw !important;
+  min-width: 180px;
   width: fit-content;
-  min-width: 22vh;
-  background-color: rgb(9, 59, 9);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
+  border: 1px solid var(--glass-border-2);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  box-shadow: var(--glass-shadow);
   overflow: hidden;
   align-items: flex-start;
   justify-content: center;
+  -webkit-box-pack: center;
+  transition: all var(--margin-adjust-time) var(--s-ease);
 }
 
-#dealersHand img,
-#playersHands > div img {
+.handHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  font-weight: 700;
+  color: #e9fbff;
+  line-height: 1;
+  padding: 5px;
+  max-height: 25px;
+}
+
+.handTotal {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  color: var(--warning);
+  padding: 0.25rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 1;
+  transform: scale(1);
+  will-change: transform, opacity;
+  transition: opacity var(--anim-medium) var(--s-ease), transform var(--anim-medium) var(--s-ease);
+}
+.handTotal[hidden] {
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+}
+
+/* top-right controls */
+#settings,
+#info {
+  position: fixed;
+  top: 20px;
+  padding: 8px;
+  border: 1px solid var(--glass-border-2);
+  border-radius: var(--radius);
+  box-shadow: var(--soft-shadow);
+  z-index: 120;
+}
+#settings {
+  right: 20px;
+}
+#info {
+  right: 70px;
+}
+.text-muted {
+  color: var(--warning) !important;
+}
+
+/* Modal backdrop / dialog */
+.modal-backdrop {
+  opacity: 0;
+  backdrop-filter: blur(6px) saturate(110%);
+  -webkit-backdrop-filter: blur(6px) saturate(110%);
+  transition: opacity 120ms var(--s-ease);
+  will-change: opacity;
+}
+
+.modal-backdrop.show {
+  opacity: 0.25;
+}
+
+.modal-content {
+  background: rgba(0, 0, 0, 0.3); /* semi-transparent dark overlay for contrast */
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(10px) saturate(120%);
+}
+
+.modal-body {
+  color: #fff; /* high contrast */
+  font-weight: 600;
+  font-size: 1rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* subtle outline for readability */
+  line-height: 1.5;
+}
+
+.modal-header,
+.modal-footer {
+  background: transparent !important;
+  border-bottom: none;
+}
+
+/* Close button shadow */
+.modal .btn-close {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+}
+
+/* Card images */
+.dealersHandContainer > div img,
+.playersHands > div img {
   max-height: 100% !important;
   margin-right: 11px;
-  margin-left: 0px;
   transform-style: preserve-3d;
+  border-radius: var(--card-radius);
+  border: 0.5px solid #04101871;
+  transition: all var(--margin-adjust-time) cubic-bezier(0.2, 0.9, 0.2, 1),
+    opacity var(--anim-fast) var(--s-ease);
+  will-change: all;
+}
+.dealersHandContainer > div img[alt="Hidden Card"],
+.dealersHandContainer > div img[src*="back.png"] {
+  transform: none;
+  align-self: center;
+}
+.dealersHandContainer > div img:last-child,
+.playersHands > div img:last-child {
+  margin-right: 0;
 }
 
-#dealersHand img:last-child,
-#playersHands > div img:last-child {
-  margin-right: 0px;
-  margin-left: 0px;
-}
-
+/* action buttons */
 #hitBtn {
-  padding: 4px 21.5px 4px 21.5px;
+  padding: 4px 21.5px;
 }
-
 #splitBtn {
-  padding: 4px 16.5px 4px 16.5px;
+  padding: 4px 16.5px;
 }
-
 #standBtn {
-  padding: 4px 13px 4px 13px;
+  padding: 4px 13px;
 }
-
 #doubleDownBtn {
   line-height: 0.9;
 }
 
 #gameActions button {
-  border-radius: 10px;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--glass-border-2);
+  box-shadow: var(--soft-shadow);
+  color: #eef6f7;
+  opacity: 1;
+  transform: scale(1);
+  transition: background var(--anim-fast) var(--s-ease), box-shadow var(--anim-fast) var(--s-ease),
+    opacity var(--anim-medium) var(--s-ease), transform var(--anim-medium) var(--s-ease);
+}
+#gameActions button[disabled] {
+  opacity: 0.55;
+  pointer-events: none;
+  cursor: not-allowed;
+  filter: grayscale(12%);
+}
+#gameActions button:not([disabled]):hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  box-shadow: 0 8px 32px rgba(2, 6, 23, 0.7);
 }
 
-#message h6 {
-  color: rgb(204, 58, 58);
-  font-weight: bolder;
+/* Results alert */
+#messageAlert {
+  /* --- glass effect --- */
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--glass-border-2);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  border-radius: var(--radius);
+  /* --- End of glass effect --- */
+
+  z-index: 130;
+  width: fit-content;
+  min-width: 200px !important;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: -20px !important;
+  overflow: hidden;
+  max-height: 39px;
+  min-height: 39px;
+  height: 39px;
 }
 
+/* Message */
+#message {
+  color: var(--warning);
+  font-size: medium;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+  /* Animation properties */
+  will-change: transform, opacity;
+  animation: messagePopIn var(--anim-medium) var(--s-ease) forwards;
+}
+
+/* Add this to your CSS file */
+@keyframes messagePopIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Main panel */
 #main {
-  max-height: 70vh !important;
-  height: 70vh !important;
+  min-height: 90vh;
+  margin: 0 !important;
+  padding: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
+  border-radius: var(--radius);
+  border: 1px solid var(--glass-border-2);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  box-shadow: var(--glass-shadow);
 }
 
+/* Points / Wager display */
 #pointsDisplay,
 .wagerDisplay {
-  max-height: 4vh !important;
-  height: 4vh !important;
-  width: 20vh;
-  font-size: 1.2vh;
-  font-weight: bold;
+  height: 4vh;
+  max-height: 4vh;
+  width: 18vh;
+  min-width: 10vh;
+  max-width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius);
+  box-shadow: var(--soft-shadow);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+.pointsLabel,
+.wagerLabel {
+  flex: 0 0 auto;
+  margin-right: 0.4rem;
+  color: var(--muted);
+  white-space: nowrap;
+  font-size: clamp(0.55rem, 0.9vw, 0.65rem);
+}
+.pointsValue,
+.wagerValue {
+  flex: 1 1 auto;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--warning);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-size: clamp(0.7rem, 1.1vw, 0.95rem);
 }
 
+/* Responsive */
+@supports (container-type: inline-size) {
+  #pointsDisplay,
+  .wagerDisplay {
+    container-type: inline-size;
+  }
+  .pointsLabel,
+  .wagerLabel {
+    font-size: clamp(0.55rem, 1.6cqi, 0.65rem);
+  }
+  .pointsValue,
+  .wagerValue {
+    font-size: clamp(0.7rem, 2.2cqi, 0.95rem);
+  }
+}
+@media (forced-colors: active) {
+  #pointsDisplay,
+  .wagerDisplay {
+    border-color: CanvasText;
+  }
+}
+@media (min-width: 768px) {
+  .pointsLabel,
+  .wagerLabel {
+    font-size: 1rem;
+  }
+  .pointsValue,
+  .wagerValue {
+    font-size: 1.1rem;
+  }
+}
+
+/* wager controls and images */
 #wagerDiv img {
   box-sizing: border-box;
-  border: 0.4vh solid #ccc;
-  border-radius: 3.25vh;
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
   max-height: 6.5vh;
-  margin: 0.5vh;
+  box-shadow: var(--soft-shadow);
+  transition: transform 200ms var(--s-ease), box-shadow 200ms var(--s-ease);
 }
-
 #wagerDiv img:hover {
   cursor: pointer;
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.8);
 }
-
 #wagerDiv #wagerBtn,
 #wagerRst,
 #allInBtn {
   max-width: 120px;
   font-size: 12px;
-  border-radius: 10px;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--glass-border-2);
+  box-shadow: var(--soft-shadow);
+  color: #eef6f7;
+  transition: background var(--anim-fast) var(--s-ease), box-shadow var(--anim-fast) var(--s-ease);
 }
-
+#wagerDiv #wagerBtn:hover,
+#wagerRst:hover,
+#allInBtn:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  box-shadow: 0 8px 32px rgba(2, 6, 23, 0.7);
+}
 #wagerDiv #allInBtn {
-  padding: 4px 11px 4px 11px;
+  padding: 4px 11px;
 }
 
+#wagerDiv,
+#gameActions {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms var(--s-ease), transform 300ms var(--s-ease),
+    max-height 500ms var(--s-ease);
+  max-height: 420px;
+}
+#wagerDiv {
+  overflow: visible;
+}
+
+#gameActions {
+  overflow: hidden;
+}
+
+#wagerDiv.hidden,
+#gameActions.hidden {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  pointer-events: none;
+  max-height: 0;
+  padding: 0px;
+  overflow: hidden;
+}
+
+/* disclaimer / misc */
 #disclaimer p {
   font-size: 0.5rem;
 }
-
 #disclaimer {
   width: fit-content;
   height: fit-content;
 }
 
-.activeHand {
-  border: 5px solid yellow;
-  box-shadow: 0 0 15px yellow;
-}
-
+/* Keyframes */
 @keyframes slideIn {
   from {
-    transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-120%, 0, 0) scale(0.75);
+    opacity: 0;
+  }
+  60% {
+    transform: translate3d(6%, 0, 0) scale(1.02);
+    opacity: 1;
   }
   to {
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
   }
 }
 
@@ -130,18 +452,6 @@
   }
 }
 
-.imgFlip {
-  animation: flip 0.6s ease forwards;
-  transform-style: preserve-3d;
-  -webkit-backface-visibility: visible; /* For Safari */
-  backface-visibility: visible;
-}
-
-.imgSlide {
-  animation: slideIn 0.5s ease-out;
-  will-change: transform;
-}
-
 @keyframes highlight {
   0% {
     background-color: #ccc;
@@ -150,19 +460,79 @@
     background-color: transparent;
   }
 }
+@keyframes pulseUp {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.98;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes valuePop {
+  0% {
+    transform: translateY(0);
+    color: #ffd966;
+  }
+  40% {
+    transform: translateY(-6%);
+    color: #fff;
+  }
+  100% {
+    transform: translateY(0);
+    color: #ffd966;
+  }
+}
 
+/* Apply animations */
+.imgFlip {
+  animation: flip var(--card-flip-time) var(--s-ease) forwards;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+.imgSlide {
+  animation: slideIn var(--card-slide-time) var(--s-ease);
+  will-change: transform;
+}
 .highlight {
   animation: highlight 0.5s linear;
 }
-
 .viewportResize img {
-  transition: margin-left 0.3s ease-in-out;
+  transition: margin-left 0.32s cubic-bezier(0.2, 0.9, 0.2, 1) !important;
+  will-change: margin-left;
+}
+.handPulse {
+  animation: pulseUp var(--card-pulse-time) var(--s-ease);
+}
+.valuePulse {
+  animation: valuePop var(--card-pulse-time) var(--s-ease);
 }
 
-#resultsAlert {
-  max-width: fit-content;
-}
-
+/* Bottom container and spacing */
 .carousel {
   max-width: fit-content;
+}
+
+#bottomDiv > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --anim-fast: 1ms;
+    --anim-medium: 1ms;
+    --anim-slow: 1ms;
+  }
+  * {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
