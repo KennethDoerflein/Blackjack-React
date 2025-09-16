@@ -367,7 +367,7 @@ export default function App() {
         const handElement = document.getElementById(handId);
         if (handElement) {
           requestAnimationFrame(() => {
-            handElement.style.willChange = 'transform';
+            handElement.style.willChange = "transform";
             handElement.classList.add("viewportResize");
             adjustCardMargins(handElement, true);
           });
@@ -378,11 +378,11 @@ export default function App() {
       const removeResizeClass = async (handElement) => {
         if (handElement) {
           if (lastFrameId) cancelAnimationFrame(lastFrameId);
-          
+
           lastFrameId = requestAnimationFrame(async () => {
             await pausableDelay(120, isTabVisible, visibilityPromiseResolver);
             handElement.classList.remove("viewportResize");
-            handElement.style.willChange = 'auto';
+            handElement.style.willChange = "auto";
           });
         }
       };

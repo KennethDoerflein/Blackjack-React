@@ -107,7 +107,7 @@ export default function GameControls({
 
   return (
     <Container
-      className={`w-100 mt-2 ${showButtons && !showInfo ? "" : "hidden"}`}
+      className={`w-100 pt-2 ${showButtons && !showInfo ? "" : "hidden"}`}
       id="gameActions">
       <ButtonGroup>
         <Button

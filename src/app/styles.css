@@ -4,6 +4,7 @@
 
 :root {
   --bg: #081013;
+  --seam-shadow: rgba(2, 6, 23, 0.16);
   --glass-border: rgba(255, 255, 255, 0.12);
   --glass-border-2: rgba(255, 255, 255, 0.08);
   --accent: #8be9fd;
@@ -11,8 +12,8 @@
   --warning: #ffd966;
   --radius: 14px;
   --card-radius: 7px;
-  --soft-shadow: 0 8px 30px rgba(2, 6, 23, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.02);
-  --glass-shadow: 0 6px 28px rgba(10, 15, 30, 0.6);
+  --soft-shadow: 0 6px 20px rgba(2, 6, 23, 0.45);
+  --glass-shadow: 0 6px 18px rgba(10, 15, 30, 0.42);
   --s-ease: ease-in-out;
 
   --anim-fast: 150ms;
@@ -26,12 +27,84 @@
   --card-pulse-time: 500ms;
 }
 
+/* Theme variants. Set on the <html> element with e.g. <html data-theme="neon"> */
+:root[data-theme="neon"] {
+  /* Liquid glass kept but toned down to classic teal/green */
+  --bg: #051918;
+  --bg-gradient: linear-gradient(180deg, #051918 0%, #062624 55%, #052623 100%);
+  --panel-bg: linear-gradient(180deg, rgba(10, 30, 28, 0.06), rgba(255, 255, 255, 0.01));
+  --seam-shadow: rgba(2, 20, 18, 0.22);
+  --glass-border: rgba(120, 200, 190, 0.1);
+  --glass-border-2: rgba(120, 200, 190, 0.06);
+  --glass-shadow: 0 6px 18px rgba(0, 40, 36, 0.12);
+  --accent: #66d6c6;
+  --muted: rgba(170, 220, 210, 0.7);
+  --warning: #ffd966;
+}
+
+:root[data-theme="ocean"] {
+  /* Cooler slate teal — more subtle */
+  --bg: #051e22;
+  --bg-gradient: linear-gradient(180deg, #051e22 0%, #062f2f 55%, #052b2a 100%);
+  --panel-bg: linear-gradient(180deg, rgba(80, 170, 180, 0.04), rgba(255, 255, 255, 0.01));
+  --seam-shadow: rgba(3, 28, 30, 0.24);
+  --glass-border: rgba(140, 200, 200, 0.1);
+  --glass-border-2: rgba(140, 200, 200, 0.06);
+  --glass-shadow: 0 6px 18px rgba(6, 50, 60, 0.12);
+  --accent: #7ad6ff;
+  --muted: rgba(170, 210, 210, 0.7);
+  --warning: #ffd1a8;
+}
+
+:root[data-theme="retro"] {
+  /* Warm mahogany / wood table vibes but muted */
+  --bg: #24180f;
+  --bg-gradient: linear-gradient(180deg, #24180f 0%, #2e1b10 52%, #1b1209 100%);
+  --panel-bg: linear-gradient(180deg, rgba(40, 26, 18, 0.06), rgba(0, 0, 0, 0.02));
+  --seam-shadow: rgba(20, 12, 8, 0.22);
+  --glass-border: rgba(220, 170, 120, 0.1);
+  --glass-border-2: rgba(220, 170, 120, 0.06);
+  --glass-shadow: 0 6px 18px rgba(50, 30, 10, 0.12);
+  --accent: #f0c37a;
+  --muted: rgba(220, 170, 120, 0.72);
+  --warning: #ffb07a;
+}
+
+:root[data-theme="forest"] {
+  /* Deep casino green — classic and legible */
+  --bg: #041814;
+  --bg-gradient: linear-gradient(180deg, #041814 0%, #072a1f 52%, #03130d 100%);
+  --panel-bg: linear-gradient(180deg, rgba(18, 90, 60, 0.06), rgba(0, 0, 0, 0.02));
+  --seam-shadow: rgba(3, 20, 14, 0.22);
+  --glass-border: rgba(130, 200, 150, 0.1);
+  --glass-border-2: rgba(130, 200, 150, 0.06);
+  --glass-shadow: 0 6px 18px rgba(8, 50, 30, 0.12);
+  --accent: #8fe39d;
+  --muted: rgba(160, 210, 170, 0.75);
+  --warning: #ffd966;
+}
+
+/* Classic dark glass theme: original look */
+:root[data-theme="classic"] {
+  --bg: #081013;
+  --bg-gradient: linear-gradient(180deg, #041018 0%, #09121a 50%, #081013 100%);
+  --panel-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015));
+  --seam-shadow: rgba(2, 6, 23, 0.28);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-2: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 6px 28px rgba(10, 15, 30, 0.36);
+  --accent: #8be9fd;
+  --muted: rgba(255, 255, 255, 0.6);
+  --warning: #ffd966;
+}
+
 /* Base */
 html,
 body,
 #root {
   height: 100%;
-  background: linear-gradient(180deg, #041018 0%, #09121a 50%, var(--bg) 100%);
+  /* use theme gradient when available, otherwise fall back to previous gradient */
+  background: var(--bg-gradient, linear-gradient(180deg, #041018 0%, #09121a 50%, var(--bg) 100%));
   color: #eef6f7;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
     Arial;
@@ -201,12 +274,13 @@ body,
   border-radius: var(--radius);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
   border: 1px solid var(--glass-border-2);
-  box-shadow: var(--soft-shadow);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: #eef6f7;
   opacity: 1;
   transform: scale(1);
   transition: background var(--anim-fast) var(--s-ease), box-shadow var(--anim-fast) var(--s-ease),
-    opacity var(--anim-medium) var(--s-ease), transform var(--anim-medium) var(--s-ease);
+    opacity var(--anim-medium) var(--s-ease), transform var(--anim-medium) var(--s-ease),
+    filter 160ms var(--s-ease);
 }
 #gameActions button[disabled] {
   opacity: 0.55;
@@ -215,8 +289,9 @@ body,
   filter: grayscale(12%);
 }
 #gameActions button:not([disabled]):hover {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
-  box-shadow: 0 8px 32px rgba(2, 6, 23, 0.7);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.03));
+  transform: translateY(-2px) scale(1.01);
+  filter: saturate(1.04);
 }
 
 /* Results alert */
@@ -271,12 +346,38 @@ body,
   min-height: 90vh;
   margin: 0 !important;
   padding: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
+  background: var(
+    --panel-bg,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015))
+  );
   border-radius: var(--radius);
   border: 1px solid var(--glass-border-2);
   backdrop-filter: blur(10px) saturate(120%);
   -webkit-backdrop-filter: blur(10px) saturate(120%);
-  box-shadow: var(--glass-shadow);
+  /* combine existing glass shadow with a subtle inset seam shadow to blend edges */
+  box-shadow: var(--glass-shadow, var(--glass-shadow));
+  position: relative;
+  overflow: visible;
+  transition: background var(--anim-medium) var(--s-ease),
+    border-color var(--anim-medium) var(--s-ease), box-shadow var(--anim-medium) var(--s-ease),
+    transform var(--anim-medium) var(--s-ease);
+}
+
+/* softened bottom edge to blend panel into page background (tuned down) */
+#main::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -18px;
+  height: 36px;
+  pointer-events: none;
+  border-radius: 10px;
+  /* subtle gradient to page background */
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.06));
+  filter: blur(4px);
+  opacity: 0.6;
+  transition: opacity var(--anim-medium) var(--s-ease), transform var(--anim-medium) var(--s-ease);
 }
 
 /* Points / Wager display */
@@ -406,6 +507,64 @@ body,
 
 #gameActions {
   overflow: hidden;
+}
+
+/* Theme picker swatches used in the settings modal */
+.theme-swatch-container {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  margin: 8px 0 12px;
+}
+.theme-swatch {
+  width: 44px;
+  height: 32px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 180ms var(--s-ease), box-shadow 180ms var(--s-ease),
+    outline 180ms var(--s-ease), filter 180ms var(--s-ease);
+}
+.theme-swatch.selected {
+  outline: 3px solid rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+.theme-swatch--neon {
+  background: linear-gradient(90deg, #041018 0%, #006b7a 50%, #8be9fd 100%);
+}
+.theme-swatch--ocean {
+  background: linear-gradient(90deg, #012f3a 0%, #0b7482 50%, #7ad6ff 100%);
+}
+.theme-swatch--retro {
+  background: linear-gradient(90deg, #2b1f12 0%, #8c5a2b 50%, #ffd166 100%);
+}
+.theme-swatch--forest {
+  background: linear-gradient(90deg, #04210f 0%, #2e6b3a 50%, #8fe39d 100%);
+}
+.theme-swatch--classic {
+  background: linear-gradient(90deg, #0a1416 0%, #062025 50%, #09121a 100%);
+}
+
+.theme-swatch:hover {
+  transform: translateY(-6px) scale(1.06);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.48), 0 0 20px rgba(255, 255, 255, 0.02) inset;
+  filter: saturate(1.08) brightness(1.02);
+}
+
+.theme-swatch-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.theme-swatch-label {
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-align: center;
+  white-space: nowrap;
+  max-width: 72px;
 }
 
 #wagerDiv.hidden,

@@ -1,6 +1,17 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { Button, Container, Form, Modal } from "react-bootstrap";
 import appInfo from "../../../package.json";
 import gitInfo from "../../generatedGitInfo.json";
+
+const THEMES = [
+  { id: "classic", label: "Classic" },
+  { id: "neon", label: "Liquid Glass" },
+  { id: "ocean", label: "Ocean" },
+  { id: "retro", label: "Retro" },
+  { id: "forest", label: "Forest" },
+];
 
 export default function SettingsModal({
   currentWager,
@@ -17,6 +28,29 @@ export default function SettingsModal({
     if (audioRef && audioRef.current) {
       audioRef.current.paused ? audioRef.current.play() : audioRef.current.pause();
     }
+  };
+
+  const [theme, setTheme] = useState("neon");
+
+  useEffect(() => {
+    // initialize from localStorage or document attribute
+    try {
+      const stored = localStorage.getItem("bj_theme");
+      const docTheme = document.documentElement.getAttribute("data-theme");
+      const initial = stored || docTheme || "neon";
+      setTheme(initial);
+      document.documentElement.setAttribute("data-theme", initial);
+    } catch (e) {
+      // ignore (SSR safe)
+    }
+  }, []);
+
+  const pickTheme = (id) => {
+    try {
+      localStorage.setItem("bj_theme", id);
+      document.documentElement.setAttribute("data-theme", id);
+    } catch (e) {}
+    setTheme(id);
   };
 
   return (
@@ -47,6 +81,25 @@ export default function SettingsModal({
             onChange={() => setSplitTypeChecked(!splitTypeChecked)}
           />
         </Form>
+
+        <div className="mt-3">
+          <div className="text-center mb-2">Theme</div>
+          <div className="theme-swatch-container" role="list">
+            {THEMES.map((t) => (
+              <div key={t.id} role="listitem" className="theme-swatch-wrap">
+                <div
+                  title={t.label}
+                  onClick={() => pickTheme(t.id)}
+                  className={`theme-swatch theme-swatch--${t.id} ${
+                    theme === t.id ? "selected" : ""
+                  }`}
+                  aria-label={t.label}
+                />
+                <div className="theme-swatch-label">{t.label.split(" ")[0]}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="warning" onClick={handleClose} className="mx-auto fw-bolder">
