@@ -377,7 +377,8 @@ export default function App() {
           playersHands[currentHand],
           deck.remainingCards,
           deck.POINT_VALUES,
-          deck.RANKS
+          deck.RANKS,
+          dealersHand
         );
         setGlobalMessage(`Bust probability: ${probability.toFixed(2)}%`);
         setProbabilityChecked(true);

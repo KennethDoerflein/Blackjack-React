@@ -102,16 +102,36 @@ export function calculateAndReturnTotals(newPlayersHands, playerTotals, dealersH
 }
 
 // Calculate the probability of busting on the next card
-export function calculateBustProbability(playerHand, remainingCards, pointValues, ranks) {
+export function calculateBustProbability(
+  playerHand,
+  remainingCards,
+  pointValues,
+  ranks,
+  dealerHand
+) {
   if (!remainingCards || !playerHand) return 0;
 
+  // Create a mutable copy of remainingCards to adjust for the dealer's visible card.
+  const adjustedRemainingCards = { ...remainingCards };
+
+  // Account for the dealer's visible card (upcard).
+  if (dealerHand && dealerHand.length > 0) {
+    const dealerUpCard = dealerHand[0];
+    if (adjustedRemainingCards[dealerUpCard.rank] > 0) {
+      adjustedRemainingCards[dealerUpCard.rank]--;
+    }
+  }
+
   let bustCards = 0;
-  const totalRemainingCards = Object.values(remainingCards).reduce((sum, count) => sum + count, 0);
+  const totalRemainingCards = Object.values(adjustedRemainingCards).reduce(
+    (sum, count) => sum + count,
+    0
+  );
 
   if (totalRemainingCards === 0) return 0;
 
-  for (const rank in remainingCards) {
-    const count = remainingCards[rank];
+  for (const rank in adjustedRemainingCards) {
+    const count = adjustedRemainingCards[rank];
     if (count > 0) {
       const cardPointValue = pointValues[ranks.indexOf(rank)];
       const testCard = { rank: rank, pointValue: cardPointValue };
