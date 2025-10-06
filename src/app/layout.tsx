@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-bs-theme="dark" data-theme="neon" suppressHydrationWarning>
+    <html lang="en" data-bs-theme="dark" data-theme="classic" suppressHydrationWarning>
       <head>
         <link rel="icon" href="assets/cards-1.3/red_joker.png" />
         {/* Initialize theme early to avoid flash */}

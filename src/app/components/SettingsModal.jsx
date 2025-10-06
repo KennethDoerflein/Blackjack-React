@@ -30,14 +30,14 @@ export default function SettingsModal({
     }
   };
 
-  const [theme, setTheme] = useState("neon");
+  const [theme, setTheme] = useState("classic");
 
   useEffect(() => {
     // initialize from localStorage or document attribute
     try {
       const stored = localStorage.getItem("bj_theme");
       const docTheme = document.documentElement.getAttribute("data-theme");
-      const initial = stored || docTheme || "neon";
+      const initial = stored || docTheme || "classic";
       setTheme(initial);
       document.documentElement.setAttribute("data-theme", initial);
     } catch (e) {
