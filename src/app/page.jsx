@@ -369,9 +369,9 @@ export default function App() {
 
   const checkBustProbability = () => {
     if (deck) {
-      if (playerPoints >= 25) {
+      if (playerPoints >= 100) {
         if (!probabilityChecked) {
-          setPlayerPoints(playerPoints - 25);
+          setPlayerPoints(playerPoints - 100);
         }
         const probability = calculateBustProbability(
           playersHands[currentHand],
