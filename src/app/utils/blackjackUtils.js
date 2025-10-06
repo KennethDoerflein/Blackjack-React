@@ -100,3 +100,28 @@ export function calculateAndReturnTotals(newPlayersHands, playerTotals, dealersH
   const newDealerTotal = calculateTotal(dealersHand);
   return { newTotals, newDealerTotal };
 }
+
+// Calculate the probability of busting on the next card
+export function calculateBustProbability(playerHand, remainingCards, pointValues, ranks) {
+  if (!remainingCards || !playerHand) return 0;
+
+  let bustCards = 0;
+  const totalRemainingCards = Object.values(remainingCards).reduce((sum, count) => sum + count, 0);
+
+  if (totalRemainingCards === 0) return 0;
+
+  for (const rank in remainingCards) {
+    const count = remainingCards[rank];
+    if (count > 0) {
+      const cardPointValue = pointValues[ranks.indexOf(rank)];
+      const testCard = { rank: rank, pointValue: cardPointValue };
+      const newHand = [...playerHand, testCard];
+
+      if (calculateTotal(newHand) > 21) {
+        bustCards += count;
+      }
+    }
+  }
+
+  return (bustCards / totalRemainingCards) * 100;
+}

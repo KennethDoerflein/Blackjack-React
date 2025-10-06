@@ -18,6 +18,7 @@ class CardDeck {
     this.cards = this.createDeck();
     this.dealtCards = [];
     this.initialDeckSize = this.cards.length;
+    this.remainingCards = this.countRemainingCards();
     this.preloadImages().then(() => {
       this.casinoShuffle().then(() => {
         this.loading = false;
@@ -143,6 +144,19 @@ class CardDeck {
     });
   }
 
+  countRemainingCards() {
+    const remaining = {};
+    this.RANKS.forEach((rank) => {
+      remaining[rank] = 0;
+    });
+
+    this.cards.forEach((card) => {
+      remaining[card.rank]++;
+    });
+
+    return remaining;
+  }
+
   async reshuffle() {
     // Reshuffle when 75% of the deck has been dealt
     const threshold = this.initialDeckSize * 0.75;
@@ -150,6 +164,7 @@ class CardDeck {
       this.loading = true;
       this.cards = this.cards.concat(this.dealtCards);
       this.dealtCards = [];
+      this.remainingCards = this.countRemainingCards();
       this.casinoShuffle().then(() => {
         this.loading = false;
       });
@@ -162,6 +177,7 @@ class CardDeck {
     }
     const card = this.cards.pop();
     this.dealtCards.push(card);
+    this.remainingCards[card.rank]--;
     return card;
   }
 }

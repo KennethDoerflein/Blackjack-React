@@ -25,6 +25,9 @@ export default function GameControls({
   devMode,
   setIsBusy,
   showInfo,
+  checkBustProbability,
+  probabilityChecked,
+  globalMessage,
 }) {
   const doubleDown = useCallback(async () => {
     setIsBusy(true);
@@ -70,6 +73,7 @@ export default function GameControls({
   const handleSplit = useCallback(() => splitHand(), [splitHand]);
   const handleDoubleDown = doubleDown;
   const handleStand = useCallback(() => endHand(), [endHand]);
+  const handleCheckOdds = useCallback(() => checkBustProbability(), [checkBustProbability]);
   const handleNewGame = useCallback(() => {
     newGame();
     setNewGameBtnHidden(false);
@@ -107,7 +111,7 @@ export default function GameControls({
 
   return (
     <Container
-      className={`w-100 pt-2 ${showButtons && !showInfo ? "" : "hidden"}`}
+      className={`w-100 mt-2 ${showButtons && !showInfo ? "" : "hidden"}`}
       id="gameActions">
       <ButtonGroup>
         <Button
@@ -171,6 +175,22 @@ export default function GameControls({
           Reset Points
         </Button>
       </ButtonGroup>
+      <Container>
+        <Button
+          onClick={isBusy ? undefined : handleCheckOdds}
+          hidden={!canAct || playerPoints < 25}
+          disabled={
+            disableButtons || (globalMessage.includes("Bust probability:") && probabilityChecked)
+          }
+          id="checkOddsBtn"
+          variant="info"
+          size="sm"
+          className="mx-2 my-4 py-2">
+          {!probabilityChecked || globalMessage.includes("Bust probability:")
+            ? "Check Odds (-25 Points)"
+            : "View Odds"}
+        </Button>
+      </Container>
     </Container>
   );
 }

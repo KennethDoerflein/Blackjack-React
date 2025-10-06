@@ -23,10 +23,12 @@ import {
   BLACKJACK_PAUSE_TIME,
   UI_TRANSITION_DELAY,
   DEALER_DECISION_PAUSE,
+  BUST_PAUSE_TIME,
 } from "./utils/constants.js";
 
 import {
   calculateAndReturnTotals,
+  calculateBustProbability,
   calculateTotal,
   shouldDealerHit,
 } from "./utils/blackjackUtils.js";
@@ -81,6 +83,7 @@ export default function App() {
   const [isBusy, setIsBusy] = useState(false);
 
   const [globalMessage, setGlobalMessage] = useState("");
+  const [probabilityChecked, setProbabilityChecked] = useState(false);
 
   const audioRef = useRef(null);
 
@@ -142,6 +145,7 @@ export default function App() {
       setSplitCount(0);
       setPlayersHandElements([[]]);
       setDealersHandElements([]);
+      setProbabilityChecked(false);
 
       // Hide the results alert if it's showing
       if (!resultsHidden) setResultsHidden(true);
@@ -230,10 +234,12 @@ export default function App() {
 
     if (isPlayer && origin === "user") {
       if (latestTotals[hand] > 21) {
-        await pausableDelay(CARD_PULSE_TIME, isTabVisible, visibilityPromiseResolver);
+        await pausableDelay(BUST_PAUSE_TIME, isTabVisible, visibilityPromiseResolver);
         await endHand();
       }
       setIsBusy(false);
+      setGlobalMessage("Player's turn");
+      setProbabilityChecked(false);
       return latestTotals[hand];
     }
 
@@ -289,6 +295,7 @@ export default function App() {
       await pausableDelay(CARD_SLIDE_TIME, isTabVisible, visibilityPromiseResolver);
       setCurrentHand(newHand);
       await pausableDelay(CARD_SLIDE_TIME, isTabVisible, visibilityPromiseResolver);
+      setProbabilityChecked(false);
     }
     setIsBusy(false);
   }
@@ -358,6 +365,26 @@ export default function App() {
       setDealerTotal(newDealerTotal);
     }
     setIsBusy(false);
+  };
+
+  const checkBustProbability = () => {
+    if (deck) {
+      if (playerPoints >= 25) {
+        if (!probabilityChecked) {
+          setPlayerPoints(playerPoints - 25);
+        }
+        const probability = calculateBustProbability(
+          playersHands[currentHand],
+          deck.remainingCards,
+          deck.POINT_VALUES,
+          deck.RANKS
+        );
+        setGlobalMessage(`Bust probability: ${probability.toFixed(2)}%`);
+        setProbabilityChecked(true);
+      } else {
+        setGlobalMessage("Not enough points to check odds.");
+      }
+    }
   };
 
   useEffect(() => {
@@ -511,6 +538,8 @@ export default function App() {
           currentWager={currentWager[currentHand]}
           currentHand={currentHand}
           splitCount={splitCount}
+          checkBustProbability={checkBustProbability}
+          isBusy={isBusy}
         />
         <Container className="text-center" id="bottomDiv">
           <WagerControls
@@ -549,6 +578,9 @@ export default function App() {
             devMode={devMode}
             setIsBusy={setIsBusy}
             showInfo={showInfo}
+            checkBustProbability={checkBustProbability}
+            probabilityChecked={probabilityChecked}
+            globalMessage={globalMessage}
           />
         </Container>
         {devMode && (
