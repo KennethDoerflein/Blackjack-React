@@ -127,7 +127,7 @@ export default function App() {
       setNewGameBtnHidden(true); // Hide new game button via state
 
       if (!deck) {
-        const newDeck = new CardDeck(10);
+        const newDeck = new CardDeck(6);
         setCardDeck(newDeck);
         await preloadDeckImages(newDeck);
       } else {
