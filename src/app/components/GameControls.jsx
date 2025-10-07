@@ -178,7 +178,11 @@ export default function GameControls({
       <Container>
         <Button
           onClick={isBusy ? undefined : handleCheckOdds}
-          hidden={!canAct || (playerPoints < 100 && !probabilityChecked)}
+          hidden={
+            !canAct ||
+            (playerPoints < 100 &&
+              !(globalMessage.includes("Bust probability:") && probabilityChecked))
+          }
           disabled={
             disableButtons || (globalMessage.includes("Bust probability:") && probabilityChecked)
           }
