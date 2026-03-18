@@ -88,16 +88,13 @@ class CardDeck {
   overhandShuffle() {
     return new Promise((resolve) => {
       let tempDeck = [];
-      let maxIterations = 100;
-      let iterations = 0;
 
-      while (this.cards.length > 0 && iterations < maxIterations) {
+      while (this.cards.length > 0) {
         const chunkSize = this.getRandomInt(1, Math.min(10, this.cards.length));
         const chunk = this.cards.splice(0, chunkSize);
 
         tempDeck =
           this.getRandomInt(1, 101) <= 50 ? tempDeck.concat(chunk) : chunk.concat(tempDeck);
-        iterations++;
       }
 
       this.cards = tempDeck;

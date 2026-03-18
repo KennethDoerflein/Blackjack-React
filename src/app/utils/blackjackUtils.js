@@ -25,28 +25,20 @@ export function shouldDealerHit(total, hand, soft17Checked) {
 
 // Check if a hand is a soft 17 (total 17 with an Ace counted as 11)
 function isSoft17(cards) {
-  const totalWithoutAces = calculateTotalWithoutAces(cards);
-  const numAces = countAces(cards);
-  return totalWithoutAces === 6 && numAces > 0;
+  if (calculateTotal(cards) !== 17) return false;
+  // calculateHardTotal counts every Ace as 1. If that sum is 7, 
+  // then one Ace can be 11 (7 - 1 + 11 = 17), making it a soft hand.
+  return calculateHardTotal(cards) === 7;
 }
 
-// Calculate total points for a hand, excluding reduction of Aces to 1
-function calculateTotalWithoutAces(cards) {
-  let total = 0;
-  for (let i = 0; i < cards.length; i++) {
-    if (cards[i].rank !== "ace") {
-      total += cards[i].pointValue;
-    }
-  }
-  return total;
+// Sum the hand with every Ace valued at 1 (the true "hard" total)
+function calculateHardTotal(cards) {
+  return cards.reduce((sum, card) => sum + (card.rank === "ace" ? 1 : card.pointValue), 0);
 }
 
-// Count the number of Aces in a hand
-function countAces(cards) {
-  return cards.filter((card) => card.rank === "ace").length;
-}
 
 // Check if splitting is allowed based on current hand and rules
+
 export const isSplitAllowed = (
   playersHands,
   currentHand,
