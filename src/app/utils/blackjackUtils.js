@@ -36,12 +36,9 @@ function calculateHardTotal(cards) {
   return cards.reduce((sum, card) => sum + (card.rank === "ace" ? 1 : card.pointValue), 0);
 }
 
-// Count the number of Aces in a hand
-function countAces(cards) {
-  return cards.filter((card) => card.rank === "ace").length;
-}
 
 // Check if splitting is allowed based on current hand and rules
+
 export const isSplitAllowed = (
   playersHands,
   currentHand,
