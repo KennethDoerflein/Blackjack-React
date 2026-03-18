@@ -58,6 +58,10 @@ class CardDeck {
   }
 
   getRandomInt(min, max) {
+    min = Math.floor(min);
+    max = Math.floor(max);
+    if (min >= max) return min;
+
     const range = max - min + 1;
     const randomArray = new Uint32Array(1);
     window.crypto.getRandomValues(randomArray);
@@ -86,14 +90,24 @@ class CardDeck {
 
   overhandShuffle() {
     return new Promise((resolve) => {
+      if (!this.cards || this.cards.length <= 1) {
+        resolve();
+        return;
+      }
+
       let tempDeck = [];
 
       while (this.cards.length > 0) {
+        // Ensure chunkSize is at least 1 and no more than 10 or the remaining cards.
         const chunkSize = this.getRandomInt(1, Math.min(10, this.cards.length));
         const chunk = this.cards.splice(0, chunkSize);
 
-        tempDeck =
-          this.getRandomInt(1, 101) <= 50 ? tempDeck.concat(chunk) : chunk.concat(tempDeck);
+        // Randomly prepend or append the chunk to build the new deck.
+        if (this.getRandomInt(1, 100) <= 50) {
+          tempDeck = tempDeck.concat(chunk);
+        } else {
+          tempDeck = chunk.concat(tempDeck);
+        }
       }
 
       this.cards = tempDeck;
@@ -119,12 +133,17 @@ class CardDeck {
 
   stripShuffle() {
     return new Promise((resolve) => {
-      let topIndex = this.getRandomInt(0, this.cards.length / 2);
-      let bottomIndex = this.getRandomInt(this.cards.length / 2, this.cards.length);
+      if (!this.cards || this.cards.length < 2) {
+        resolve();
+        return;
+      }
 
-      let topPortion = this.cards.slice(0, topIndex);
-      let middlePortion = this.cards.slice(topIndex, bottomIndex);
-      let bottomPortion = this.cards.slice(bottomIndex);
+      const topIndex = this.getRandomInt(0, Math.floor(this.cards.length / 2));
+      const bottomIndex = this.getRandomInt(Math.floor(this.cards.length / 2), this.cards.length);
+
+      const topPortion = this.cards.slice(0, topIndex);
+      const middlePortion = this.cards.slice(topIndex, bottomIndex);
+      const bottomPortion = this.cards.slice(bottomIndex);
 
       this.cards = bottomPortion.concat(middlePortion).concat(topPortion);
       resolve();
@@ -133,7 +152,15 @@ class CardDeck {
 
   cutDeck() {
     return new Promise((resolve) => {
-      const cutIndex = this.getRandomInt(this.cards.length / 4, (3 * this.cards.length) / 4);
+      if (!this.cards || this.cards.length < 2) {
+        resolve();
+        return;
+      }
+
+      const cutPointMin = Math.floor(this.cards.length / 4);
+      const cutPointMax = Math.floor((3 * this.cards.length) / 4);
+      const cutIndex = this.getRandomInt(cutPointMin, cutPointMax);
+
       const cutPart = this.cards.splice(0, cutIndex);
       this.cards = this.cards.concat(cutPart);
       resolve();
